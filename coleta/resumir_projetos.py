@@ -145,6 +145,7 @@ FERRAMENTA_PRINCIPAL = {
         },
         "required": ["assunto", "assunto_secundario", "confianca_assunto", "motivo_incerteza", "resumo",
                      "confianca_resumo", "motivo_resumo", "pontos_chave", "tags"],
+        "additionalProperties": False,
     },
 }
 FERRAMENTA_CLASSIFICADOR = {
@@ -155,6 +156,7 @@ FERRAMENTA_CLASSIFICADOR = {
         "properties": {"assunto": {"type": "string", "enum": ASSUNTOS},
                        "confianca": {"type": "string", "enum": ["alta", "media", "baixa"]}},
         "required": ["assunto", "confianca"],
+        "additionalProperties": False,
     },
 }
 FERRAMENTA_VERIFICADOR = {
@@ -166,6 +168,7 @@ FERRAMENTA_VERIFICADOR = {
                        "sem_apoio": {"type": "array", "items": {"type": "string"},
                                      "description": "afirmações sem apoio no texto original"}},
         "required": ["veredito", "sem_apoio"],
+        "additionalProperties": False,
     },
 }
 
@@ -180,15 +183,37 @@ class ErroProjeto(Exception):
 
 # ---------------------------------------------------------------- chamada da API
 
+# Os modelos Sonnet 5.5 e Opus 5.5 não aceitam forçar uma ferramenta (tool_choice "tool"). Por isso o modelo escolhe
+# (auto) e a ferramenta é marcada como strict, o que obriga a resposta a seguir o formato. Se algum modelo recusar o
+# strict, o script passa a chamá-lo sem ele. Se a resposta vier como texto, tenta ler o JSON do texto.
+SEM_STRICT = set()
+
+
+def json_do_texto(resp):
+    texto = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
+    i, j = texto.find("{"), texto.rfind("}")
+    if i >= 0 and j > i:
+        try:
+            dado = json.loads(texto[i:j + 1])
+            return dado if isinstance(dado, dict) else None
+        except ValueError:
+            return None
+    return None
+
+
 def chamar(modelo, sistema, usuario, ferramenta, chave, tentativas=6):
     """Chama a API e devolve (dados da ferramenta, tokens de entrada, tokens de saída)."""
-    corpo = json.dumps({
-        "model": modelo, "max_tokens": 1500, "system": sistema,
-        "messages": [{"role": "user", "content": usuario}],
-        "tools": [ferramenta], "tool_choice": {"type": "tool", "name": ferramenta["name"]},
-    }).encode("utf-8")
     ultimo = ""
-    for i in range(tentativas):
+    i = 0
+    while i < tentativas:
+        ferr = dict(ferramenta)
+        if modelo not in SEM_STRICT:
+            ferr["strict"] = True
+        corpo = json.dumps({
+            "model": modelo, "max_tokens": 1500, "system": sistema,
+            "messages": [{"role": "user", "content": usuario + f"\n\nResponda usando a ferramenta {ferramenta['name']}."}],
+            "tools": [ferr], "tool_choice": {"type": "auto"},
+        }).encode("utf-8")
         req = Request(API_URL, data=corpo, method="POST", headers={
             "x-api-key": chave, "anthropic-version": "2023-06-01", "content-type": "application/json"})
         try:
@@ -198,7 +223,13 @@ def chamar(modelo, sistema, usuario, ferramenta, chave, tentativas=6):
             for bloco in resp.get("content", []):
                 if bloco.get("type") == "tool_use" and isinstance(bloco.get("input"), dict):
                     return bloco["input"], uso.get("input_tokens", 0), uso.get("output_tokens", 0)
-            raise ErroProjeto(f"resposta sem o resultado esperado (parada: {resp.get('stop_reason')})")
+            dado = json_do_texto(resp)
+            if dado is not None:
+                return dado, uso.get("input_tokens", 0), uso.get("output_tokens", 0)
+            ultimo = f"resposta sem o resultado esperado (parada: {resp.get('stop_reason')})"
+            i += 1
+            time.sleep(2)
+            continue
         except HTTPError as e:
             texto = e.read().decode("utf-8", "replace")[:400]
             ultimo = f"HTTP {e.code}: {texto}"
@@ -206,17 +237,23 @@ def chamar(modelo, sistema, usuario, ferramenta, chave, tentativas=6):
                 raise ErroFatal(f"a chave foi recusada ({ultimo})")
             if e.code == 400 and "credit" in texto.lower():
                 raise ErroFatal(f"acabou o saldo de créditos da API ({ultimo})")
+            if e.code == 400 and "strict" in texto.lower() and modelo not in SEM_STRICT:
+                SEM_STRICT.add(modelo)  # este modelo não aceita strict: repete sem ele
+                print(f"Aviso: {modelo} não aceitou o modo strict; seguindo sem ele.", flush=True)
+                continue
             if e.code in (429, 500, 502, 503, 504, 529):
                 try:
                     espera = float(e.headers.get("retry-after") or 0)
                 except ValueError:
                     espera = 0
                 time.sleep(min(90, espera or 2 ** (i + 1)))
+                i += 1
                 continue
             raise ErroProjeto(ultimo)
         except (URLError, TimeoutError, ConnectionError, ValueError) as e:
             ultimo = f"erro de rede: {e}"
             time.sleep(min(60, 2 ** (i + 1)))
+            i += 1
     raise ErroProjeto(f"falhou depois de {tentativas} tentativas ({ultimo})")
 
 
