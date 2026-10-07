@@ -12,8 +12,10 @@ Uso (na raiz do repositório):
 
 Formato do resumos.json (todas as chaves são opcionais):
   {"<id do projeto na Câmara>": {"assunto": "Saúde", "assunto_secundario": null,
-                                 "confianca_assunto": "alta", "resumo": "...",
-                                 "pontos_chave": ["..."], "tags": ["..."]}}
+                                 "confianca_assunto": "alta", "motivo_assunto": null,
+                                 "resumo": "...", "confianca_resumo": "alta", "motivo_resumo": null,
+                                 "pode_diferir": false, "pontos_chave": ["..."], "tags": ["..."]}}
+(coleta/resumir_projetos.py preenche esse arquivo com a IA)
 
 Não há revisão humana neste projeto. Por isso cada votação e cada assunto leva uma "confiança"
 (alta, media ou baixa) e, quando não é alta, um aviso em português simples para aparecer na tela:
@@ -53,6 +55,8 @@ CREATE TABLE projetos (
     confianca_assunto TEXT,
     aviso_assunto TEXT,
     resumo TEXT,
+    confianca_resumo TEXT,
+    aviso_resumo TEXT,
     pontos_chave TEXT,
     tags TEXT,
     achado_por_numero_diferente INTEGER NOT NULL DEFAULT 0,
@@ -218,20 +222,35 @@ def main():
         assunto = r.get("assunto")
         if assunto is not None and assunto not in ASSUNTOS:
             print(f"Aviso: assunto desconhecido no projeto {pid}: {assunto!r}", file=sys.stderr)
-        conf_assunto = None
-        aviso_assunto = None
+        conf_assunto = aviso_assunto = None
         if assunto is not None:
             conf_assunto = r.get("confianca_assunto") if r.get("confianca_assunto") in col.NIVEL else "media"
             if conf_assunto != "alta":
-                aviso_assunto = ("O assunto e o resumo deste projeto foram feitos por inteligência artificial "
-                                 "e a classificação pode estar errada.")
-        con.execute("INSERT INTO projetos VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                    (pid, d.get("siglaTipo"), d.get("numero"), d.get("ano"), d.get("ementa"),
-                     d.get("urlInteiroTeor"), assunto, r.get("assunto_secundario"), conf_assunto, aviso_assunto,
-                     r.get("resumo"),
-                     json.dumps(r.get("pontos_chave"), ensure_ascii=False) if r.get("pontos_chave") else None,
-                     json.dumps(r.get("tags"), ensure_ascii=False) if r.get("tags") else None,
-                     1 if divergente else 0, citados.get(pid) if divergente else None))
+                motivo = (r.get("motivo_assunto") or "").strip().rstrip(".")
+                aviso_assunto = ("O assunto deste projeto foi escolhido por inteligência artificial e pode estar errado"
+                                 + (f": {motivo}." if motivo else "."))
+        resumo = r.get("resumo")
+        conf_resumo = aviso_resumo = None
+        if resumo:
+            conf_resumo = r.get("confianca_resumo") if r.get("confianca_resumo") in col.NIVEL else "media"
+            avisos_r = []
+            if conf_resumo != "alta":
+                motivo_r = (r.get("motivo_resumo") or "").strip().rstrip(".")
+                avisos_r.append("O resumo foi feito por inteligência artificial e pode conter erros"
+                                + (f": {motivo_r}." if motivo_r else "."))
+            if r.get("pode_diferir"):
+                avisos_r.append("O resumo foi feito a partir da ementa do projeto original. A votação foi sobre um "
+                                "substitutivo ou emenda, e o texto votado pode ser diferente.")
+            aviso_resumo = " ".join(avisos_r) or None
+        con.execute(
+            "INSERT INTO projetos (id, tipo, numero, ano, ementa, url_texto_integral, assunto, assunto_secundario, "
+            "confianca_assunto, aviso_assunto, resumo, confianca_resumo, aviso_resumo, pontos_chave, tags, "
+            "achado_por_numero_diferente, nome_citado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (pid, d.get("siglaTipo"), d.get("numero"), d.get("ano"), d.get("ementa"), d.get("urlInteiroTeor"),
+             assunto, r.get("assunto_secundario"), conf_assunto, aviso_assunto, resumo, conf_resumo, aviso_resumo,
+             json.dumps(r.get("pontos_chave"), ensure_ascii=False) if r.get("pontos_chave") else None,
+             json.dumps(r.get("tags"), ensure_ascii=False) if r.get("tags") else None,
+             1 if divergente else 0, citados.get(pid) if divergente else None))
 
     # votações e votos
     for vt in votacoes:
@@ -259,11 +278,17 @@ def main():
     sem_assunto = con.execute("SELECT COUNT(*) FROM projetos WHERE assunto IS NULL").fetchone()[0]
     por_tipo = dict(con.execute("SELECT tipo_votacao, COUNT(*) FROM votacoes GROUP BY 1").fetchall())
     sem_partido = con.execute("SELECT COUNT(*) FROM votos WHERE partido IS NULL").fetchone()[0]
+    assuntos = dict(con.execute("SELECT COALESCE(assunto, '(sem assunto)'), COUNT(*) FROM projetos GROUP BY 1 ORDER BY 2 DESC").fetchall())
+    conf_ass = dict(con.execute("SELECT COALESCE(confianca_assunto, '-'), COUNT(*) FROM projetos GROUP BY 1").fetchall())
+    conf_res = dict(con.execute("SELECT COALESCE(confianca_resumo, '-'), COUNT(*) FROM projetos GROUP BY 1").fetchall())
     por_conf = dict(con.execute("SELECT confianca, COUNT(*) FROM votacoes GROUP BY 1").fetchall())
     con.close()
     print(f"Banco criado em {args.saida}: {n}")
     print(f"Votações por tipo: {por_tipo}. Votações sem projeto: {sem_projeto}. Projetos sem assunto: {sem_assunto}.")
     print(f"Votações por confiança da classificação: {por_conf} (as que não são 'alta' aparecem com aviso na tela).")
+    if any(k != "(sem assunto)" for k in assuntos):
+        print(f"Projetos por assunto: {assuntos}")
+        print(f"Confiança do assunto: {conf_ass}. Confiança do resumo: {conf_res} ('-' = sem resumo).")
     print(f"Votos sem o partido do dia do voto: {sem_partido} (esperado: 0 depois da primeira rodada completa).")
     if renumeracao:
         print(f"\nVotações cujo texto cita um número que a Câmara não tem registrado: {dict(renumeracao)}.")
