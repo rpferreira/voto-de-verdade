@@ -31,7 +31,9 @@ from collections import Counter
 import coletar_votacoes as col
 
 ASSUNTOS = ["Saúde", "Educação", "Impostos e Economia", "Segurança Pública", "Meio Ambiente",
-            "Trabalho e Direitos", "Infraestrutura e Transporte", "Tecnologia e Comunicação", "Outros"]
+            "Trabalho e Direitos", "Infraestrutura e Transporte", "Tecnologia e Comunicação",
+            "Administração Pública e Congresso", "Cultura, Esporte e Turismo", "Relações Internacionais e Defesa",
+            "Outros"]
 
 ESQUEMA = """
 CREATE TABLE deputados (

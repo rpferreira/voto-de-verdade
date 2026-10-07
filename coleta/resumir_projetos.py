@@ -45,7 +45,7 @@ MODELO_PRINCIPAL = os.environ.get("MODELO_PRINCIPAL", "claude-sonnet-5-5")
 MODELO_CONFERENCIA = os.environ.get("MODELO_CONFERENCIA", "claude-haiku-4-5-20251001")
 # Preço por milhão de tokens (entrada, saída), em dólares, só para estimar o gasto no log.
 PRECOS = {"claude-sonnet-5-5": (2.0, 10.0), "claude-haiku-4-5-20251001": (1.0, 5.0)}
-VERSAO_REGRAS = "2"  # mude para refazer todos os resumos (por exemplo, depois de mudar as instruções)
+VERSAO_REGRAS = "3"  # mude para refazer todos os resumos (por exemplo, depois de mudar as instruções)
 
 NIVEL = {"baixa": 0, "media": 1, "alta": 2}
 
@@ -59,8 +59,14 @@ DEFINICOES = {
                             "(mulheres, crianças, idosos, pessoas com deficiência, minorias) e do consumidor"),
     "Infraestrutura e Transporte": "estradas, ferrovias, portos, aeroportos, energia, saneamento, moradia, obras, trânsito",
     "Tecnologia e Comunicação": "internet, dados pessoais, inteligência artificial, telecomunicações, rádio e TV, imprensa",
-    "Outros": ("só se nenhum dos anteriores descreve o foco principal (por exemplo, homenagens, regras internas "
-               "do Congresso, acordos internacionais, cultura e esporte, administração pública)"),
+    "Administração Pública e Congresso": ("regras internas da Câmara e do Congresso (regimento, grupos parlamentares, "
+                                          "secretarias), servidores públicos e seus cargos, organização de órgãos e "
+                                          "ministérios, eleições e partidos"),
+    "Cultura, Esporte e Turismo": ("cultura, artes, patrimônio histórico, esporte, turismo, datas e dias nacionais "
+                                   "comemorativos, homenagens"),
+    "Relações Internacionais e Defesa": ("acordos e tratados com outros países ou organismos internacionais, política "
+                                         "externa, Forças Armadas, defesa nacional"),
+    "Outros": "só se nenhum dos anteriores descreve o foco principal do projeto",
 }
 
 # Palavras (sem acento) que sugerem cada assunto. Servem só para conferir a resposta da IA.
@@ -83,6 +89,12 @@ PALAVRAS = {
     "Tecnologia e Comunicação": ["internet", "digital", "dados pessoais", "inteligencia artificial", "telecomunic",
                                  "tecnolog", "software", "plataforma", "radiodifus", "comunicac", "cibernet",
                                  "redes sociais", "imprensa"],
+    "Administração Pública e Congresso": ["regimento interno", "grupo parlamentar", "servidores", "cargos", "quadro de pessoal",
+                                          "ministerio", "orgao", "eleitor", "eleicao", "partido", "secretaria"],
+    "Cultura, Esporte e Turismo": ["cultur", "esport", "turismo", "patrimonio", "artist", "museu", "cinema",
+                                   "audiovisual", "futebol", "atleta", "dia nacional", "semana nacional", "homenagem"],
+    "Relações Internacionais e Defesa": ["acordo entre", "tratado", "convencao", "protocolo", "mercosul", "forcas armadas",
+                                         "militar", "defesa nacional", "exercito", "marinha", "aeronautica", "internacional"],
 }
 
 LISTA_ASSUNTOS = "\n".join(f"   - {a}: {DEFINICOES[a]}" for a in ASSUNTOS)
@@ -93,7 +105,9 @@ Sua tarefa é escolher o assunto, escrever um resumo e listar pontos-chave.
 
 Regras:
 1. Use SOMENTE o que está no texto recebido. Não use conhecimento externo sobre o projeto, não adivinhe o conteúdo e
-   não complete o que a ementa não diz. Se a ementa for vaga, diga isso no resumo e marque a confiança como baixa.
+   não complete o que a ementa não diz. Se a ementa for vaga, diga isso no resumo. Você pode explicar em palavras
+   simples o significado de siglas e termos técnicos comuns (por exemplo, "provimento efetivo" ou "ASEAN"), desde que
+   isso não acrescente fatos sobre o projeto.
 2. Seja neutro. Não opine, não diga se o projeto é bom ou ruim, importante, polêmico, necessário ou controverso.
    Não use adjetivos de valor. Descreva o que o projeto faz ou propõe.
 3. Escreva em português simples, para quem não conhece termos jurídicos. Troque "dispõe sobre" e "altera a redação
@@ -102,8 +116,10 @@ Regras:
    verificáveis no texto recebido.
 5. Se as votações são sobre um substitutivo, subemenda ou emenda, o texto votado pode ser diferente da ementa.
    Não descreva o conteúdo do substitutivo, porque ele não está no texto. Resuma a ementa. O site já mostra ao
-   cidadão um aviso próprio sobre isso, então NÃO repita o aviso no resumo nem nos pontos-chave, a não ser como um
-   fato curto (por exemplo, "O Plenário aprovou o substitutivo da Comissão de Finanças").
+   cidadão um aviso próprio sobre isso, então NÃO mencione substitutivo, subemenda ou emenda no resumo nem nos
+   pontos-chave.
+   Também NÃO diga se o projeto foi aprovado ou rejeitado, nem quantos votos teve. O site mostra o resultado de cada
+   votação separadamente, e um mesmo projeto pode ter várias votações com resultados diferentes.
 6. Assuntos possíveis (escolha pelo foco principal do projeto):
 {LISTA_ASSUNTOS}
 7. Escolha UM assunto principal. Escolha um assunto secundário só se houver um segundo foco claro; senão, "nenhum".
@@ -133,7 +149,9 @@ SISTEMA_VERIFICADOR = """Você confere resumos de projetos da Câmara dos Deputa
 Você recebe o texto original (ementa e textos das votações) e um resumo com pontos-chave escritos por outra pessoa.
 Compare cada afirmação com o texto original. Aponte as afirmações do resumo ou dos pontos-chave que NÃO estão
 apoiadas no texto original: informações inventadas, detalhes que o texto não traz, exageros, opiniões ou adjetivos de
-valor (bom, ruim, importante, polêmico). Reformular em palavras mais simples é aceitável, desde que o sentido seja o mesmo.
+valor (bom, ruim, importante, polêmico). Reformular em palavras mais simples é aceitável, desde que o sentido seja o
+mesmo. Explicar o significado de uma sigla ou de um termo técnico comum também é aceitável, desde que não acrescente
+fatos sobre o projeto.
 Veredito: "apoiado" se tudo está apoiado; "parcialmente_apoiado" se há problemas pequenos; "nao_apoiado" se há
 informação importante inventada ou contrária ao texto. Responda sempre usando a ferramenta conferir_resumo."""
 
@@ -410,6 +428,7 @@ def processar(p, entrada, chave, contas):
         "resumo": limitar(resumo, 500) if resumo else None,
         "confianca_resumo": conf_r, "motivo_resumo": "; ".join(mot_r) or None,
         "pode_diferir": entrada["pode_diferir"],
+        "conferencia_obs": (v.get("sem_apoio") or [])[:4] if v["veredito"] != "apoiado" else [],
         "pontos_chave": [limitar(x, 160) for x in (a.get("pontos_chave") or [])[:4]] if resumo else [],
         "tags": [limitar(x, 40) for x in (a.get("tags") or [])[:5]],
         "modelo": MODELO_PRINCIPAL, "conferencia": MODELO_CONFERENCIA,
