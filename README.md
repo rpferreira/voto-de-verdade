@@ -122,6 +122,18 @@ aceita uma lista de projetos separados por vírgula.
 Os filtros vão no endereço da página, para o cidadão poder compartilhar o link de uma busca. Nada some sem
 o cidadão pedir: o filtro de confiança vem desligado.
 
+## O site
+
+A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Telas prontas:
+
+- **Início** (`#/`): os assuntos, com busca e filtros.
+- **Página do assunto** (`#/assunto/<assunto>`): os projetos, com resumo, aviso quando a IA não tem certeza e as votações de cada projeto.
+- **Votação** (`#/votacao/<id>`): resultado, como cada partido votou e o voto de cada deputado, com filtros por nome, partido, estado e voto. Os filtros ficam no endereço, então dá para compartilhar o link.
+
+Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. A atualização diária já faz isso e publica o site no GitHub Pages (ligue em Settings > Pages > Source: GitHub Actions).
+
+Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -m http.server --directory site`, e abra http://localhost:8000.
+
 ## Arquivos
 
 | Arquivo | Para que serve |
@@ -132,7 +144,9 @@ o cidadão pedir: o filtro de confiança vem desligado.
 | `coleta/guardar_no_repositorio.sh` | Guarda arquivos da rotina no repositório, repetindo se alguém mexeu nele |
 | `dados/cache_v5.json` | Tudo o que veio da API (a base do banco) |
 | `dados/resumos.json` | Assunto e resumo de cada projeto, com confiança (escrito pela IA) |
-| `.github/workflows/atualizacao-diaria.yml` | A rotina diária |
+| `site/` | O site (`index.html`, `estilos.css`, `app.js`, fontes) |
+| `site/exportar_dados.py` | Passa o banco para os JSON que o site lê (`site/dados/`) |
+| `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, dados do site e publicação |
 
 ## Rodar a rotina
 
