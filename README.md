@@ -90,7 +90,8 @@ Não há revisão humana, então a confiança é medida por checagens automátic
 5. **Substitutivo ou emenda:** quando a votação foi sobre um substitutivo, o texto votado pode ser diferente da
    ementa. O banco guarda um aviso para a tela dizer isso.
 
-O texto enviado à IA é a ementa oficial e os textos das votações. Ela é instruída a usar só esse texto e a ser neutra.
+O texto enviado à IA é a ementa oficial e os textos das votações. Ela é instruída a usar só esse texto, a ser neutra e
+a não dizer se o projeto foi aprovado ou rejeitado (o resultado vem de cada votação, e um projeto pode ter várias).
 Todo resumo deve aparecer na tela com o selo "gerado por inteligência artificial", a ementa original e o link do texto
 integral.
 
@@ -100,6 +101,13 @@ estimado. Sem a chave `ANTHROPIC_API_KEY` no GitHub, a etapa é pulada sem erro.
 
 **Teste barato.** Em Actions, **Run workflow**, preencha "limite_resumos" com `5`. A rotina resume só 5 projetos e
 mostra o gasto no log.
+
+**Reavaliar sem custo.** Em Actions, **Run workflow**, com "reavaliar" = `sim`, a rotina refaz só as confianças dos resumos
+já feitos, sem chamar a IA e sem gastar. Ela tira o aviso "uma conferência automática achou partes do resumo sem apoio"
+quando tudo o que a conferência apontou estava no próprio texto ou era só "a ementa não detalha...".
+
+**Testes com projetos escolhidos.** "espalhar" = `sim` sorteia projetos de toda a lista (em vez dos mais recentes), e "ids"
+aceita uma lista de projetos separados por vírgula.
 
 ## Telas e filtros planejados
 
@@ -166,7 +174,15 @@ rotina faz pausas entre as consultas para não ser bloqueada. Nos dias seguintes
 - **Sem revisão humana.** A rede de segurança são os avisos de confiança e um canal de "Reportar erro", que
   ainda precisa de um responsável para receber e tratar os relatos.
 - **Resumos por IA.** Podem conter erros. A confiança e a conferência automática reduzem o risco, mas não o eliminam.
-  Os 9 assuntos são fixos, e "Outros" pode juntar muitos projetos. Vale conferir a distribuição depois da primeira carga.
+  Os 13 assuntos são fixos. Em testes com 59 projetos, "Outros" ficou com 13 de 40 no começo, e todos eram regras
+  internas do Congresso, servidores, acordos internacionais, datas e homenagens. Por isso existem os assuntos
+  "Administração Pública e Congresso", "Relações Internacionais e Defesa" e "Cultura, Esporte e Turismo". "Agropecuária
+  e Campo" foi criado depois de aparecerem reforma agrária, trabalho por safra e programa de alimentos. Vale conferir a
+  distribuição de novo depois da primeira carga completa.
+- **Projeto em dois assuntos.** Muitos projetos cabem em dois assuntos (por exemplo, um fundo de telecomunicações que
+  muda regras fiscais). A IA escolhe um assunto principal e um secundário, e o site lista o projeto nos dois. A
+  confiança do assunto só cai para média ou baixa quando a segunda leitura discorda dos dois assuntos, quando as
+  palavras da ementa apontam para outro, ou quando o projeto ficou em "Outros".
 - **Projetos com outro número.** Em 23 projetos (27 votações), o texto cita um número que a Câmara não tem
   registrado hoje, e a Câmara indica o projeto com outro número. Conferimos o ano de apresentação: nos 23 casos ele
   é igual ao ano citado no texto, ou seja, é o mesmo projeto com outro número. Se o ano não bater, a votação fica
