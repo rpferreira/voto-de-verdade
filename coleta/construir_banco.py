@@ -147,7 +147,10 @@ def main():
         aviso = None
         if conf != "alta":
             aviso = "A classificação desta votação foi feita automaticamente e pode estar errada: " + "; ".join(motivos) + "."
-            incertas.append((conf, col.data_da(v), projeto_id, desc, motivos))
+            det = cache.get("detalhes", {}).get(str(projeto_id)) or {}
+            real = f"{det.get('siglaTipo')} {det.get('numero')}/{det.get('ano')}" if det else "?"
+            citado = f"{sigla} {numero}/{ano}" if sigla and numero and ano else "sem número no texto"
+            incertas.append((conf, col.data_da(v), projeto_id, desc, motivos, citado, real))
         contagem = Counter(t for _d, t in lista if t is not None) if tipo == "nominal" else Counter()
         principais = {"Sim", "Não", "Abstenção", "Obstrução"}
         votacoes.append({
@@ -231,15 +234,15 @@ def main():
     print(f"Votações por confiança da classificação: {por_conf} (as que não são 'alta' aparecem com aviso na tela).")
     print(f"Votos sem o partido do dia do voto: {sem_partido} (esperado: 0 depois da primeira rodada completa).")
     if incertas:
-        motivos_cont = Counter(m for _c, _d, _p, _t, ms in incertas for m in ms)
+        motivos_cont = Counter(m for _c, _d, _p, _t, ms, _ci, _re in incertas for m in ms)
         print("\nMotivos das votações com confiança média ou baixa (uma votação pode ter mais de um):")
         for m, n_m in motivos_cont.most_common():
             print(f"   {n_m:3d}x  {m}")
-        print("\nVotações com confiança baixa (data | projeto | texto | motivos):")
+        print("\nVotações com confiança baixa (data | número citado no texto | projeto que a Câmara indica | texto):")
         baixas = [i for i in incertas if i[0] == "baixa"]
-        for conf_i, data_i, pid_i, desc_i, ms_i in sorted(baixas, key=lambda i: i[1])[:60]:
-            texto = " ".join((desc_i or "").split())[:110]
-            print(f"   {data_i} | {pid_i or 'sem projeto'} | {texto} | {'; '.join(ms_i)[:160]}")
+        for conf_i, data_i, pid_i, desc_i, ms_i, citado_i, real_i in sorted(baixas, key=lambda i: i[1])[:60]:
+            texto = " ".join((desc_i or "").split())[:70]
+            print(f"   {data_i} | texto cita {citado_i} | Câmara indica {real_i} (id {pid_i or 'nenhum'}) | {texto}")
         if len(baixas) > 60:
             print(f"   ... e mais {len(baixas) - 60}.")
         print()

@@ -349,7 +349,9 @@ def buscar_votos(ids, cache):
 
 def buscar_proposicoes(chaves, cache):
     """Procura cada projeto por tipo, número e ano. Guarda id e ementa. Devolve as chaves com erro."""
-    faltam = [c for c in chaves if c not in cache["props"]]
+    # também refaz a busca dos que deram mais de um resultado e ainda não guardaram quais eram os candidatos
+    faltam = [c for c in chaves if c not in cache["props"]
+              or (cache["props"][c].get("n", 0) > 1 and "candidatos" not in cache["props"][c])]
     print(f"   {len(chaves) - len(faltam)} já estavam em cache; faltam {len(faltam)}.", flush=True)
     erros = []
     for i, chave in enumerate(faltam, 1):
@@ -364,7 +366,10 @@ def buscar_proposicoes(chaves, cache):
                 cache["props"][chave] = {"n": 1, "id": p.get("id"), "uri": p.get("uri"),
                                          "ementa": p.get("ementa")}
             else:
-                cache["props"][chave] = {"n": len(achadas)}
+                cache["props"][chave] = {
+                    "n": len(achadas),
+                    "candidatos": [[x.get("id"), f"{x.get('siglaTipo')} {x.get('numero')}/{x.get('ano')}",
+                                    (x.get("ementa") or "")[:120]] for x in achadas]}
         if i % 25 == 0 or i == len(faltam):
             salvar_cache(cache)
             print(f"   ...proposições {i}/{len(faltam)}", flush=True)
@@ -447,6 +452,12 @@ def completar_por_detalhe(merito, cache):
                        if p.get("siglaTipo") in EQUIVALENTES.get(sigla, {sigla})
                        and str(p.get("numero")) == numero and str(p.get("ano")) == ano), None)
         divergente = False
+        # a busca achou mais de um projeto: vale o único candidato que a votação afeta
+        cand_ids = {x[0] for x in cache["props"][c].get("candidatos", [])}
+        if achado is None and cache["props"][c].get("n", 0) > 1 and cand_ids:
+            em_comum = [x for x in afetadas if x.get("id") in cand_ids]
+            if len(em_comum) == 1:
+                achado = em_comum[0]
         if achado is None and cache["props"][c].get("n") == 0 and len(afetadas) == 1:
             achado, divergente = afetadas[0], True
         if achado:
@@ -458,7 +469,9 @@ def completar_por_detalhe(merito, cache):
         else:
             cache["props"][c]["tentou_detalhe2"] = True
             resumo = [f"{p.get('siglaTipo')} {p.get('numero')}/{p.get('ano')}" for p in afetadas[:5]]
-            log(f"     {c.replace('|', ' ')}: o detalhe da votação de {data_da(v)} lista {resumo or 'nada'}")
+            cands = [x[1] for x in cache["props"][c].get("candidatos", [])]
+            log(f"     {c.replace('|', ' ')}: o detalhe da votação de {data_da(v)} lista {resumo or 'nada'}"
+                + (f"; a busca achou {cands}" if cands else ""))
     if pendentes:
         salvar_cache(cache)
     return resolvidos, len(pendentes)
