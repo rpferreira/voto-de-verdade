@@ -45,7 +45,7 @@ MODELO_PRINCIPAL = os.environ.get("MODELO_PRINCIPAL", "claude-sonnet-5-5")
 MODELO_CONFERENCIA = os.environ.get("MODELO_CONFERENCIA", "claude-haiku-4-5-20251001")
 # Preço por milhão de tokens (entrada, saída), em dólares, só para estimar o gasto no log.
 PRECOS = {"claude-sonnet-5-5": (2.0, 10.0), "claude-haiku-4-5-20251001": (1.0, 5.0)}
-VERSAO_REGRAS = "1"  # mude para refazer todos os resumos (por exemplo, depois de mudar as instruções)
+VERSAO_REGRAS = "2"  # mude para refazer todos os resumos (por exemplo, depois de mudar as instruções)
 
 NIVEL = {"baixa": 0, "media": 1, "alta": 2}
 
@@ -101,15 +101,25 @@ Regras:
 4. Resumo: 2 a 3 frases, no máximo 400 caracteres. Pontos-chave: 2 a 4 itens curtos (até 120 caracteres cada), todos
    verificáveis no texto recebido.
 5. Se as votações são sobre um substitutivo, subemenda ou emenda, o texto votado pode ser diferente da ementa.
-   Não descreva o conteúdo do substitutivo, porque você não o recebeu. Resuma a ementa.
+   Não descreva o conteúdo do substitutivo, porque ele não está no texto. Resuma a ementa. O site já mostra ao
+   cidadão um aviso próprio sobre isso, então NÃO repita o aviso no resumo nem nos pontos-chave, a não ser como um
+   fato curto (por exemplo, "O Plenário aprovou o substitutivo da Comissão de Finanças").
 6. Assuntos possíveis (escolha pelo foco principal do projeto):
 {LISTA_ASSUNTOS}
 7. Escolha UM assunto principal. Escolha um assunto secundário só se houver um segundo foco claro; senão, "nenhum".
-8. Confiança do assunto: "alta" se o assunto é evidente na ementa; "media" se há mais de uma leitura razoável;
-   "baixa" se a ementa não permite saber. Se não for alta, explique em uma frase curta e simples em motivo_incerteza.
-9. Confiança do resumo: "alta" se o texto recebido sustenta bem o resumo; "media" ou "baixa" se faltam detalhes.
-   Se não for alta, explique em uma frase curta e simples em motivo_resumo.
+8. Confiança do assunto: "alta" se o foco principal é claro, mesmo que o projeto toque em outro assunto (para isso
+   existe o assunto secundário); "media" só se duas leituras do FOCO PRINCIPAL são razoáveis e você não consegue
+   escolher entre elas; "baixa" se a ementa não permite saber. Se não for alta, explique em uma frase curta e simples
+   em motivo_incerteza.
+9. Confiança do resumo: ela mede só se o resumo é FIEL ao texto, isto é, se cada frase dele está apoiada no texto
+   (ementa e textos das votações). "alta" se tudo está apoiado, mesmo que o resumo seja curto ou diga que a ementa é
+   vaga. "media" se você precisou interpretar ou ligar ideias que o texto não liga de forma direta. "baixa" se o resumo
+   depende de suposição. Falta de detalhe na ementa ou votação sobre substitutivo NÃO baixam a confiança, porque são
+   tratadas à parte. Se não for alta, explique em uma frase curta e simples em motivo_resumo.
 10. Tags: até 5 palavras que um cidadão digitaria para achar este projeto (sem repetir o assunto).
+11. O resumo é lido por cidadãos, que não sabem como ele foi feito. Nunca escreva o que "foi recebido", "foi
+    informado" ou "não está disponível para mim". Quando a ementa for vaga, diga só "A ementa não detalha ..." ou
+    "O texto oficial não explica ...".
 Responda sempre usando a ferramenta registrar_projeto."""
 
 SISTEMA_CLASSIFICADOR = f"""Você classifica projetos da Câmara dos Deputados do Brasil por assunto.
@@ -467,6 +477,8 @@ def main():
     ap.add_argument("--limite", type=int, default=300, help="máximo de projetos nesta execução")
     ap.add_argument("--tempo-max", type=float, default=80, help="minutos; depois disso não começa projetos novos")
     ap.add_argument("--paralelo", type=int, default=6, help="projetos ao mesmo tempo")
+    ap.add_argument("--espalhar", action="store_true",
+                    help="em vez de seguir a ordem normal, pega projetos espalhados por toda a fila (bom para testes)")
     args = ap.parse_args()
 
     chave = os.environ.get("ANTHROPIC_API_KEY", "").strip()
@@ -516,7 +528,11 @@ def main():
                 print(f"   ...{estado['feitos']} projetos feitos", flush=True)
 
     lote = max(1, args.paralelo) * 4
-    alvo = pendentes[: args.limite]
+    if args.espalhar and args.limite < len(pendentes):
+        passo = len(pendentes) / args.limite
+        alvo = [pendentes[int(i * passo)] for i in range(args.limite)]
+    else:
+        alvo = pendentes[: args.limite]
     with ThreadPoolExecutor(max_workers=max(1, args.paralelo)) as pool:
         for i in range(0, len(alvo), lote):
             if estado["fatal"]:

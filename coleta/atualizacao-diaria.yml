@@ -1,0 +1,80 @@
+name: Atualização diária
+
+# Roda todo dia às 6h (horário de Brasília) e também quando você clicar em "Run workflow".
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      limite_resumos:
+        description: "Quantos projetos resumir com IA nesta execução (use 5 para um teste barato)"
+        default: "300"
+      espalhar:
+        description: "Para testes: pegar projetos espalhados por toda a lista, e não só os mais recentes (sim ou nao)"
+        default: "nao"
+
+permissions:
+  contents: write
+
+# Nunca duas atualizações ao mesmo tempo.
+concurrency:
+  group: atualizacao-diaria
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar o Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Coletar os dados da Câmara
+        id: coleta
+        working-directory: dados
+        run: python ../coleta/coletar_votacoes.py --diario
+
+      # Guarda o cache mesmo se a coleta falhou.
+      - name: Guardar o que já foi coletado, mesmo se a coleta falhou
+        if: always()
+        run: bash coleta/guardar_no_repositorio.sh "Atualização diária dos dados" dados/cache_v5.json
+
+      - name: Construir o banco de dados
+        id: banco
+        if: steps.coleta.outcome == 'success'
+        run: python coleta/construir_banco.py
+
+      # Assunto e resumo por IA, só dos projetos novos. Sem a chave ANTHROPIC_API_KEY, esta etapa é pulada.
+      - name: Resumir os projetos novos com IA
+        if: steps.coleta.outcome == 'success' && steps.banco.outcome == 'success'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMITE_RESUMOS: ${{ github.event.inputs.limite_resumos || '300' }}
+          ESPALHAR: ${{ github.event.inputs.espalhar || 'nao' }}
+        run: |
+          EXTRA=""
+          if [ "$ESPALHAR" = "sim" ]; then EXTRA="--espalhar"; fi
+          python coleta/resumir_projetos.py --limite "$LIMITE_RESUMOS" --tempo-max 80 $EXTRA
+
+      - name: Guardar os resumos, mesmo se a etapa anterior falhou
+        if: always()
+        run: bash coleta/guardar_no_repositorio.sh "Resumos dos projetos (IA)" dados/resumos.json
+
+      # Refaz o banco, agora com os resumos.
+      - name: Construir o banco de dados com os resumos
+        if: steps.coleta.outcome == 'success'
+        run: python coleta/construir_banco.py
+
+      - name: Guardar o banco para consulta (7 dias)
+        if: steps.coleta.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: banco-de-dados
+          path: dados/voto_de_verdade.db
+          retention-days: 7
+          if-no-files-found: error
