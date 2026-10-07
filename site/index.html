@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voto de Verdade: como a Câmara dos Deputados votou</title>
+  <meta name="description" content="Escolha um assunto e veja o que a Câmara dos Deputados votou e como cada deputado federal votou. Sem nota e sem ranking.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231b3fd0'/%3E%3Cpath d='M8 17l5 5 11-12' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preload" href="fontes/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="topo">
+    <div class="topo__miolo">
+      <a class="marca" href="#/">Voto de Verdade</a>
+      <nav aria-label="Principal">
+        <ul>
+          <li><a id="nav-assuntos" href="#/" aria-current="page">Assuntos</a></li>
+          <li><span class="em-breve">Deputados (em breve)</span></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" tabindex="-1">
+    <p class="miolo" style="padding-block:3rem">Carregando…</p>
+    <noscript><p class="miolo">Este site precisa de JavaScript para mostrar os dados.</p></noscript>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape__miolo">
+      <p id="rodape-dados">Dados da Câmara dos Deputados (Dados Abertos).</p>
+      <p>Assuntos e resumos são feitos por inteligência artificial e podem conter erros. Quando não temos certeza, avisamos. O texto oficial de cada projeto está sempre ao lado.</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

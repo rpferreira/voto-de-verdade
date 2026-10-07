@@ -1,0 +1,7 @@
+dados/voto_de_verdade.db
+dados/relatorio_api_camara_v5.txt
+dados/*.csv
+dados/dados_merito_v5.json
+dados/votos_nominais_v5.json
+dados/*.tmp
+__pycache__/
