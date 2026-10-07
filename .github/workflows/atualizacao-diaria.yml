@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "0 9 * * *"
   workflow_dispatch:
+    inputs:
+      limite_resumos:
+        description: "Quantos projetos resumir com IA nesta execução (use 5 para um teste barato)"
+        default: "300"
 
 permissions:
   contents: write
@@ -17,7 +21,7 @@ concurrency:
 jobs:
   atualizar:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 150
     steps:
       - name: Baixar o repositório
         uses: actions/checkout@v4
@@ -32,25 +36,38 @@ jobs:
         working-directory: dados
         run: python ../coleta/coletar_votacoes.py --diario
 
+      # Guarda o cache mesmo se a coleta falhou.
       - name: Guardar o que já foi coletado, mesmo se a coleta falhou
         if: always()
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dados/cache_v5.json
-          if git diff --cached --quiet; then
-            echo "Nada novo para guardar."
-          else
-            git commit -m "Atualização diária dos dados"
-            git push
-          fi
+        run: bash coleta/guardar_no_repositorio.sh "Atualização diária dos dados" dados/cache_v5.json
 
       - name: Construir o banco de dados
+        id: banco
+        if: steps.coleta.outcome == 'success'
+        run: python coleta/construir_banco.py
+
+      # Assunto e resumo por IA, só dos projetos novos. Sem a chave ANTHROPIC_API_KEY, esta etapa é pulada.
+      - name: Resumir os projetos novos com IA
+        if: steps.coleta.outcome == 'success' && steps.banco.outcome == 'success'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMITE_RESUMOS: ${{ github.event.inputs.limite_resumos || '300' }}
+        run: python coleta/resumir_projetos.py --limite "$LIMITE_RESUMOS" --tempo-max 80
+
+      - name: Guardar os resumos, mesmo se a etapa anterior falhou
+        if: always()
+        run: bash coleta/guardar_no_repositorio.sh "Resumos dos projetos (IA)" dados/resumos.json
+
+      # Refaz o banco, agora com os resumos.
+      - name: Construir o banco de dados com os resumos
+        if: steps.coleta.outcome == 'success'
         run: python coleta/construir_banco.py
 
       - name: Guardar o banco para consulta (7 dias)
+        if: steps.coleta.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: banco-de-dados
           path: dados/voto_de_verdade.db
           retention-days: 7
+          if-no-files-found: error
