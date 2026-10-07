@@ -45,7 +45,7 @@ MODELO_PRINCIPAL = os.environ.get("MODELO_PRINCIPAL", "claude-sonnet-5-5")
 MODELO_CONFERENCIA = os.environ.get("MODELO_CONFERENCIA", "claude-haiku-4-5-20251001")
 # Preço por milhão de tokens (entrada, saída), em dólares, só para estimar o gasto no log.
 PRECOS = {"claude-sonnet-5-5": (2.0, 10.0), "claude-haiku-4-5-20251001": (1.0, 5.0)}
-VERSAO_REGRAS = "3"  # mude para refazer todos os resumos (por exemplo, depois de mudar as instruções)
+VERSAO_REGRAS = "4"  # mude para refazer todos os resumos (por exemplo, depois de mudar as instruções)
 
 NIVEL = {"baixa": 0, "media": 1, "alta": 2}
 
@@ -66,6 +66,8 @@ DEFINICOES = {
                                    "comemorativos, homenagens"),
     "Relações Internacionais e Defesa": ("acordos e tratados com outros países ou organismos internacionais, política "
                                          "externa, Forças Armadas, defesa nacional"),
+    "Agropecuária e Campo": ("agricultura, pecuária, pesca, reforma agrária e conflitos por terra, trabalhadores e "
+                             "mulheres do campo, alimentos e abastecimento, agrotóxicos"),
     "Outros": "só se nenhum dos anteriores descreve o foco principal do projeto",
 }
 
@@ -93,6 +95,8 @@ PALAVRAS = {
                                           "ministerio", "orgao", "eleitor", "eleicao", "partido", "secretaria"],
     "Cultura, Esporte e Turismo": ["cultur", "esport", "turismo", "patrimonio", "artist", "museu", "cinema",
                                    "audiovisual", "futebol", "atleta", "dia nacional", "semana nacional", "homenagem"],
+    "Agropecuária e Campo": ["agropecuar", "agricult", "rural", "pecuaria", "reforma agraria", "fundiari", "agrotox",
+                             "pesca", "safra", "agricultor", "lavoura", "rebanho"],
     "Relações Internacionais e Defesa": ["acordo entre", "tratado", "convencao", "protocolo", "mercosul", "forcas armadas",
                                          "militar", "defesa nacional", "exercito", "marinha", "aeronautica", "internacional"],
 }
@@ -356,11 +360,15 @@ def combinar_assunto(a, b, entrada):
         if motivo:
             motivos.append(motivo)
 
+    # Projeto que cabe em dois assuntos aparece nos dois (principal e secundário). Se a segunda leitura escolheu um
+    # dos dois, o cidadão acha o projeto onde procurar, então isso não vira aviso.
+    if secundario and b["assunto"] in (principal, secundario) and b.get("confianca") != "baixa" and nivel == "media":
+        nivel, motivos = "alta", []
     if b["assunto"] == principal:
         if b.get("confianca") == "baixa":
             baixar("media", "uma segunda leitura concordou, mas sem muita certeza")
     elif b["assunto"] == secundario:
-        baixar("media", f"uma segunda leitura escolheu {b['assunto']}, que é o assunto secundário")
+        pass
     else:
         baixar("baixa", f"duas leituras automáticas escolheram assuntos diferentes ({principal} e {b['assunto']})")
     sinal, sugerido = sinal_palavras(entrada, principal, secundario)
@@ -379,6 +387,10 @@ def combinar_resumo(a, v, entrada):
     resumo = (a.get("resumo") or "").strip()
     nivel = a.get("confianca_resumo") if a.get("confianca_resumo") in NIVEL else "media"
     motivos = []
+    # A conferência independente é quem decide: se ela achou o resumo apoiado, a hesitação do próprio modelo
+    # (por exemplo, ao explicar um termo) não vira aviso. Só "baixa" do modelo vale por si.
+    if nivel == "media" and v["veredito"] == "apoiado":
+        nivel = "alta"
     if nivel != "alta" and (a.get("motivo_resumo") or "").strip():
         motivos.append(a["motivo_resumo"].strip().rstrip("."))
     if not resumo:
@@ -496,6 +508,7 @@ def main():
     ap.add_argument("--limite", type=int, default=300, help="máximo de projetos nesta execução")
     ap.add_argument("--tempo-max", type=float, default=80, help="minutos; depois disso não começa projetos novos")
     ap.add_argument("--paralelo", type=int, default=6, help="projetos ao mesmo tempo")
+    ap.add_argument("--ids", default="", help="só estes projetos (ids separados por vírgula), para testes")
     ap.add_argument("--espalhar", action="store_true",
                     help="em vez de seguir a ordem normal, pega projetos espalhados por toda a fila (bom para testes)")
     args = ap.parse_args()
@@ -519,6 +532,10 @@ def main():
     pendentes = [(p, e) for p, e, _i in fila if str(p["id"]) not in resumos
                  or resumos[str(p["id"])].get("entrada") != impressao(e)]
     print(f"Projetos votados: {len(fila)}. Com resumo em dia: {len(fila) - len(pendentes)}. A fazer: {len(pendentes)}.")
+    if args.ids.strip():
+        quais = {x.strip() for x in args.ids.split(",") if x.strip()}
+        pendentes = [(p, e) for p, e in pendentes if str(p["id"]) in quais]
+        print(f"Só os projetos pedidos em --ids: {len(pendentes)} de {len(quais)} (os outros já estão em dia ou não existem).")
     print(f"Modelo principal: {MODELO_PRINCIPAL}. Conferência: {MODELO_CONFERENCIA}.")
     if not pendentes:
         return 0

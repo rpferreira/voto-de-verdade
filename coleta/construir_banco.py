@@ -33,7 +33,7 @@ import coletar_votacoes as col
 ASSUNTOS = ["Saúde", "Educação", "Impostos e Economia", "Segurança Pública", "Meio Ambiente",
             "Trabalho e Direitos", "Infraestrutura e Transporte", "Tecnologia e Comunicação",
             "Administração Pública e Congresso", "Cultura, Esporte e Turismo", "Relações Internacionais e Defesa",
-            "Outros"]
+            "Agropecuária e Campo", "Outros"]
 
 ESQUEMA = """
 CREATE TABLE deputados (
