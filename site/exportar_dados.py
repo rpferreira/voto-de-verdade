@@ -12,6 +12,7 @@ Só usa a biblioteca padrão do Python. Arquivos gerados:
     votacoes.json   uma linha por votação (lista de votações de cada projeto e tela de votação)
     deputados.json  nome, partido e estado de cada deputado
     votacoes/<id>.json   o voto de cada deputado, só das votações nominais (tela de votação)
+    deputados/<id>.json  os votos de um deputado em todas as votações nominais (página do deputado)
 """
 import argparse
 import json
@@ -55,10 +56,19 @@ def slug(texto):
     return re.sub(r"[^a-z0-9]+", "-", t).strip("-")
 
 
+ABREVIATURAS = {"art", "arts", "inc", "al", "n", "no", "nº", "dr", "dra", "sr", "sra", "dep", "ex", "av", "pl", "prof", "profa", "cap", "par", "p", "cf", "obs"}
+
+
 def primeira_frase(texto, limite=200):
+    """Primeira frase do texto. Não termina a frase em abreviaturas como "art." ou "nº."."""
     texto = " ".join((texto or "").split())
-    m = re.match(r"(.+?[.!?])(\s|$)", texto)
-    frase = m.group(1) if m else texto
+    frase = texto
+    for m in re.finditer(r"[.!?](?=\s)", texto):
+        antes = re.search(r"([\wº°ª]+)$", texto[: m.start()])
+        if antes and antes.group(1).lower() in ABREVIATURAS:
+            continue
+        frase = texto[: m.end()]
+        break
     if len(frase) > limite:
         corte = frase[: limite - 1]
         if " " in corte:
@@ -201,6 +211,29 @@ def main():
         with open(os.path.join(pasta_votos, f"{vid}.json"), "w", encoding="utf-8") as f:
             json.dump({"v": lista}, f, ensure_ascii=False, separators=(",", ":"))
         n_arquivos += 1
+    # voto a voto de cada deputado (página do deputado) e os partidos por onde passou, em ordem de data
+    data_de = {v["id"]: v["d"] for v in votacoes}
+    pasta_dep = os.path.join(args.saida, "deputados")
+    os.makedirs(pasta_dep, exist_ok=True)
+    for antigo in os.listdir(pasta_dep):
+        if antigo.endswith(".json"):
+            os.remove(os.path.join(pasta_dep, antigo))
+    por_dep = {}
+    for vid, lista in por_votacao.items():
+        if vid not in data_de:
+            continue
+        for did, codigo, partido in lista:
+            por_dep.setdefault(did, []).append((data_de[vid], vid, codigo, partido))
+    for did, itens in por_dep.items():
+        itens.sort()
+        partidos, vistos = [], set()
+        for _, _, _, partido in itens:
+            if partido and partido not in vistos:
+                vistos.add(partido)
+                partidos.append(partido)
+        with open(os.path.join(pasta_dep, f"{did}.json"), "w", encoding="utf-8") as f:
+            json.dump({"v": [[vid, codigo] for _, vid, codigo, _ in itens], "pt": partidos},
+                      f, ensure_ascii=False, separators=(",", ":"))
     con.close()
 
     def gravar(nome, dado):
@@ -215,6 +248,7 @@ def main():
     gravar("votacoes.json", votacoes)
     gravar("deputados.json", deputados)
     print(f"   {pasta_votos}/: {n_arquivos} arquivos")
+    print(f"   {pasta_dep}/: {len(por_dep)} arquivos")
     print(f"Pronto: {len(assuntos)} assuntos, {len(projetos)} projetos, {meta['votacoes']} votações.")
     return 0
 

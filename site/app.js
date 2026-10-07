@@ -1,6 +1,7 @@
-/* Voto de Verdade: telas "Assuntos" (início), "Página do assunto" e "Votação".
+/* Voto de Verdade: telas "Assuntos" (início), "Página do assunto", "Votação", "Deputados" e "Página do deputado".
    JavaScript puro, sem bibliotecas. Os dados vêm de dados/*.json (feitos por site/exportar_dados.py).
    Endereços: #/   #/assunto/<slug>?q=...&ind=1&ord=...   #/votacao/<id>?q=...&pt=PT&uf=GO&v=S
+   #/deputados?q=...&pt=PT&uf=GO   #/deputado/<id>?q=...&a=<assunto>&v=S
    (os filtros ficam no endereço para poder compartilhar). */
 (function () {
   "use strict";
@@ -534,7 +535,7 @@
         : estado.ord === "uf" ? (a, b) => a.uf.localeCompare(b.uf, "pt-BR") || cmp(a, b) : cmp);
       const mostrados = r.slice(0, limite);
       lista.replaceChildren(...mostrados.map((l) => h("li", { class: "deputado" },
-        h("span", { class: "deputado__nome" }, l.nome),
+        h("a", { class: "deputado__nome", href: "#/deputado/" + l.id }, l.nome),
         h("span", { class: "deputado__sub" }, [l.partido, l.uf].filter(Boolean).join(" · ")),
         fichaVoto(l.cod))));
 
@@ -558,6 +559,202 @@
     return document.getElementById("titulo-votacao");
   }
 
+  // ------------------------------------------------------------------ deputados (busca) e página do deputado
+  const fotoDeputado = (id) => h("img", {
+    class: "foto-dep", src: `https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg`, alt: "", width: "96", height: "128",
+    loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.target.remove(),
+  });
+
+  async function telaDeputados(p) {
+    const deputados = await dados("deputados");
+    for (const d of deputados) d._t = semAcento(d.nome);
+    const partidos = [...new Set(deputados.map((d) => d.partido))].filter(Boolean).sort((a, b) => a.localeCompare(b, "pt-BR"));
+    const ufs = [...new Set(deputados.map((d) => d.uf))].filter(Boolean).sort();
+    const estado = { q: p.get("q") || "", pt: partidos.includes(p.get("pt")) ? p.get("pt") : "", uf: ufs.includes(p.get("uf")) ? p.get("uf") : "", ex: p.get("ex") === "1" };
+    let limite = 60;
+
+    const campoQ = h("input", { id: "busca-d", type: "search", autocomplete: "off", spellcheck: "false", value: estado.q, placeholder: "nome do deputado", enterkeyhint: "search" });
+    const selPt = h("select", { id: "dep-pt" }, h("option", { value: "" }, "Todos os partidos"), partidos.map((x) => h("option", { value: x }, x)));
+    const selUf = h("select", { id: "dep-uf" }, h("option", { value: "" }, "Todos os estados"), ufs.map((x) => h("option", { value: x }, x)));
+    selPt.value = estado.pt; selUf.value = estado.uf;
+    const caixaEx = h("input", { type: "checkbox", id: "dep-ex" }); caixaEx.checked = estado.ex;
+    const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
+    const lista = h("ul", { class: "lista-dep" });
+    const maisBox = h("div", { class: "mais" });
+
+    principal.replaceChildren(h("div", { class: "miolo" },
+      h("section", { class: "abertura", "aria-labelledby": "titulo-deputados" },
+        h("h1", { id: "titulo-deputados", tabindex: "-1" }, "Procure um deputado federal"),
+        h("p", { class: "abertura__texto" }, "Veja como cada um votou nas votações em que o voto de cada deputado foi registrado. Sem nota e sem ranking.")),
+      h("form", { class: "filtros", role: "search", "aria-label": "Procurar deputado", onsubmit: (e) => e.preventDefault() },
+        h("div", { class: "filtros__linha" },
+          h("div", { class: "campo" }, h("label", { for: "busca-d" }, "Nome"), campoQ),
+          h("div", { class: "campo" }, h("label", { for: "dep-pt" }, "Partido"), selPt),
+          h("div", { class: "campo" }, h("label", { for: "dep-uf" }, "Estado"), selUf)),
+        h("label", { class: "marcar", for: "dep-ex" }, caixaEx, h("span", {}, "Só quem está em exercício agora",
+          h("small", {}, "Deixe desligado para ver também quem já deixou o cargo ou foi suplente no período.")))),
+      estadoTxt, lista, maisBox));
+    document.title = "Deputados: Voto de Verdade";
+
+    function atualizar(reiniciar) {
+      if (reiniciar) limite = 60;
+      estado.q = campoQ.value.trim(); estado.pt = selPt.value; estado.uf = selUf.value; estado.ex = caixaEx.checked;
+      gravarEndereco("deputados", limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, ex: estado.ex ? "1" : "" }));
+      const ts = termos(estado.q);
+      const r = deputados.filter((d) => (!ts.length || casa(d._t, ts)) && (!estado.pt || d.partido === estado.pt) && (!estado.uf || d.uf === estado.uf) && (!estado.ex || d.ex));
+      const mostrados = r.slice(0, limite);
+      lista.replaceChildren(...mostrados.map((d) => h("li", {}, h("a", { class: "linha-dep", href: "#/deputado/" + d.id },
+        h("span", { class: "linha-dep__nome" }, d.nome),
+        h("span", { class: "linha-dep__sub" }, [d.partido, d.uf].filter(Boolean).join(" · ") + (d.ex ? "" : " · fora do exercício agora"))))));
+      anunciar(estadoTxt, r.length ? `${plural(r.length, "deputado", "deputados")}${r.length !== deputados.length ? ` de ${deputados.length.toLocaleString("pt-BR")}` : ""}`
+        : "Nenhum deputado com esses filtros. Confira a grafia do nome ou tire algum filtro.");
+      maisBox.replaceChildren();
+      if (r.length > mostrados.length) {
+        maisBox.append(h("button", { type: "button", class: "botao botao--leve", onclick: () => { limite += 60; atualizar(false); } },
+          `Mostrar mais ${Math.min(60, r.length - mostrados.length)} deputados`));
+      }
+    }
+    let espera;
+    campoQ.addEventListener("input", () => { clearTimeout(espera); espera = setTimeout(() => atualizar(true), 180); });
+    for (const el of [selPt, selUf, caixaEx]) el.addEventListener("change", () => atualizar(true));
+    atualizar(true);
+    return document.getElementById("titulo-deputados");
+  }
+
+  async function telaDeputado(id, p) {
+    const [deputados, vots, projetos, assuntos] = await Promise.all([dados("deputados"), indiceVotacoes(), dados("projetos"), dados("assuntos")]);
+    const dep = deputados.find((d) => String(d.id) === id);
+    if (!dep) return telaNaoEncontrada();
+    let arq;
+    try { arq = await dados("deputados/" + id); } catch (e) { arq = { v: [], pt: [] }; }
+    const meta = await dados("meta");
+    const prPorId = Object.fromEntries(projetos.map((x) => [x.id, x]));
+    const nomeAssunto = Object.fromEntries(assuntos.map((x) => [x.slug, x.nome]));
+
+    const votos = [];
+    for (const [vid, cod] of arq.v) {
+      const v = vots.porId[vid]; if (!v) continue;
+      const pr = prPorId[v.p]; if (!pr) continue;
+      votos.push({ v, pr, cod, _t: semAcento([pr.titulo, pr.nome, v.desc].join(" ")) });
+    }
+    const total = {}; for (const x of votos) total[x.cod] = (total[x.cod] || 0) + 1;
+
+    const porAssunto = {};
+    for (const x of votos) {
+      const t = (porAssunto[x.pr.a] ||= { S: 0, N: 0, O: 0, n: 0 });
+      t.n++; if (x.cod === "S" || x.cod === "N") t[x.cod]++; else t.O++;
+    }
+    const slugs = Object.keys(porAssunto).sort((a, b) => (nomeAssunto[a] === "Outros") - (nomeAssunto[b] === "Outros") || nomeAssunto[a].localeCompare(nomeAssunto[b], "pt-BR"));
+
+    const estado = {
+      q: p.get("q") || "", a: porAssunto[p.get("a")] ? p.get("a") : "", v: VOTO[p.get("v")] ? p.get("v") : "", ord: p.get("ord") === "antiga" ? "antiga" : "recente",
+    };
+    let limite = 30;
+
+    const campoQ = h("input", { id: "busca-v", type: "search", autocomplete: "off", spellcheck: "false", value: estado.q, placeholder: "uma palavra do projeto", enterkeyhint: "search" });
+    const selA = h("select", { id: "dep-a" }, h("option", { value: "" }, "Todos os assuntos"), slugs.map((x) => h("option", { value: x }, nomeAssunto[x])));
+    const selV = h("select", { id: "dep-v" }, h("option", { value: "" }, "Todos os votos"), ORDEM_VOTO.filter((c) => total[c]).map((c) => h("option", { value: c }, VOTO[c].nome)));
+    const selOrd = h("select", { id: "dep-ord" }, h("option", { value: "recente" }, "Mais recentes primeiro"), h("option", { value: "antiga" }, "Mais antigas primeiro"));
+    selA.value = estado.a; selV.value = estado.v; selOrd.value = estado.ord;
+    const limpar = h("button", { type: "button", class: "botao botao--leve", id: "limpar-d" }, "Limpar filtros");
+    const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
+    const tabelaBox = h("div", { class: "tabela-rolavel", tabindex: "0", role: "region", "aria-label": "Votos por assunto" });
+    const lista = h("ul", { class: "votos-dep" });
+    const maisBox = h("div", { class: "mais" });
+
+    const partidoAgora = [dep.partido, dep.uf].filter(Boolean).join(" · ");
+    const historico = arq.pt && arq.pt.length > 1 ? `Nas votações, apareceu nos partidos: ${arq.pt.join(", ")} (do mais antigo ao mais recente).` : null;
+
+    const temVotos = votos.length > 0;
+    const placar = h("dl", { class: "placar" }, ORDEM_VOTO.filter((c) => total[c]).map((c) => h("div", {}, h("dt", {}, VOTO[c].nome), h("dd", {}, total[c].toLocaleString("pt-BR")))));
+
+    const conteudo = h("div", { class: "miolo" },
+      h("nav", { class: "migalhas", "aria-label": "Você está em" },
+        h("ol", {}, h("li", {}, h("a", { href: "#/deputados" }, "Deputados")), h("li", { "aria-current": "page" }, dep.nome))),
+      h("header", { class: "cabeca-dep" },
+        fotoDeputado(dep.id),
+        h("div", {},
+          h("h1", { id: "titulo-deputado", tabindex: "-1" }, dep.nome),
+          h("p", { class: "cabeca-dep__sub" }, partidoAgora, dep.ex ? "" : " · não está em exercício agora"),
+          historico ? h("p", { class: "nota" }, historico) : null)),
+      temVotos
+        ? h("section", { "aria-labelledby": "resumo-dep" },
+            h("h2", { id: "resumo-dep" }, "Votos registrados"),
+            placar,
+            h("p", { class: "nota" }, `${plural(votos.length, "votação nominal com voto registrado", "votações nominais com voto registrado")}, de ${data(meta.de)} a ${data(meta.ate)}. Votações simbólicas não registram o voto de cada deputado, então não entram aqui. Quando o deputado faltou ou não votou, a votação não aparece.`))
+        : h("p", { class: "aviso-previa" }, "Não há voto registrado deste deputado nas votações nominais do período."));
+
+    if (temVotos) {
+      conteudo.append(
+        h("section", { class: "bloco", "aria-labelledby": "assuntos-dep" },
+          h("h2", { id: "assuntos-dep" }, "Por assunto"),
+          h("p", { class: "nota" }, "Conta pelo assunto principal de cada projeto. Escolha um assunto para ver só os votos nele."),
+          tabelaBox),
+        h("section", { class: "bloco", "aria-labelledby": "lista-dep" },
+          h("h2", { id: "lista-dep" }, "Votação por votação"),
+          h("form", { class: "filtros", role: "search", "aria-label": "Filtrar os votos de " + dep.nome, onsubmit: (e) => e.preventDefault() },
+            h("div", { class: "filtros__linha filtros__linha--4" },
+              h("div", { class: "campo" }, h("label", { for: "busca-v" }, "Procurar nos projetos"), campoQ),
+              h("div", { class: "campo" }, h("label", { for: "dep-a" }, "Assunto"), selA),
+              h("div", { class: "campo" }, h("label", { for: "dep-v" }, "Voto"), selV),
+              h("div", { class: "campo" }, h("label", { for: "dep-ord" }, "Ordem"), selOrd)),
+            h("div", { class: "filtros__rodape" }, limpar)),
+          estadoTxt, lista, maisBox,
+          h("p", { class: "nota" }, "Votar sim ou não em uma votação não diz, sozinho, se o deputado apoia o assunto do projeto. Muitas votações são sobre emendas, substitutivos ou pontos separados do texto (destaques). Leia o que foi votado em cada uma.")));
+    }
+    principal.replaceChildren(conteudo);
+    document.title = `${dep.nome}: Voto de Verdade`;
+
+    function desenharTabela() {
+      tabelaBox.replaceChildren(h("table", { class: "tabela-partidos" },
+        h("caption", { class: "so-leitor" }, "Votos por assunto"),
+        h("thead", {}, h("tr", {}, h("th", { scope: "col" }, "Assunto"), h("th", { scope: "col", class: "num" }, "Sim"), h("th", { scope: "col", class: "num" }, "Não"),
+          h("th", { scope: "col", class: "num" }, "Outros"), h("th", { scope: "col", class: "num" }, "Total"))),
+        h("tbody", {}, slugs.map((sl) => {
+          const t = porAssunto[sl], ativo = estado.a === sl;
+          return h("tr", { class: ativo ? "ativa" : null },
+            h("th", { scope: "row" },
+              h("button", { type: "button", class: "link-botao", "aria-pressed": ativo ? "true" : "false", onclick: () => { selA.value = ativo ? "" : sl; atualizar(true); } }, nomeAssunto[sl]),
+              h("span", { class: "barra-voto barra-voto--fina", "aria-hidden": "true" },
+                h("i", { class: "seg-S", style: `width:${(t.S / t.n) * 100}%` }), h("i", { class: "seg-N", style: `width:${(t.N / t.n) * 100}%` }), h("i", { class: "seg-O", style: `width:${(t.O / t.n) * 100}%` }))),
+            h("td", { class: "num" }, t.S), h("td", { class: "num" }, t.N), h("td", { class: "num" }, t.O), h("td", { class: "num" }, t.n));
+        }))));
+    }
+
+    function atualizar(reiniciar) {
+      if (reiniciar) limite = 30;
+      estado.q = campoQ.value.trim(); estado.a = selA.value; estado.v = selV.value; estado.ord = selOrd.value;
+      gravarEndereco("deputado/" + id, limparParams({ q: estado.q, a: estado.a, v: estado.v, ord: estado.ord === "recente" ? "" : estado.ord }));
+      desenharTabela();
+      const ts = termos(estado.q);
+      const r = votos.filter((x) => (!ts.length || casa(x._t, ts)) && (!estado.a || x.pr.a === estado.a) && (!estado.v || x.cod === estado.v));
+      r.sort((x, y) => (estado.ord === "recente" ? (y.v.d > x.v.d ? 1 : y.v.d < x.v.d ? -1 : 0) : (x.v.d > y.v.d ? 1 : x.v.d < y.v.d ? -1 : 0)) || (x.v.id < y.v.id ? -1 : 1));
+      const mostrados = r.slice(0, limite);
+      lista.replaceChildren(...mostrados.map(({ v, pr, cod }) => h("li", { class: "voto-dep" },
+        h("div", { class: "voto-dep__topo" }, h("b", {}, data(v.d)), fichaVoto(cod)),
+        h("p", { class: "voto-dep__titulo" }, pr.titulo),
+        h("p", { class: "oficial" }, `${pr.nome}. ${v.desc}`),
+        h("p", {}, h("a", { href: "#/votacao/" + encodeURIComponent(v.id) }, "Ver a votação e os outros deputados"),
+          " · ", h("a", { href: "#/assunto/" + pr.a }, nomeAssunto[pr.a] || "Assunto"))))); 
+      anunciar(estadoTxt, r.length ? `${plural(r.length, "votação", "votações")}${r.length !== votos.length ? ` de ${votos.length.toLocaleString("pt-BR")}` : ""}`
+        : "Nenhuma votação com esses filtros. Tire algum filtro ou use outra palavra.");
+      limpar.hidden = !(estado.q || estado.a || estado.v);
+      maisBox.replaceChildren();
+      if (r.length > mostrados.length) {
+        maisBox.append(h("button", { type: "button", class: "botao botao--leve", onclick: () => { limite += 30; atualizar(false); } },
+          `Mostrar mais ${Math.min(30, r.length - mostrados.length)} votações`));
+      }
+    }
+    if (temVotos) {
+      let espera;
+      campoQ.addEventListener("input", () => { clearTimeout(espera); espera = setTimeout(() => atualizar(true), 180); });
+      for (const el of [selA, selV, selOrd]) el.addEventListener("change", () => atualizar(true));
+      limpar.addEventListener("click", () => { campoQ.value = ""; selA.value = ""; selV.value = ""; atualizar(true); campoQ.focus(); });
+      atualizar(true);
+    }
+    return document.getElementById("titulo-deputado");
+  }
+
   function telaNaoEncontrada() {
     principal.replaceChildren(h("div", { class: "miolo", style: "padding-block:3rem" },
       h("h1", { id: "titulo-nao", tabindex: "-1" }, "Não achamos esta página"),
@@ -572,13 +769,20 @@
     if (location.hash === "#conteudo") { principal.focus(); return; }
     const { partes, p } = lerRota();
     const emAssunto = partes[0] === "assunto";
-    const nav = document.getElementById("nav-assuntos");
-    nav.setAttribute("aria-current", "page");
+    const emDeputados = partes[0] === "deputados" || partes[0] === "deputado";
+    document.getElementById("nav-assuntos").toggleAttribute("aria-current", !emDeputados);
+    document.getElementById("nav-deputados").toggleAttribute("aria-current", emDeputados);
+    for (const id of ["nav-assuntos", "nav-deputados"]) {
+      const a = document.getElementById(id);
+      if (a.hasAttribute("aria-current")) a.setAttribute("aria-current", "page");
+    }
     let titulo;
     try {
       if (!partes.length) titulo = await telaInicio(p);
       else if (emAssunto && partes[1]) titulo = await telaAssunto(partes[1], p);
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
+      else if (partes[0] === "deputados") titulo = await telaDeputados(p);
+      else if (partes[0] === "deputado" && partes[1]) titulo = await telaDeputado(partes[1], p);
       else titulo = telaNaoEncontrada();
     } catch (e) {
       console.error(e);
