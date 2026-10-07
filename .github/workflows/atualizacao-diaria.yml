@@ -12,6 +12,9 @@ on:
       ids:
         description: "Para testes: só estes projetos (ids separados por vírgula). Deixe vazio para o normal"
         default: ""
+      reavaliar:
+        description: "Só refazer as confianças dos resumos já feitos, sem chamar a IA e sem gastar (sim ou nao)"
+        default: "nao"
       espalhar:
         description: "Para testes: pegar projetos espalhados por toda a lista, e não só os mais recentes (sim ou nao)"
         default: "nao"
@@ -60,7 +63,12 @@ jobs:
           LIMITE_RESUMOS: ${{ github.event.inputs.limite_resumos || '300' }}
           ESPALHAR: ${{ github.event.inputs.espalhar || 'nao' }}
           IDS: ${{ github.event.inputs.ids || '' }}
+          REAVALIAR: ${{ github.event.inputs.reavaliar || 'nao' }}
         run: |
+          if [ "$REAVALIAR" = "sim" ]; then
+            python coleta/resumir_projetos.py --reavaliar
+            exit 0
+          fi
           EXTRA=""
           if [ "$ESPALHAR" = "sim" ]; then EXTRA="--espalhar"; fi
           python coleta/resumir_projetos.py --limite "$LIMITE_RESUMOS" --tempo-max 80 --ids "$IDS" $EXTRA
