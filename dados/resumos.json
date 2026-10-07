@@ -26,6 +26,33 @@
    "Lei Orgânica"
   ]
  },
+ "2157806": {
+  "assunto": "Tecnologia e Comunicação",
+  "assunto_secundario": "Cultura, Esporte e Turismo",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "351e080c9db30209",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de conteúdo audiovisual sob demanda, que pode ser lido como comunicação ou como cultura, mas a ementa não detalha o foco",
+  "motivo_resumo": "A explicação de \"por demanda\" é uma interpretação do termo, que a ementa não define",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata da provisão de conteúdo audiovisual por demanda (CAvD)",
+   "Altera a Medida Provisória 2.228-1, de 2001",
+   "A ementa não detalha as regras previstas"
+  ],
+  "resumo": "O projeto trata da oferta de conteúdo audiovisual por demanda, ou seja, conteúdo que o público escolhe assistir quando quiser. Também altera a Medida Provisória 2.228-1, de 2001. A ementa não detalha quais serão as regras.",
+  "tags": [
+   "streaming",
+   "vídeo sob demanda",
+   "audiovisual",
+   "plataformas de vídeo",
+   "Ancine"
+  ]
+ },
  "2176186": {
   "assunto": "Trabalho e Direitos",
   "assunto_secundario": "Infraestrutura e Transporte",
@@ -79,6 +106,34 @@
    "voos"
   ]
  },
+ "2236970": {
+  "assunto": "Educação",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "2a1ee23758ff9f88",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei de Diretrizes e Bases da Educação (Lei nº 9.394/1996)",
+   "Prevê atendimento educacional diferenciado a mães, gestantes e lactantes",
+   "Inclui adotantes no período inicial da adoção",
+   "Revoga a Lei nº 6.202, de 17 de abril de 1975"
+  ],
+  "resumo": "O projeto acrescenta um item à Lei de Diretrizes e Bases da Educação Nacional para prever atendimento educacional diferenciado a mães, gestantes, lactantes e a pessoas que adotam, no período inicial da adoção. Também revoga a Lei nº 6.202, de 1975.",
+  "tags": [
+   "gestante estudante",
+   "lactante",
+   "adoção",
+   "LDB",
+   "licença estudantil"
+  ]
+ },
  "2253943": {
   "assunto": "Educação",
   "assunto_secundario": "Trabalho e Direitos",
@@ -103,6 +158,63 @@
    "Covid-19",
    "Lei Complementar 173",
    "restrições"
+  ]
+ },
+ "2278389": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Saúde",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [
+   "Especificação de 'perderam pai, mãe ou responsáveis' - o texto original apenas menciona 'crianças e adolescentes que se tornaram órfãos' sem detalhar quem especificamente"
+  ],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "media",
+  "entrada": "b65b01503116b067",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": "A ementa diz \"órfãos\"; o sentido de perda de pai, mãe ou responsáveis é uma interpretação do termo; uma conferência automática achou partes do resumo sem apoio no texto original",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Institui o Programa Nacional de Apoio Social e Psicológico (PRONASP)",
+   "Público: crianças e adolescentes órfãos por causa da covid-19",
+   "Prevê apoio social e psicológico"
+  ],
+  "resumo": "Cria o Programa Nacional de Apoio Social e Psicológico (PRONASP). O programa é voltado a crianças e adolescentes que perderam pai, mãe ou responsáveis por causa da pandemia de covid-19.",
+  "tags": [
+   "órfãos da covid",
+   "pandemia",
+   "apoio psicológico",
+   "crianças e adolescentes",
+   "PRONASP"
+  ]
+ },
+ "2279183": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Saúde",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "fd5cfa3df994ca68",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de direitos de grupos (autistas, mobilidade reduzida), mas também de doadores de sangue, ligados à saúde; as palavras da ementa sugerem Infraestrutura e Transporte",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Atendimento prioritário para pessoas com transtorno do espectro autista",
+   "Atendimento prioritário para pessoas com mobilidade reduzida e doadores de sangue",
+   "Reserva de assento no transporte coletivo para autistas e pessoas com mobilidade reduzida",
+   "Altera as Leis nº 10.048/2000 e nº 10.205/2001"
+  ],
+  "resumo": "O projeto muda duas leis para garantir atendimento prioritário a pessoas com transtorno do espectro autista, a pessoas com mobilidade reduzida e a doadores de sangue. Também prevê reserva de assento em empresas públicas de transporte e concessionárias de transporte coletivo para os dois primeiros grupos.",
+  "tags": [
+   "atendimento prioritário",
+   "autismo",
+   "doação de sangue",
+   "assento reservado",
+   "mobilidade reduzida"
   ]
  },
  "2305152": {
@@ -130,6 +242,34 @@
    "acordo internacional",
    "protocolo",
    "licitações"
+  ]
+ },
+ "2305155": {
+  "assunto": "Relações Internacionais e Defesa",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "469d378393b4e572",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Envolve Brasil e Argentina",
+   "Trata de assistência de emergência e cooperação em defesa civil",
+   "Vale para localidades fronteiriças vinculadas",
+   "Assinado em Brasília, em 7 de fevereiro de 2017"
+  ],
+  "resumo": "Aprova o texto de um ajuste complementar a um acordo entre Brasil e Argentina sobre localidades fronteiriças vinculadas. O ajuste trata da prestação de serviços de assistência de emergência e da cooperação em defesa civil. Foi assinado em Brasília, em 7 de fevereiro de 2017.",
+  "tags": [
+   "Argentina",
+   "fronteira",
+   "defesa civil",
+   "acordo internacional",
+   "emergência"
   ]
  },
  "2305157": {
@@ -264,6 +404,57 @@
    "ensino superior"
   ]
  },
+ "2345500": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "49f71f99992562c3",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Institui a Semana Nacional de Retiros Culturais",
+   "A ementa não informa datas nem atividades da semana"
+  ],
+  "resumo": "O projeto cria a Semana Nacional de Retiros Culturais. A ementa não detalha quando a semana será realizada, quais atividades terá nem o que são os \"retiros culturais\".",
+  "tags": [
+   "retiros culturais",
+   "semana nacional",
+   "data comemorativa",
+   "cultura"
+  ]
+ },
+ "2349493": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "baixa",
+  "confianca_resumo": "alta",
+  "entrada": "af12fa153e8d0963",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "A ementa fala de ocupantes e invasores de propriedades e altera a lei da reforma agrária, mas não detalha o conteúdo; pode ser lida como tema de segurança ou de terra e economia; duas leituras automáticas escolheram assuntos diferentes (Segurança Pública e Trabalho e Direitos)",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 8.629, de 25 de fevereiro de 1993",
+   "Trata de impedimentos para ocupantes e invasores de propriedades",
+   "Vale para todo o território nacional"
+  ],
+  "resumo": "O projeto altera a Lei nº 8.629, de 1993, para tratar de impedimentos aplicados a ocupantes e invasores de propriedades em todo o território nacional. A ementa não detalha quais são esses impedimentos.",
+  "tags": [
+   "invasão de terras",
+   "ocupação de propriedades",
+   "reforma agrária",
+   "propriedade rural"
+  ]
+ },
  "2349508": {
   "assunto": "Trabalho e Direitos",
   "assunto_secundario": null,
@@ -343,6 +534,62 @@
    "estabilidade macroeconômica"
   ]
  },
+ "2358793": {
+  "assunto": "Saúde",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "342d685ceb3086d9",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 8.080/1990 (Lei Orgânica da Saúde)",
+   "Trata do atendimento de mulheres vítimas de violência",
+   "O atendimento deve ocorrer em ambiente privativo e individualizado",
+   "Abrange serviços de saúde prestados no âmbito do SUS"
+  ],
+  "resumo": "O projeto muda a Lei Orgânica da Saúde (Lei nº 8.080/1990) para tratar do atendimento de mulheres vítimas de violência em ambiente privativo e individualizado. Vale para os serviços de saúde prestados no âmbito do Sistema Único de Saúde (SUS).",
+  "tags": [
+   "violência contra a mulher",
+   "SUS",
+   "sala de acolhimento",
+   "atendimento humanizado",
+   "Lei Orgânica da Saúde"
+  ]
+ },
+ "2364109": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "62d09bf651f54030",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto cria crimes de discriminação (área penal) e também define regras para bancos sobre conta e crédito (área financeira)",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Define como crime a discriminação contra pessoas expostas politicamente",
+   "Inclui pessoas investigadas ou rés em processo judicial em curso",
+   "Altera a Lei nº 13.506/2017 sobre negativa de conta ou recusa de crédito",
+   "Define procedimentos a serem seguidos pelas instituições financeiras"
+  ],
+  "resumo": "O projeto cria crimes de discriminação contra pessoas expostas politicamente, pessoas investigadas em procedimentos de infração penal, civil ou administrativa e rés em processo judicial em curso. Também altera a Lei nº 13.506/2017 para definir os procedimentos dos bancos ao negar abrir ou manter conta ou ao recusar crédito.",
+  "tags": [
+   "discriminação",
+   "pessoa politicamente exposta",
+   "conta bancária",
+   "crédito",
+   "bancos"
+  ]
+ },
  "2369016": {
   "assunto": "Educação",
   "assunto_secundario": "Saúde",
@@ -370,6 +617,33 @@
    "alunos com transtornos"
   ]
  },
+ "2373173": {
+  "assunto": "Saúde",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "84d1c39a87b5497f",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O tema é uma doença (saúde), mas o laudo pode servir para acesso a direitos; a ementa não diz para que o laudo é usado",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata do prazo de validade do laudo médico pericial do diabetes tipo 1",
+   "A regra seria válida em âmbito nacional",
+   "A ementa não informa qual é o prazo"
+  ],
+  "resumo": "O projeto trata do prazo de validade do laudo médico pericial que comprova o diabetes tipo 1 (DM1). A regra valeria em todo o país. A ementa não detalha qual será o prazo nem para que o laudo é usado.",
+  "tags": [
+   "diabetes tipo 1",
+   "DM1",
+   "laudo médico",
+   "perícia",
+   "validade do laudo"
+  ]
+ },
  "2382675": {
   "assunto": "Impostos e Economia",
   "assunto_secundario": "Tecnologia e Comunicação",
@@ -394,6 +668,30 @@
    "indústria",
    "inovação",
    "tecnologia"
+  ]
+ },
+ "2383019": {
+  "assunto": "Outros",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "baixa",
+  "confianca_resumo": "alta",
+  "entrada": "32e1bc9834df1b40",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "A ementa só cita a Lei Complementar nº 78/1993, sem dizer qual é o tema da mudança; duas leituras automáticas escolheram assuntos diferentes (Outros e Impostos e Economia); o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei Complementar nº 78, de 30 de dezembro de 1993",
+   "A ementa não informa quais pontos da lei serão mudados"
+  ],
+  "resumo": "O projeto muda o texto da Lei Complementar nº 78, de 30 de dezembro de 1993. A ementa não detalha o que será alterado nem qual é o assunto da lei, então não é possível saber o conteúdo da mudança só por ela.",
+  "tags": [
+   "Lei Complementar 78",
+   "Lei Complementar 78/1993",
+   "PLP 177/2023"
   ]
  },
  "2386490": {
@@ -502,6 +800,34 @@
    "remissão"
   ]
  },
+ "2408230": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "e9117e9f5bb64216",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Altera o Código de Processo Penal (Decreto-Lei nº 3.689/1941)",
+   "Juiz poderia decretar medidas cautelares e prisão preventiva de ofício",
+   "Permite converter prisão em flagrante em preventiva",
+   "Vale para crimes de violência doméstica e familiar contra a mulher"
+  ],
+  "resumo": "Muda o Código de Processo Penal para permitir que o juiz, por conta própria, sem pedido de outra parte, decrete medidas cautelares, inclusive prisão preventiva. Também permite converter prisão em flagrante em preventiva em crimes de violência doméstica e familiar contra a mulher (Lei Maria da Penha).",
+  "tags": [
+   "Lei Maria da Penha",
+   "prisão preventiva",
+   "violência doméstica",
+   "medidas cautelares",
+   "flagrante"
+  ]
+ },
  "2417234": {
   "assunto": "Trabalho e Direitos",
   "assunto_secundario": null,
@@ -527,6 +853,33 @@
    "violência contra a mulher",
    "conscientização",
    "premiação"
+  ]
+ },
+ "2442994": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Cultura, Esporte e Turismo",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "770ed48cec156c80",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto cria um prêmio (homenagem) para municípios, mas o foco são políticas de bem-estar das mulheres, o que também cabe em direitos",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Cria o \"Selo Cidade Mulher\"",
+   "O selo é um prêmio destinado a municípios brasileiros",
+   "Premia municípios com destaque em políticas públicas para o bem-estar das mulheres"
+  ],
+  "resumo": "Cria o \"Selo Cidade Mulher\", um prêmio para os municípios brasileiros que se destacarem na efetividade de políticas públicas específicas para o bem-estar das mulheres.",
+  "tags": [
+   "Selo Cidade Mulher",
+   "prêmio",
+   "municípios",
+   "mulheres",
+   "políticas públicas"
   ]
  },
  "2452837": {
@@ -556,6 +909,33 @@
    "Lei 12.777"
   ]
  },
+ "2455340": {
+  "assunto": "Relações Internacionais e Defesa",
+  "assunto_secundario": "Cultura, Esporte e Turismo",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "ea7f91a906fcbb16",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Trata de cooperação cultural entre Brasil e Croácia",
+   "Acordo assinado em Zagreb, em 14 de fevereiro de 2023",
+   "O projeto aprova o texto do acordo",
+   "A ementa não detalha as medidas do acordo"
+  ],
+  "resumo": "O projeto aprova o texto de um acordo de cooperação cultural entre o governo do Brasil e o governo da Croácia. O acordo foi assinado em Zagreb, em 14 de fevereiro de 2023. A ementa não detalha o que o acordo prevê.",
+  "tags": [
+   "Croácia",
+   "acordo internacional",
+   "cooperação cultural",
+   "tratado"
+  ]
+ },
  "2455564": {
   "assunto": "Meio Ambiente",
   "assunto_secundario": "Segurança Pública",
@@ -581,6 +961,34 @@
    "incêndio florestal",
    "Código Florestal",
    "poluição"
+  ]
+ },
+ "2456263": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "51c8f9a4d45f4580",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de distribuição de alimentos a municípios em emergência, o que pode ser visto como assistência social ou como política de compras públicas",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Altera a Lei nº 14.628, de 20 de julho de 2023",
+   "Trata do Programa de Aquisição de Alimentos (PAA)",
+   "Dá prioridade a municípios em emergência ou calamidade pública",
+   "A prioridade vale para a aquisição e a distribuição dos produtos"
+  ],
+  "resumo": "O projeto muda a Lei nº 14.628/2023 para dar prioridade na compra e na distribuição de produtos do Programa de Aquisição de Alimentos (PAA) aos municípios em situação de emergência ou estado de calamidade pública.",
+  "tags": [
+   "PAA",
+   "calamidade pública",
+   "alimentos",
+   "municípios",
+   "emergência"
   ]
  },
  "2461382": {
@@ -631,6 +1039,61 @@
    "medida provisória",
    "orçamento",
    "ministérios"
+  ]
+ },
+ "2467306": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "3c81d8e522149e84",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 13.999/2020 e a Lei nº 12.087/2009",
+   "Busca tornar permanentes os recursos do Pronampe",
+   "O Pronampe é o programa de apoio a microempresas e empresas de pequeno porte",
+   "A ementa não detalha as \"outras providências\""
+  ],
+  "resumo": "O projeto muda duas leis (a Lei 13.999/2020 e a Lei 12.087/2009) para que os recursos do Pronampe, programa de apoio às microempresas e empresas de pequeno porte, passem a ser permanentes. A ementa também fala em \"outras providências\", sem detalhá-las.",
+  "tags": [
+   "Pronampe",
+   "microempresas",
+   "pequenas empresas",
+   "crédito",
+   "apoio empresarial"
+  ]
+ },
+ "2492368": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "b34ca9d3e3a033df",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto muda o Código de Processo Civil (regras de processo), mas trata de pensão alimentícia, ligada a direitos de família. Não se encaixa claramente em um único assunto; uma segunda leitura escolheu Trabalho e Direitos, que é o assunto secundário",
+  "motivo_resumo": "A ementa não diz que a Lei nº 13.105 é o Código de Processo Civil; descrevi apenas como lei sobre processos, o que é uma interpretação leve",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 13.105, de 16 de março de 2015",
+   "Prevê a quebra de sigilo bancário e fiscal em ações de alimentos",
+   "Vale para casos de indícios de ocultação de bens pelo alimentante"
+  ],
+  "resumo": "O projeto altera a lei de 2015 que trata de processos na Justiça (Lei nº 13.105) para permitir a quebra de sigilo bancário e fiscal em ações de alimentos. Isso se aplicaria quando houver indícios de que quem deve pagar os alimentos está escondendo bens.",
+  "tags": [
+   "pensão alimentícia",
+   "sigilo bancário",
+   "sigilo fiscal",
+   "ocultação de bens",
+   "ação de alimentos"
   ]
  },
  "2501358": {
@@ -732,6 +1195,32 @@
    "crimes hediondos",
    "crime",
    "pena"
+  ]
+ },
+ "2562764": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "d375279f11c11d1e",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Reconhece Jaguariúna (SP) como \"Capital Country do Brasil\"",
+   "Trata de um título de homenagem à cidade"
+  ],
+  "resumo": "O projeto dá à cidade de Jaguariúna, no Estado de São Paulo, o título de \"Capital Country do Brasil\". A ementa não detalha outros efeitos além do reconhecimento do título.",
+  "tags": [
+   "Jaguariúna",
+   "capital country",
+   "título",
+   "música country",
+   "São Paulo"
   ]
  },
  "2580259": {
@@ -869,25 +1358,28 @@
   "assunto": "Impostos e Economia",
   "assunto_secundario": null,
   "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
   "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "833cffd86827802b",
+  "entrada": "0fa650bf848740d9",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
-   "Trata de benefícios tributários e despesas obrigatórias em 2026",
-   "A ementa não detalha quais regras são criadas",
-   "O Plenário aprovou a subemenda substitutiva adotada pelo relator da Comissão de Finanças e Tributação"
+   "Trata de benefícios tributários",
+   "Trata de despesas obrigatórias",
+   "Vale para o exercício de 2026",
+   "A ementa não detalha as regras específicas"
   ],
-  "resumo": "O projeto trata de regras sobre benefícios tributários e despesas obrigatórias no ano de 2026. A ementa não detalha quais benefícios ou despesas são afetados nem quais são as regras. O Plenário aprovou a subemenda substitutiva adotada pelo relator da Comissão de Finanças e Tributação.",
+  "resumo": "O projeto trata de regras sobre benefícios tributários e despesas obrigatórias no ano de 2026. A ementa não detalha quais benefícios ou despesas são atingidos nem quais regras são criadas.",
   "tags": [
-   "benefícios tributários",
+   "benefícios fiscais",
    "despesas obrigatórias",
    "orçamento 2026",
-   "projeto de lei complementar"
+   "lei complementar",
+   "finanças públicas"
   ]
  },
  "2611992": {
@@ -968,6 +1460,32 @@
    "Oriente Médio",
    "preço da energia",
    "lei complementar"
+  ]
+ },
+ "2620930": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "6fbfcb8f46b5c808",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "A ementa trata de orçamento, mas não diz para que o dinheiro será usado, então o tema final pode ser outro",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Abre crédito extraordinário de R$ 305.000.000,00",
+   "O valor é destinado ao Ministério da Integração e do Desenvolvimento Regional",
+   "A ementa não detalha a finalidade do crédito"
+  ],
+  "resumo": "Esta medida provisória libera um crédito extraordinário de R$ 305 milhões para o Ministério da Integração e do Desenvolvimento Regional. A ementa diz que o dinheiro é \"para o fim que especifica\", mas não detalha qual é a finalidade.",
+  "tags": [
+   "crédito extraordinário",
+   "medida provisória",
+   "orçamento",
+   "Integração e Desenvolvimento Regional"
   ]
  },
  "348782": {
