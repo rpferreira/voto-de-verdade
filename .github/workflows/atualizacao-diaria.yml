@@ -1,0 +1,56 @@
+name: Atualização diária
+
+# Roda todo dia às 6h (horário de Brasília) e também quando você clicar em "Run workflow".
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Nunca duas atualizações ao mesmo tempo.
+concurrency:
+  group: atualizacao-diaria
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar o Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Coletar os dados da Câmara
+        id: coleta
+        working-directory: dados
+        run: python ../coleta/coletar_votacoes.py --diario
+
+      - name: Guardar o que já foi coletado, mesmo se a coleta falhou
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dados/cache_v5.json
+          if git diff --cached --quiet; then
+            echo "Nada novo para guardar."
+          else
+            git commit -m "Atualização diária dos dados"
+            git push
+          fi
+
+      - name: Construir o banco de dados
+        run: python coleta/construir_banco.py
+
+      - name: Guardar o banco para consulta (7 dias)
+        uses: actions/upload-artifact@v4
+        with:
+          name: banco-de-dados
+          path: dados/voto_de_verdade.db
+          retention-days: 7
