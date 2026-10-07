@@ -9,6 +9,9 @@ Só usa a biblioteca padrão do Python. Arquivos gerados:
     assuntos.json   os assuntos, com contagens (tela inicial)
     projetos.json   um registro enxuto por projeto (busca e página do assunto)
     meta.json       totais e período dos dados (rodapé e textos de ajuda)
+    votacoes.json   uma linha por votação (lista de votações de cada projeto e tela de votação)
+    deputados.json  nome, partido e estado de cada deputado
+    votacoes/<id>.json   o voto de cada deputado, só das votações nominais (tela de votação)
 """
 import argparse
 import json
@@ -39,6 +42,9 @@ DESCRICOES = {
     "Outros": "projetos que não couberam bem em nenhum dos outros assuntos",
 }
 
+# Como o voto de cada deputado é guardado (curto, para os arquivos ficarem leves).
+CODIGO_VOTO = {"Sim": "S", "Não": "N", "Abstenção": "A", "Obstrução": "O", "Artigo 17": "P"}
+
 AVISO_IA = "O resumo foi feito por inteligência artificial e pode conter erros"
 AVISO_SUBSTITUTIVO = "O resumo foi feito a partir da ementa do projeto original."
 
@@ -49,12 +55,15 @@ def slug(texto):
     return re.sub(r"[^a-z0-9]+", "-", t).strip("-")
 
 
-def primeira_frase(texto, limite=170):
+def primeira_frase(texto, limite=200):
     texto = " ".join((texto or "").split())
     m = re.match(r"(.+?[.!?])(\s|$)", texto)
     frase = m.group(1) if m else texto
     if len(frase) > limite:
-        frase = frase[: limite - 1].rstrip(" ,;:") + "…"
+        corte = frase[: limite - 1]
+        if " " in corte:
+            corte = corte.rsplit(" ", 1)[0]  # não corta no meio de uma palavra ou número
+        frase = corte.rstrip(" ,;:") + "…"
     return frase
 
 
@@ -158,6 +167,40 @@ def main():
         "projetos_com_voto_individual": sum(1 for p in projetos if p["ind"]),
         "deputados": con.execute("SELECT COUNT(*) FROM deputados").fetchone()[0],
     }
+    # votações (uma linha cada) e o voto de cada deputado nas nominais
+    ids_projeto = {p["id"] for p in projetos}
+    votacoes = []
+    for r in con.execute("SELECT * FROM votacoes WHERE projeto_id IS NOT NULL ORDER BY data, id"):
+        if r["projeto_id"] not in ids_projeto:
+            continue
+        votacoes.append({
+            "id": r["id"], "p": r["projeto_id"], "d": r["data"], "t": r["tipo_votacao"],
+            "ap": bool(r["aprovacao"]), "c": r["confianca"], "av": r["aviso"],
+            "desc": " ".join((r["descricao"] or "").split()),
+        })
+    deputados = [{"id": r["id"], "nome": r["nome"], "uf": r["uf"], "partido": r["partido"], "ex": bool(r["em_exercicio"])}
+                 for r in con.execute("SELECT * FROM deputados ORDER BY nome")]
+
+    pasta_votos = os.path.join(args.saida, "votacoes")
+    os.makedirs(pasta_votos, exist_ok=True)
+    for antigo in os.listdir(pasta_votos):
+        if antigo.endswith(".json"):
+            os.remove(os.path.join(pasta_votos, antigo))
+    por_votacao = {}
+    for r in con.execute("SELECT votacao_id, deputado_id, voto, partido FROM votos ORDER BY votacao_id, deputado_id"):
+        codigo = CODIGO_VOTO.get(r["voto"])
+        if codigo is None:
+            print(f"AVISO: voto desconhecido “{r['voto']}” (ignorado)", file=sys.stderr)
+            continue
+        por_votacao.setdefault(r["votacao_id"], []).append([r["deputado_id"], codigo, r["partido"] or ""])
+    ids_votacao = {v["id"] for v in votacoes}
+    n_arquivos = 0
+    for vid, lista in por_votacao.items():
+        if vid not in ids_votacao:
+            continue
+        with open(os.path.join(pasta_votos, f"{vid}.json"), "w", encoding="utf-8") as f:
+            json.dump({"v": lista}, f, ensure_ascii=False, separators=(",", ":"))
+        n_arquivos += 1
     con.close()
 
     def gravar(nome, dado):
@@ -169,6 +212,9 @@ def main():
     gravar("assuntos.json", assuntos)
     gravar("projetos.json", projetos)
     gravar("meta.json", meta)
+    gravar("votacoes.json", votacoes)
+    gravar("deputados.json", deputados)
+    print(f"   {pasta_votos}/: {n_arquivos} arquivos")
     print(f"Pronto: {len(assuntos)} assuntos, {len(projetos)} projetos, {meta['votacoes']} votações.")
     return 0
 
