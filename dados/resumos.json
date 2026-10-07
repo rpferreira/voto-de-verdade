@@ -1,4 +1,84 @@
 {
+ "2122125": {
+  "assunto": "Outros",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "fb80ca7a0ce4b729",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei Complementar nº 73/1993, que organiza a Advocacia-Geral da União",
+   "Inclui a Procuradoria-Geral Federal e a do Banco Central como órgãos de direção superior da AGU",
+   "Revoga dispositivos das Leis nº 9.028/1995 e nº 10.480/2002",
+   "O Plenário aprovou a subemenda substitutiva adotada pelo relator da Comissão de Constituição e Justiça"
+  ],
+  "resumo": "O projeto muda a Lei Orgânica da Advocacia-Geral da União (AGU). Ele coloca a Procuradoria-Geral Federal e a Procuradoria-Geral do Banco Central entre os órgãos de direção superior da AGU. Também revoga dispositivos de duas outras leis, de 1995 e de 2002.",
+  "tags": [
+   "AGU",
+   "Advocacia-Geral da União",
+   "Procuradoria-Geral Federal",
+   "Procuradoria Banco Central",
+   "Lei Orgânica"
+  ]
+ },
+ "2176186": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Infraestrutura e Transporte",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "409d462aa22d78b4",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 11.126, de 2005",
+   "Garante a pessoas com deficiência o acompanhamento por cão de assistência",
+   "Vale para todos os meios de transporte",
+   "Vale para locais públicos e privados abertos ao público ou de uso coletivo"
+  ],
+  "resumo": "O projeto muda a Lei nº 11.126/2005 para garantir às pessoas com deficiência o direito de serem acompanhadas por cão de assistência em todos os meios de transporte. O direito vale também em locais públicos e privados abertos ao público ou de uso coletivo. O Plenário aprovou uma subemenda substitutiva global da relatora da CCJ.",
+  "tags": [
+   "cão de assistência",
+   "cão-guia",
+   "pessoa com deficiência",
+   "acessibilidade",
+   "transporte"
+  ]
+ },
+ "2217739": {
+  "assunto": "Outros",
+  "assunto_secundario": "Infraestrutura e Transporte",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "016f52b5f6a67676",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "É um acordo internacional (Outros), mas trata de serviços aéreos, que também se relacionam a transporte; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Aprova acordo sobre serviços aéreos entre Brasil e Albânia",
+   "O acordo foi assinado em Brasília, em 4 de novembro de 2015",
+   "O Plenário aprovou o Projeto de Decreto Legislativo nº 567, de 2019"
+  ],
+  "resumo": "O projeto aprova o texto de um acordo sobre serviços aéreos entre o governo do Brasil e o Conselho de Ministros da Albânia, assinado em Brasília em 4 de novembro de 2015. O Plenário da Câmara aprovou o projeto. A ementa não detalha o conteúdo do acordo.",
+  "tags": [
+   "acordo internacional",
+   "Albânia",
+   "serviços aéreos",
+   "aviação",
+   "voos"
+  ]
+ },
  "2253943": {
   "assunto": "Educação",
   "assunto_secundario": "Trabalho e Direitos",
@@ -23,6 +103,33 @@
    "Covid-19",
    "Lei Complementar 173",
    "restrições"
+  ]
+ },
+ "2305152": {
+  "assunto": "Outros",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "c86bb7e965f54d15",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "É um acordo internacional (Outros), mas trata de contratações públicas, tema que também poderia ser visto como economia; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Aprova o texto do Protocolo de Contratações Públicas do Mercosul",
+   "O protocolo foi assinado em Brasília, em 21 de dezembro de 2017",
+   "O protocolo foi aprovado pela Decisão CMC nº 37/17",
+   "O Plenário aprovou o Projeto de Decreto Legislativo nº 928/2021"
+  ],
+  "resumo": "O projeto aprova o texto do Protocolo de Contratações Públicas do Mercosul, aprovado pela Decisão CMC nº 37/17 e assinado em Brasília, em 21 de dezembro de 2017. A ementa não detalha o conteúdo das regras do protocolo. O Plenário aprovou o projeto.",
+  "tags": [
+   "Mercosul",
+   "contratações públicas",
+   "acordo internacional",
+   "protocolo",
+   "licitações"
   ]
  },
  "2305157": {
@@ -78,6 +185,59 @@
    "tarifa"
   ]
  },
+ "2330015": {
+  "assunto": "Educação",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "0a33093862b76199",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Prorroga prazos de conclusão de cursos e programas da educação superior",
+   "Vale para parto, nascimento de filho, adoção ou guarda judicial para adoção",
+   "Altera a Lei nº 13.536/2017 sobre a prorrogação das bolsas de estudo",
+   "O Plenário aprovou o substitutivo da Comissão de Educação"
+  ],
+  "resumo": "O projeto prorroga os prazos de conclusão de cursos ou programas de estudantes e pesquisadores da educação superior em caso de parto, nascimento de filho, adoção ou guarda judicial para adoção. Também muda a Lei nº 13.536/2017 para tratar da prorrogação da vigência das bolsas de estudo.",
+  "tags": [
+   "mestrado",
+   "doutorado",
+   "licença maternidade",
+   "bolsa de pesquisa",
+   "adoção"
+  ]
+ },
+ "2334279": {
+  "assunto": "Outros",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "63f6065f51b964c5",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Cria funções comissionadas e cargos efetivos no quadro de pessoal do Conselho Nacional de Justiça",
+   "Altera a Lei nº 11.416, de 15 de dezembro de 2006",
+   "O Plenário aprovou a subemenda substitutiva global adotada pela relatora da Comissão de Administração e Serviço Público"
+  ],
+  "resumo": "O projeto trata da criação de funções comissionadas e de cargos efetivos no quadro de pessoal do Conselho Nacional de Justiça. Também muda a Lei nº 11.416, de 2006. O Plenário aprovou uma subemenda substitutiva global adotada pela relatora da Comissão de Administração e Serviço Público.",
+  "tags": [
+   "Conselho Nacional de Justiça",
+   "CNJ",
+   "cargos",
+   "funções comissionadas",
+   "servidores"
+  ]
+ },
  "2338858": {
   "assunto": "Trabalho e Direitos",
   "assunto_secundario": "Educação",
@@ -102,6 +262,59 @@
    "assédio",
    "direitos da mulher",
    "ensino superior"
+  ]
+ },
+ "2349508": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "99914113d8491745",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata do contrato de trabalho por safra e de quem é titular de benefícios sociais",
+   "Altera a Lei nº 5.889 de 1976",
+   "O Plenário rejeitou o substitutivo do Senado",
+   "O Plenário aprovou a subemenda substitutiva da Comissão de Trabalho"
+  ],
+  "resumo": "O projeto trata da compatibilidade entre o contrato de trabalho por safra e a condição de quem recebe benefícios sociais. Para isso, altera a Lei nº 5.889 de 1976. A ementa não detalha quais benefícios ou quais regras são previstas.",
+  "tags": [
+   "trabalho por safra",
+   "benefícios sociais",
+   "trabalhador rural",
+   "contrato de safra"
+  ]
+ },
+ "2353615": {
+  "assunto": "Infraestrutura e Transporte",
+  "assunto_secundario": "Segurança Pública",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "79267b58720ff9dc",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera o art. 105 do Código de Trânsito Brasileiro (Lei nº 9.503/1997)",
+   "Vale para veículos nacionais e importados",
+   "Dispositivo abre o porta-malas pelo lado interno em emergências",
+   "Plenário aprovou o substitutivo da Comissão de Viação e Transportes"
+  ],
+  "resumo": "O projeto muda o Código de Trânsito Brasileiro para determinar que todos os veículos nacionais e importados tenham um dispositivo que abra o porta-malas por dentro em caso de emergência, como sequestro ou crianças presas por acidente. O Plenário aprovou o substitutivo da Comissão de Viação e Transportes.",
+  "tags": [
+   "porta-malas",
+   "Código de Trânsito",
+   "equipamento obrigatório",
+   "sequestro",
+   "crianças presas"
   ]
  },
  "2357053": {
@@ -130,6 +343,33 @@
    "estabilidade macroeconômica"
   ]
  },
+ "2369016": {
+  "assunto": "Educação",
+  "assunto_secundario": "Saúde",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "05f4f005aff667bb",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 14.254, de 30 de novembro de 2021",
+   "Assegura acompanhamento integral a estudantes com Transtorno Opositivo Desafiador (TOD)",
+   "A lei já cobre dislexia, TDAH e outros transtornos de aprendizagem",
+   "O Plenário aprovou o substitutivo adotado pela relatora da Comissão de Educação"
+  ],
+  "resumo": "O projeto muda a Lei nº 14.254/2021, que trata do acompanhamento integral de estudantes com dislexia, TDAH ou outro transtorno de aprendizagem. A mudança garante esse acompanhamento também a estudantes com Transtorno Opositivo Desafiador (TOD). O Plenário aprovou o substitutivo da Comissão de Educação.",
+  "tags": [
+   "TOD",
+   "Transtorno Opositivo Desafiador",
+   "TDAH",
+   "dislexia",
+   "alunos com transtornos"
+  ]
+ },
  "2382675": {
   "assunto": "Impostos e Economia",
   "assunto_secundario": "Tecnologia e Comunicação",
@@ -156,6 +396,33 @@
    "tecnologia"
   ]
  },
+ "2386490": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "0841de1f2dd9b8c4",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de atendimento policial e medidas protetivas, mas também de proteção de direitos de mulheres indígenas; uma segunda leitura escolheu Trabalho e Direitos, que é o assunto secundário",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata do atendimento a mulheres indígenas vítimas de violência",
+   "Envolve delegacias de polícia e demais órgãos responsáveis",
+   "Refere-se a medidas protetivas de urgência da Lei 11.340/2006",
+   "Plenário aprovou o substitutivo da Comissão da Amazônia e dos Povos Originários e Tradicionais"
+  ],
+  "resumo": "O projeto define procedimentos que delegacias de polícia e outros órgãos devem seguir ao atender mulheres indígenas vítimas de violência, nos casos de medidas protetivas de urgência previstas na Lei 11.340/2006 (Lei Maria da Penha). O Plenário aprovou o substitutivo da relatora da Comissão da Amazônia e dos Povos Originários e Tradicionais.",
+  "tags": [
+   "mulheres indígenas",
+   "Lei Maria da Penha",
+   "medida protetiva",
+   "violência contra a mulher",
+   "delegacia"
+  ]
+ },
  "2398369": {
   "assunto": "Outros",
   "assunto_secundario": "Trabalho e Direitos",
@@ -179,6 +446,33 @@
    "Regimento Interno",
    "Câmara dos Deputados",
    "Mesa Diretora"
+  ]
+ },
+ "2400758": {
+  "assunto": "Infraestrutura e Transporte",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "78c04b2b7c667b63",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de seguro obrigatório para vítimas de trânsito, que pode ser lido como tema de trânsito ou de seguros e finanças",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Dispõe sobre o Seguro Obrigatório para Proteção de Vítimas de Acidentes de Trânsito (SPVAT)",
+   "Altera o Decreto-Lei 73/1966 e o Código de Trânsito Brasileiro, entre outras leis",
+   "Revoga as Leis 6.194/1974 e 8.441/1992 e trechos de outras leis",
+   "O Plenário aprovou a subemenda substitutiva global da Comissão de Viação e Transportes"
+  ],
+  "resumo": "O projeto cria o Seguro Obrigatório para Proteção de Vítimas de Acidentes de Trânsito (SPVAT). Também altera leis, entre elas o Código de Trânsito Brasileiro e a lei sobre o Sistema Nacional de Seguros Privados, e revoga as Leis 6.194/1974 e 8.441/1992.",
+  "tags": [
+   "SPVAT",
+   "DPVAT",
+   "seguro obrigatório",
+   "acidente de trânsito",
+   "Código de Trânsito"
   ]
  },
  "2405120": {
@@ -208,6 +502,33 @@
    "remissão"
   ]
  },
+ "2417234": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "6803d542c4c43dc6",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de direitos da mulher e de campanha de conscientização, que também poderia ser vista como ação de segurança pública contra a violência",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei 14.448/2022, que trata do Agosto Lilás",
+   "Prevê o Projeto Banco Vermelho no Agosto Lilás",
+   "Prevê ações de conscientização em lugares públicos e premiação de projetos",
+   "Foco: conscientização para o fim da violência contra a mulher"
+  ],
+  "resumo": "O projeto muda a Lei 14.448/2022 para prever, dentro do \"Agosto Lilás\", o Projeto Banco Vermelho, ações de conscientização em lugares públicos e premiação de projetos. O objetivo é conscientizar para o fim da violência contra a mulher. O Plenário aprovou o substitutivo da Comissão de Defesa dos Direitos da Mulher.",
+  "tags": [
+   "Agosto Lilás",
+   "Banco Vermelho",
+   "violência contra a mulher",
+   "conscientização",
+   "premiação"
+  ]
+ },
  "2452837": {
   "assunto": "Outros",
   "assunto_secundario": "Trabalho e Direitos",
@@ -235,6 +556,83 @@
    "Lei 12.777"
   ]
  },
+ "2455564": {
+  "assunto": "Meio Ambiente",
+  "assunto_secundario": "Segurança Pública",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "ddcf7cc42a9d4613",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Cria agravante para infrações que dificultem serviços públicos e para as cometidas em concurso de pessoas",
+   "Aumenta penas dos crimes de incêndio em floresta e de poluição de qualquer natureza",
+   "Proíbe quem usar fogo de forma irregular de contratar com o Poder Público ou receber recursos públicos",
+   "Plenário aprovou o substitutivo da Comissão de Meio Ambiente, ressalvado um destaque"
+  ],
+  "resumo": "O projeto muda a Lei de Crimes Ambientais e o Código Florestal. Prevê agravante para infrações que atrapalhem serviços públicos ou sejam feitas em grupo, aumenta penas para incêndio em floresta e poluição, e impede quem usar fogo de forma irregular de contratar com o governo ou receber verba pública. O Plenário aprovou o substitutivo da Comissão de Meio Ambiente.",
+  "tags": [
+   "crimes ambientais",
+   "queimadas",
+   "incêndio florestal",
+   "Código Florestal",
+   "poluição"
+  ]
+ },
+ "2461382": {
+  "assunto": "Outros",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "deb5cba610263499",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Reconhece o Hip Hop como manifestação da cultura nacional",
+   "O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Constituição e Justiça e de Cidadania"
+  ],
+  "resumo": "O projeto reconhece o Hip Hop como manifestação da cultura nacional. O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Constituição e Justiça e de Cidadania.",
+  "tags": [
+   "Hip Hop",
+   "cultura nacional",
+   "reconhecimento cultural",
+   "manifestação cultural"
+  ]
+ },
+ "2463814": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "82f1104baa9a28ea",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Crédito extraordinário de R$ 938.458.061,00",
+   "Beneficia sete ministérios, como Saúde, Meio Ambiente e Pesca e Aquicultura",
+   "A ementa diz apenas que o uso é \"para os fins que especifica\"",
+   "O Plenário aprovou a Medida Provisória nº 1.268, de 2024"
+  ],
+  "resumo": "Abre um crédito extraordinário de R$ 938.458.061,00 no orçamento federal. O dinheiro vai para sete ministérios, entre eles Justiça e Segurança Pública, Saúde e Meio Ambiente. A ementa não detalha para que o valor será usado. O Plenário aprovou a medida provisória.",
+  "tags": [
+   "crédito extraordinário",
+   "medida provisória",
+   "orçamento",
+   "ministérios"
+  ]
+ },
  "2501358": {
   "assunto": "Trabalho e Direitos",
   "assunto_secundario": "Educação",
@@ -258,6 +656,82 @@
    "desenvolvimento infantil",
    "crianças",
    "EDI 0-5"
+  ]
+ },
+ "2502887": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "628a7c71374559c4",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera o parágrafo 3º do art. 136 do Código Penal",
+   "Prevê aumento de pena para maus tratos contra pessoa com deficiência",
+   "O Plenário aprovou o substitutivo da Comissão de Constituição e Justiça e de Cidadania"
+  ],
+  "resumo": "O projeto muda o Código Penal para aumentar a pena do crime de maus tratos quando ele é praticado contra pessoa com deficiência. O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Constituição e Justiça e de Cidadania.",
+  "tags": [
+   "maus tratos",
+   "pessoa com deficiência",
+   "Código Penal",
+   "aumento de pena"
+  ]
+ },
+ "2523788": {
+  "assunto": "Outros",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "ddc41bf6f3ea720c",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto cria uma data comemorativa (Outros), mas o tema é um grupo específico, as mulheres rurais (Trabalho e Direitos); o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Institui o Dia Nacional da Mulher Rural",
+   "A ementa não informa a data nem as atividades do dia",
+   "O Plenário aprovou o Projeto de Lei nº 2.805, de 2025"
+  ],
+  "resumo": "O projeto cria o Dia Nacional da Mulher Rural. A ementa não detalha a data escolhida nem o que será feito nesse dia. O Plenário da Câmara aprovou o projeto.",
+  "tags": [
+   "dia nacional",
+   "mulher rural",
+   "data comemorativa",
+   "mulheres do campo"
+  ]
+ },
+ "2558722": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "7c8447a2508e29f5",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Cria o crime de \"Domínio de Cidades\" no Código Penal",
+   "Altera a Lei de Crimes Hediondos (Lei nº 8.072/1990)",
+   "O Plenário aprovou uma subemenda substitutiva global adotada pelo relator da CCJ"
+  ],
+  "resumo": "O projeto muda o Código Penal para criar o crime chamado \"Domínio de Cidades\". Também muda a Lei de Crimes Hediondos. A ementa não detalha em que consiste o crime nem qual será a pena.",
+  "tags": [
+   "domínio de cidades",
+   "Código Penal",
+   "crimes hediondos",
+   "crime",
+   "pena"
   ]
  },
  "2580259": {
@@ -312,6 +786,31 @@
    "concurso",
    "Ministério da Educação",
    "Ministério da Gestão"
+  ]
+ },
+ "2593628": {
+  "assunto": "Outros",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "6b0bb80044ba024b",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata da carreira de servidores públicos, que pode ser vista como administração pública ou como tema de trabalho; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Altera a Lei nº 12.300, de 28 de julho de 2010",
+   "Modifica o Plano de Carreira dos Servidores do Senado Federal",
+   "O Plenário aprovou o projeto, ressalvado o destaque"
+  ],
+  "resumo": "O projeto muda a Lei nº 12.300/2010 para modificar o Plano de Carreira dos Servidores do Senado Federal. A ementa não detalha quais mudanças serão feitas. O Plenário aprovou o projeto, ressalvado um destaque.",
+  "tags": [
+   "servidores do Senado",
+   "plano de carreira",
+   "Senado Federal",
+   "servidor público"
   ]
  },
  "2606313": {
@@ -521,6 +1020,32 @@
    "parcerias",
    "contratações públicas",
    "limite de despesas"
+  ]
+ },
+ "545304": {
+  "assunto": "Meio Ambiente",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "21cfb84459aef50f",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "A ementa fala de produção e consumo sustentáveis, o que pode ser lido como tema ambiental ou econômico, e não detalha as medidas",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Institui a Política Nacional de Estímulo à Produção e ao Consumo Sustentáveis",
+   "Altera as Leis 9.605/1998, 9.795/1999 e 12.375/2010",
+   "Revoga um dispositivo da Lei 10.375/2010",
+   "O Plenário aprovou o substitutivo da Comissão Especial, ressalvados os destaques"
+  ],
+  "resumo": "O projeto cria a Política Nacional de Estímulo à Produção e ao Consumo Sustentáveis. Também muda as Leis 9.605/1998, 9.795/1999 e 12.375/2010 e revoga um dispositivo da Lei 10.375/2010. A ementa não detalha as medidas previstas.",
+  "tags": [
+   "consumo sustentável",
+   "produção sustentável",
+   "política nacional",
+   "sustentabilidade"
   ]
  }
 }
