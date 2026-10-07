@@ -203,6 +203,11 @@ def main():
             print(f"AVISO: voto desconhecido “{r['voto']}” (ignorado)", file=sys.stderr)
             continue
         por_votacao.setdefault(r["votacao_id"], []).append([r["deputado_id"], codigo, r["partido"] or ""])
+    # placar de cada votação nominal: [sim, não, abstenção, obstrução, presidia a sessão]
+    for v in votacoes:
+        lista = por_votacao.get(v["id"])
+        if lista:
+            v["s"] = [sum(1 for x in lista if x[1] == c) for c in "SNAOP"]
     ids_votacao = {v["id"] for v in votacoes}
     n_arquivos = 0
     for vid, lista in por_votacao.items():
