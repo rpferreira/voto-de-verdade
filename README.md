@@ -25,7 +25,9 @@ busca esses dados todo dia e monta o banco de dados que alimenta o site.
 2. Em seguida, `coleta/construir_banco.py` monta o banco `dados/voto_de_verdade.db` a partir do cache e de
    `dados/resumos.json`. O banco é refeito do zero a cada rodada, fica guardado por 7 dias na aba Actions
    e não vai para o repositório.
-3. Se algo falhar, a execução fica vermelha na aba Actions e o GitHub avisa o dono do repositório por e-mail.
+3. Depois, `coleta/resumir_projetos.py` pede a uma IA o assunto e o resumo dos projetos novos, mede a confiança de
+   cada um e guarda tudo em `dados/resumos.json`. O banco é refeito com os resumos.
+4. Se algo falhar, a execução fica vermelha na aba Actions e o GitHub avisa o dono do repositório por e-mail.
 
 ```
 API da Câmara ──► coletar_votacoes.py ──► dados/cache_v5.json ─┐
@@ -72,8 +74,32 @@ SQLite, refeito do zero a cada rodada.
 | `execucoes` | Histórico das rodadas: contagens, problemas e avisos |
 
 `dados/resumos.json` guarda o assunto e o resumo de cada projeto, no formato
-`{"<id do projeto>": {"assunto", "assunto_secundario", "confianca_assunto", "resumo", "pontos_chave", "tags"}}`.
-Ele será preenchido na etapa dos resumos por IA, que ainda não foi construída.
+`{"<id do projeto>": {"assunto", "assunto_secundario", "confianca_assunto", "motivo_assunto", "resumo",
+"confianca_resumo", "motivo_resumo", "pode_diferir", "pontos_chave", "tags"}}`. Quem escreve é o `resumir_projetos.py`.
+
+## Assunto e resumo por IA
+
+Não há revisão humana, então a confiança é medida por checagens automáticas:
+
+1. **Modelo principal** (Claude Sonnet 5.5): escolhe o assunto, escreve o resumo e diz quanto tem de certeza.
+2. **Segunda leitura** (Claude Haiku 4.5): escolhe o assunto sem ver a resposta do primeiro. Se os dois discordam, a
+   confiança do assunto é baixa.
+3. **Palavras-chave** da ementa conferem se o assunto faz sentido.
+4. **Conferência do resumo** (Claude Haiku 4.5): compara o resumo com o texto original e aponta o que não tem apoio
+   nele. Resumo sem apoio no texto é descartado, e a tela mostra só a ementa original.
+5. **Substitutivo ou emenda:** quando a votação foi sobre um substitutivo, o texto votado pode ser diferente da
+   ementa. O banco guarda um aviso para a tela dizer isso.
+
+O texto enviado à IA é a ementa oficial e os textos das votações. Ela é instruída a usar só esse texto e a ser neutra.
+Todo resumo deve aparecer na tela com o selo "gerado por inteligência artificial", a ementa original e o link do texto
+integral.
+
+**Custo.** A API é paga por uso, com créditos pré-pagos. Pelos preços de outubro de 2026, a carga inicial dos cerca de
+900 projetos deve custar poucos dólares, e depois a rotina diária gasta centavos. O log de cada rodada mostra o gasto
+estimado. Sem a chave `ANTHROPIC_API_KEY` no GitHub, a etapa é pulada sem erro.
+
+**Teste barato.** Em Actions, **Run workflow**, preencha "limite_resumos" com `5`. A rotina resume só 5 projetos e
+mostra o gasto no log.
 
 ## Telas e filtros planejados
 
@@ -94,8 +120,10 @@ o cidadão pedir: o filtro de confiança vem desligado.
 | --- | --- |
 | `coleta/coletar_votacoes.py` | Coleta e classifica as votações |
 | `coleta/construir_banco.py` | Monta o banco SQLite |
+| `coleta/resumir_projetos.py` | Assunto e resumo por IA, com confiança |
+| `coleta/guardar_no_repositorio.sh` | Guarda arquivos da rotina no repositório, repetindo se alguém mexeu nele |
 | `dados/cache_v5.json` | Tudo o que veio da API (a base do banco) |
-| `dados/resumos.json` | Assunto e resumo de cada projeto, com confiança |
+| `dados/resumos.json` | Assunto e resumo de cada projeto, com confiança (escrito pela IA) |
 | `.github/workflows/atualizacao-diaria.yml` | A rotina diária |
 
 ## Rodar a rotina
@@ -137,6 +165,8 @@ rotina faz pausas entre as consultas para não ser bloqueada. Nos dias seguintes
 
 - **Sem revisão humana.** A rede de segurança são os avisos de confiança e um canal de "Reportar erro", que
   ainda precisa de um responsável para receber e tratar os relatos.
+- **Resumos por IA.** Podem conter erros. A confiança e a conferência automática reduzem o risco, mas não o eliminam.
+  Os 9 assuntos são fixos, e "Outros" pode juntar muitos projetos. Vale conferir a distribuição depois da primeira carga.
 - **Projetos com outro número.** Em 23 projetos (27 votações), o texto cita um número que a Câmara não tem
   registrado hoje, e a Câmara indica o projeto com outro número. Conferimos o ano de apresentação: nos 23 casos ele
   é igual ao ano citado no texto, ou seja, é o mesmo projeto com outro número. Se o ano não bater, a votação fica
