@@ -400,7 +400,10 @@ def buscar_deputados_atuais(cache):
 def buscar_detalhes(cache):
     """Tipo, número, ano, ementa e link do texto integral de cada projeto votado.
     Devolve quantos continuaram com erro."""
-    ids = sorted({p["id"] for p in cache["props"].values() if p.get("n") == 1 and p.get("id")})
+    ids = {p["id"] for p in cache["props"].values() if p.get("n") == 1 and p.get("id")}
+    # também os candidatos das buscas que acharam mais de um projeto (para escolher pela data da votação)
+    ids |= {x[0] for p in cache["props"].values() if p.get("n", 0) > 1 for x in p.get("candidatos", []) if x[0]}
+    ids = sorted(ids)
     faltam = [i for i in ids if str(i) not in cache["detalhes"]]
     print(f"   {len(ids) - len(faltam)} projetos já tinham detalhe em cache; faltam {len(faltam)}.", flush=True)
     erros = 0

@@ -55,7 +55,8 @@ CREATE TABLE projetos (
     resumo TEXT,
     pontos_chave TEXT,
     tags TEXT,
-    achado_por_numero_diferente INTEGER NOT NULL DEFAULT 0
+    achado_por_numero_diferente INTEGER NOT NULL DEFAULT 0,
+    nome_citado TEXT
 );
 CREATE TABLE votacoes (
     id TEXT PRIMARY KEY,
@@ -111,6 +112,7 @@ def main():
             plen[v["id"]] = v
 
     votacoes, projetos_usados, incertas = [], {}, []
+    citados, renumeracao = {}, Counter()
     for v in plen.values():
         desc = v.get("descricao")
         if col.classificar(desc) != "merito":
@@ -119,8 +121,20 @@ def main():
         chave = f"{sigla}|{numero}|{ano}" if sigla and numero and ano else f"votacao|{v['id']}"
         p = cache["props"].get(chave) or {}
         projeto_id = p.get("id") if p.get("n") == 1 else None
+        por_data = False
+        if projeto_id is None and p.get("n", 0) > 1:
+            # A busca achou mais de um projeto com o mesmo tipo, número e ano (por exemplo, a PEC 45/2019
+            # e a versão que voltou do Senado). Vale o mais recente que já tinha sido apresentado na data da votação.
+            data_v = col.data_da(v)
+            cands = []
+            for x in p.get("candidatos", []):
+                ap = ((cache.get("detalhes", {}).get(str(x[0])) or {}).get("dataApresentacao") or "")[:10]
+                if ap and ap <= data_v:
+                    cands.append((ap, x[0]))
+            if cands:
+                projeto_id, por_data = max(cands)[1], True
         if projeto_id:
-            projetos_usados.setdefault(projeto_id, bool(p.get("divergente")))
+            projetos_usados[projeto_id] = projetos_usados.get(projeto_id, False) or bool(p.get("divergente"))
         lista = cache["votos"].get(str(v["id"]))
         if lista is None:
             continue  # votos ainda não consultados: entra no próximo dia
@@ -135,9 +149,26 @@ def main():
         motivos = list(motivos)
         if projeto_id is None:
             conf, motivos = "baixa", motivos + ["não foi possível identificar o projeto votado"]
+        elif por_data:
+            conf = min(conf, "media", key=col.NIVEL.get)
+            motivos.append(f"a busca achou {p['n']} projetos com o número {sigla} {numero}/{ano}; escolhemos o mais recente "
+                           f"que já tinha sido apresentado na data da votação")
         elif p.get("divergente"):
-            conf = min(conf, "baixa", key=col.NIVEL.get)
-            motivos.append("o número citado na votação não existe como projeto da Câmara, e usamos o projeto que a Câmara indica")
+            # O texto cita um número que a Câmara não tem; a Câmara indica outro projeto. Se o projeto indicado
+            # foi apresentado no mesmo ano que o texto cita, é o mesmo projeto com outro número (por exemplo,
+            # o número que recebeu ao passar pelo Senado). Sem essa confirmação, a confiança é baixa.
+            det_p = cache.get("detalhes", {}).get(str(projeto_id)) or {}
+            ano_ap = (det_p.get("dataApresentacao") or "")[:4]
+            citado_p = f"{sigla} {numero}/{ano}"
+            citados.setdefault(projeto_id, citado_p)
+            if ano_ap and ano_ap == str(ano):
+                renumeracao["confirmado pelo ano de apresentação"] += 1
+            else:
+                renumeracao["sem confirmação"] += 1
+                conf = min(conf, "baixa", key=col.NIVEL.get)
+                real_p = f"{det_p.get('siglaTipo')} {det_p.get('numero')}/{det_p.get('ano')}"
+                motivos.append(f"o texto da votação cita {citado_p}, que a Câmara não tem registrado, "
+                               f"e usamos o projeto que a Câmara indica ({real_p}); não foi possível confirmar que é o mesmo")
         elif chave.startswith("votacao|"):
             conf = min(conf, "media", key=col.NIVEL.get)
             motivos.append("usamos o projeto que a Câmara indica, porque o texto da votação não cita o número")
@@ -150,7 +181,8 @@ def main():
             det = cache.get("detalhes", {}).get(str(projeto_id)) or {}
             real = f"{det.get('siglaTipo')} {det.get('numero')}/{det.get('ano')}" if det else "?"
             citado = f"{sigla} {numero}/{ano}" if sigla and numero and ano else "sem número no texto"
-            incertas.append((conf, col.data_da(v), projeto_id, desc, motivos, citado, real))
+            ano_ap_i = (det.get("dataApresentacao") or "")[:4] or "?"
+            incertas.append((conf, col.data_da(v), projeto_id, desc, motivos, citado, f"{real}, apresentado em {ano_ap_i}"))
         contagem = Counter(t for _d, t in lista if t is not None) if tipo == "nominal" else Counter()
         principais = {"Sim", "Não", "Abstenção", "Obstrução"}
         votacoes.append({
@@ -193,13 +225,13 @@ def main():
             if conf_assunto != "alta":
                 aviso_assunto = ("O assunto e o resumo deste projeto foram feitos por inteligência artificial "
                                  "e a classificação pode estar errada.")
-        con.execute("INSERT INTO projetos VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        con.execute("INSERT INTO projetos VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     (pid, d.get("siglaTipo"), d.get("numero"), d.get("ano"), d.get("ementa"),
                      d.get("urlInteiroTeor"), assunto, r.get("assunto_secundario"), conf_assunto, aviso_assunto,
                      r.get("resumo"),
                      json.dumps(r.get("pontos_chave"), ensure_ascii=False) if r.get("pontos_chave") else None,
                      json.dumps(r.get("tags"), ensure_ascii=False) if r.get("tags") else None,
-                     1 if divergente else 0))
+                     1 if divergente else 0, citados.get(pid) if divergente else None))
 
     # votações e votos
     for vt in votacoes:
@@ -233,6 +265,16 @@ def main():
     print(f"Votações por tipo: {por_tipo}. Votações sem projeto: {sem_projeto}. Projetos sem assunto: {sem_assunto}.")
     print(f"Votações por confiança da classificação: {por_conf} (as que não são 'alta' aparecem com aviso na tela).")
     print(f"Votos sem o partido do dia do voto: {sem_partido} (esperado: 0 depois da primeira rodada completa).")
+    if renumeracao:
+        print(f"\nVotações cujo texto cita um número que a Câmara não tem registrado: {dict(renumeracao)}.")
+    ambiguos = [(c, pr) for c, pr in sorted(cache.get("props", {}).items()) if pr.get("n", 0) > 1]
+    if ambiguos:
+        print("\nProjetos em que a busca achou mais de um candidato:")
+        for c, pr in ambiguos:
+            print(f"   {c.replace('|', ' ')}: " + " | ".join(
+                f"id {x[0]} {x[1]} apresentado em "
+                f"{((cache.get('detalhes', {}).get(str(x[0])) or {}).get('dataApresentacao') or '?')[:10]} {x[2][:70]}"
+                for x in pr.get("candidatos", [])))
     if incertas:
         motivos_cont = Counter(m for _c, _d, _p, _t, ms, _ci, _re in incertas for m in ms)
         print("\nMotivos das votações com confiança média ou baixa (uma votação pode ter mais de um):")
