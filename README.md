@@ -137,10 +137,13 @@ rotina faz pausas entre as consultas para não ser bloqueada. Nos dias seguintes
 
 - **Sem revisão humana.** A rede de segurança são os avisos de confiança e um canal de "Reportar erro", que
   ainda precisa de um responsável para receber e tratar os relatos.
-- **Projetos com número divergente.** Alguns projetos citados na votação não existem na Câmara com aquele
-  número (por exemplo, números do Senado). Usamos o projeto que a Câmara indica e marcamos com confiança baixa.
-- **PEC 45/2019.** Precisa de uma correção manual, porque a proposta principal pode ser outra
-  (a PEC 293/2004 é uma hipótese). Até lá, ela fica com confiança baixa e aviso.
+- **Projetos com outro número.** Em 23 projetos (27 votações), o texto cita um número que a Câmara não tem
+  registrado hoje, e a Câmara indica o projeto com outro número. Conferimos o ano de apresentação: nos 23 casos ele
+  é igual ao ano citado no texto, ou seja, é o mesmo projeto com outro número. Se o ano não bater, a votação fica
+  com confiança baixa e aviso.
+- **PEC 45/2019.** A busca acha dois registros com esse número. Escolhemos o mais recente que já tinha sido
+  apresentado na data da votação, com confiança média e aviso. A votação de 15/12/2023 afeta, segundo a Câmara, a
+  PEC 293/2004, que não usamos porque o texto cita a 45/2019.
 - **Partido no dia do voto.** A coleta guarda o partido que a API informa junto com cada voto. Falta
   confirmar, na primeira rodada real, que é o partido do dia do voto.
 - **Sem ausências.** A API só lista quem votou, então o site não mostra "não votou".
