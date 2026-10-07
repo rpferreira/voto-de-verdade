@@ -1,28 +1,29 @@
 {
  "2122125": {
-  "assunto": "Outros",
+  "assunto": "Administração Pública e Congresso",
   "assunto_secundario": null,
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "fb80ca7a0ce4b729",
+  "entrada": "06056c14631b4f71",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Altera a Lei Complementar nº 73/1993, que organiza a Advocacia-Geral da União",
-   "Inclui a Procuradoria-Geral Federal e a do Banco Central como órgãos de direção superior da AGU",
-   "Revoga dispositivos das Leis nº 9.028/1995 e nº 10.480/2002",
-   "O Plenário aprovou a subemenda substitutiva adotada pelo relator da Comissão de Constituição e Justiça"
+   "Inclui a Procuradoria-Geral Federal como órgão de direção superior da AGU",
+   "Inclui a Procuradoria-Geral do Banco Central como órgão de direção superior da AGU",
+   "Revoga dispositivos das Leis nº 9.028/1995 e nº 10.480/2002"
   ],
-  "resumo": "O projeto muda a Lei Orgânica da Advocacia-Geral da União (AGU). Ele coloca a Procuradoria-Geral Federal e a Procuradoria-Geral do Banco Central entre os órgãos de direção superior da AGU. Também revoga dispositivos de duas outras leis, de 1995 e de 2002.",
+  "resumo": "O projeto muda a Lei Orgânica da Advocacia-Geral da União (AGU). Inclui a Procuradoria-Geral Federal e a Procuradoria-Geral do Banco Central entre os órgãos de direção superior da AGU. Também revoga dispositivos de duas leis, de 1995 e de 2002.",
   "tags": [
    "AGU",
    "Advocacia-Geral da União",
    "Procuradoria-Geral Federal",
-   "Procuradoria Banco Central",
+   "Banco Central",
    "Lei Orgânica"
   ]
  },
@@ -81,29 +82,31 @@
   ]
  },
  "2217739": {
-  "assunto": "Outros",
+  "assunto": "Relações Internacionais e Defesa",
   "assunto_secundario": "Infraestrutura e Transporte",
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "016f52b5f6a67676",
+  "entrada": "e1e93a860285f269",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "É um acordo internacional (Outros), mas trata de serviços aéreos, que também se relacionam a transporte; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
-   "Aprova acordo sobre serviços aéreos entre Brasil e Albânia",
+   "Trata de um acordo sobre serviços aéreos entre Brasil e Albânia",
    "O acordo foi assinado em Brasília, em 4 de novembro de 2015",
-   "O Plenário aprovou o Projeto de Decreto Legislativo nº 567, de 2019"
+   "O projeto aprova o texto do acordo",
+   "A ementa não informa o conteúdo das regras do acordo"
   ],
-  "resumo": "O projeto aprova o texto de um acordo sobre serviços aéreos entre o governo do Brasil e o Conselho de Ministros da Albânia, assinado em Brasília em 4 de novembro de 2015. O Plenário da Câmara aprovou o projeto. A ementa não detalha o conteúdo do acordo.",
+  "resumo": "O projeto aprova o texto de um acordo sobre serviços aéreos entre o governo do Brasil e o Conselho de Ministros da Albânia. O acordo foi assinado em Brasília, em 4 de novembro de 2015. A ementa não detalha as regras previstas no acordo.",
   "tags": [
-   "acordo internacional",
    "Albânia",
-   "serviços aéreos",
-   "aviação",
-   "voos"
+   "acordo aéreo",
+   "voos internacionais",
+   "companhias aéreas",
+   "tratado internacional"
   ]
  },
  "2236970": {
@@ -218,30 +221,31 @@
   ]
  },
  "2305152": {
-  "assunto": "Outros",
+  "assunto": "Relações Internacionais e Defesa",
   "assunto_secundario": "Impostos e Economia",
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "c86bb7e965f54d15",
+  "entrada": "ffa497e5bfcaba3e",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "É um acordo internacional (Outros), mas trata de contratações públicas, tema que também poderia ser visto como economia; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
-   "Aprova o texto do Protocolo de Contratações Públicas do Mercosul",
-   "O protocolo foi assinado em Brasília, em 21 de dezembro de 2017",
+   "Trata do Protocolo de Contratações Públicas do Mercosul",
    "O protocolo foi aprovado pela Decisão CMC nº 37/17",
-   "O Plenário aprovou o Projeto de Decreto Legislativo nº 928/2021"
+   "Foi assinado em Brasília, em 21 de dezembro de 2017",
+   "A ementa não explica o conteúdo das regras do protocolo"
   ],
-  "resumo": "O projeto aprova o texto do Protocolo de Contratações Públicas do Mercosul, aprovado pela Decisão CMC nº 37/17 e assinado em Brasília, em 21 de dezembro de 2017. A ementa não detalha o conteúdo das regras do protocolo. O Plenário aprovou o projeto.",
+  "resumo": "O projeto aprova o texto de um protocolo do Mercosul sobre contratações públicas, aprovado pela Decisão CMC nº 37/17 e assinado em Brasília, em 21 de dezembro de 2017. A ementa não detalha o conteúdo das regras do protocolo.",
   "tags": [
    "Mercosul",
-   "contratações públicas",
+   "licitações",
+   "compras governamentais",
    "acordo internacional",
-   "protocolo",
-   "licitações"
+   "protocolo"
   ]
  },
  "2305155": {
@@ -273,29 +277,30 @@
   ]
  },
  "2305157": {
-  "assunto": "Outros",
+  "assunto": "Relações Internacionais e Defesa",
   "assunto_secundario": "Segurança Pública",
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "17981db5e0f3bb86",
+  "entrada": "97406c1634231f78",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Aprova o texto de uma emenda a um protocolo internacional sobre assistência jurídica em assuntos penais",
    "A emenda foi assinada em Montevidéu, Uruguai, em 17 de dezembro de 2018",
-   "O Plenário aprovou o projeto de decreto legislativo"
+   "A ementa não explica o conteúdo da alteração"
   ],
-  "resumo": "O projeto aprova o texto de uma emenda ao Protocolo de Assistência Jurídica Mútua em Assuntos Penais, assinada em Montevidéu, no Uruguai, em 17 de dezembro de 2018. A ementa não detalha o que a emenda muda no protocolo. O Plenário aprovou o projeto.",
+  "resumo": "O projeto aprova o texto de uma emenda (alteração) ao Protocolo de Assistência Jurídica Mútua em Assuntos Penais. A emenda foi assinada em Montevidéu, no Uruguai, em 17 de dezembro de 2018. A ementa não detalha o que muda no protocolo.",
   "tags": [
-   "acordo internacional",
+   "assistência jurídica",
    "Uruguai",
-   "cooperação jurídica",
-   "protocolo",
-   "assuntos penais"
+   "acordo internacional",
+   "cooperação penal",
+   "Mercosul"
   ]
  },
  "2313995": {
@@ -353,26 +358,27 @@
   ]
  },
  "2334279": {
-  "assunto": "Outros",
+  "assunto": "Administração Pública e Congresso",
   "assunto_secundario": null,
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "63f6065f51b964c5",
+  "entrada": "b2093c76e8da736d",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
-   "Cria funções comissionadas e cargos efetivos no quadro de pessoal do Conselho Nacional de Justiça",
-   "Altera a Lei nº 11.416, de 15 de dezembro de 2006",
-   "O Plenário aprovou a subemenda substitutiva global adotada pela relatora da Comissão de Administração e Serviço Público"
+   "Cria funções comissionadas no quadro de pessoal do Conselho Nacional de Justiça",
+   "Cria cargos efetivos no mesmo quadro de pessoal",
+   "Altera a Lei nº 11.416, de 15 de dezembro de 2006"
   ],
-  "resumo": "O projeto trata da criação de funções comissionadas e de cargos efetivos no quadro de pessoal do Conselho Nacional de Justiça. Também muda a Lei nº 11.416, de 2006. O Plenário aprovou uma subemenda substitutiva global adotada pela relatora da Comissão de Administração e Serviço Público.",
+  "resumo": "O projeto cria funções comissionadas (funções de confiança, ocupadas por servidores) e cargos efetivos (preenchidos por concurso) no quadro de pessoal do Conselho Nacional de Justiça. Também altera a Lei nº 11.416, de 15 de dezembro de 2006.",
   "tags": [
-   "Conselho Nacional de Justiça",
    "CNJ",
+   "Conselho Nacional de Justiça",
    "cargos",
    "funções comissionadas",
    "servidores"
@@ -722,28 +728,29 @@
   ]
  },
  "2398369": {
-  "assunto": "Outros",
-  "assunto_secundario": "Trabalho e Direitos",
+  "assunto": "Administração Pública e Congresso",
+  "assunto_secundario": null,
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "0671d7c88973f590",
+  "entrada": "dcd73f17c7cf8bc6",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "O projeto muda regras internas da Câmara, mas a ementa não explica se trata de direitos de um grupo; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
-   "Altera o Regimento Interno da Câmara dos Deputados",
+   "Altera o Regimento Interno da Câmara (Resolução nº 17, de 1989)",
    "Cria a Bancada Negra da Câmara dos Deputados",
-   "Plenário aprovou o substitutivo adotado pelo relator da Mesa Diretora"
+   "A ementa não detalha composição nem funcionamento da bancada"
   ],
-  "resumo": "O projeto muda o Regimento Interno da Câmara dos Deputados para criar a Bancada Negra da Câmara. A ementa não detalha como a bancada funcionará. O Plenário aprovou o substitutivo adotado pelo relator da Mesa Diretora.",
+  "resumo": "Muda o Regimento Interno da Câmara dos Deputados, que reúne as regras de funcionamento da Casa, para criar a Bancada Negra da Câmara dos Deputados. A ementa não detalha como a bancada funcionará nem quem a integrará.",
   "tags": [
-   "Bancada Negra",
-   "Regimento Interno",
+   "bancada negra",
+   "regimento interno",
    "Câmara dos Deputados",
-   "Mesa Diretora"
+   "resolução"
   ]
  },
  "2400758": {
@@ -883,24 +890,25 @@
   ]
  },
  "2452837": {
-  "assunto": "Outros",
-  "assunto_secundario": "Trabalho e Direitos",
+  "assunto": "Administração Pública e Congresso",
+  "assunto_secundario": null,
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
-  "confianca_resumo": "media",
-  "entrada": "7b2270edf879f0fb",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "f877d8cb8525f4b5",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "O projeto trata da administração pública (servidores da Câmara), mas também pode ser lido como tema de remuneração e direitos de trabalhadores; o projeto não coube bem em nenhum dos assuntos",
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Altera a Lei nº 12.777, de 28 de dezembro de 2012",
-   "Vale para servidores ativos, inativos e pensionistas da Câmara dos Deputados",
-   "Trata de vantagens pessoais nominalmente identificadas",
-   "O Plenário aprovou o Projeto de Lei nº 3.159, de 2024"
+   "Trata das vantagens pessoais nominalmente identificadas dos servidores",
+   "Abrange servidores ativos, inativos e pensionistas da Câmara dos Deputados",
+   "A ementa não explica o conteúdo das regras"
   ],
-  "resumo": "O projeto muda a Lei nº 12.777, de 2012, para definir regras sobre as vantagens pessoais nominalmente identificadas de servidores ativos, aposentados e pensionistas do Quadro de Pessoal da Câmara dos Deputados. A ementa não detalha quais são essas regras. O Plenário aprovou o projeto.",
+  "resumo": "O projeto muda a Lei nº 12.777, de 2012, para definir regras sobre as \"vantagens pessoais nominalmente identificadas\" dos servidores da Câmara dos Deputados. As regras valem para servidores ativos, aposentados e pensionistas do Quadro de Pessoal da Câmara. A ementa não detalha quais são as regras.",
   "tags": [
    "servidores da Câmara",
    "vantagens pessoais",
@@ -992,26 +1000,27 @@
   ]
  },
  "2461382": {
-  "assunto": "Outros",
+  "assunto": "Cultura, Esporte e Turismo",
   "assunto_secundario": null,
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "deb5cba610263499",
+  "entrada": "702bb6be6b4cf32e",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Reconhece o Hip Hop como manifestação da cultura nacional",
-   "O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Constituição e Justiça e de Cidadania"
+   "A ementa não informa outras medidas além do reconhecimento"
   ],
-  "resumo": "O projeto reconhece o Hip Hop como manifestação da cultura nacional. O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Constituição e Justiça e de Cidadania.",
+  "resumo": "O projeto reconhece o Hip Hop como manifestação da cultura nacional. A ementa não detalha outras medidas, como apoio, incentivos ou regras específicas ligadas a esse reconhecimento.",
   "tags": [
-   "Hip Hop",
-   "cultura nacional",
-   "reconhecimento cultural",
+   "hip hop",
+   "cultura popular",
+   "rap",
    "manifestação cultural"
   ]
  },
@@ -1147,26 +1156,27 @@
   ]
  },
  "2523788": {
-  "assunto": "Outros",
-  "assunto_secundario": "Trabalho e Direitos",
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": "Agropecuária e Campo",
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "ddc41bf6f3ea720c",
+  "entrada": "bb393f868a3ea6ba",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "O projeto cria uma data comemorativa (Outros), mas o tema é um grupo específico, as mulheres rurais (Trabalho e Direitos); o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Institui o Dia Nacional da Mulher Rural",
-   "A ementa não informa a data nem as atividades do dia",
-   "O Plenário aprovou o Projeto de Lei nº 2.805, de 2025"
+   "A ementa não informa a data da comemoração",
+   "A ementa não detalha ações ou atividades previstas"
   ],
-  "resumo": "O projeto cria o Dia Nacional da Mulher Rural. A ementa não detalha a data escolhida nem o que será feito nesse dia. O Plenário da Câmara aprovou o projeto.",
+  "resumo": "O projeto cria o Dia Nacional da Mulher Rural, uma data comemorativa no calendário do país. A ementa não detalha qual será a data nem como ela será celebrada.",
   "tags": [
-   "dia nacional",
    "mulher rural",
+   "dia nacional",
    "data comemorativa",
    "mulheres do campo"
   ]
@@ -1251,55 +1261,56 @@
   ]
  },
  "2585316": {
-  "assunto": "Outros",
-  "assunto_secundario": "Educação",
+  "assunto": "Administração Pública e Congresso",
+  "assunto_secundario": null,
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
-  "confianca_resumo": "media",
-  "entrada": "dbfb722513a54da3",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "9a0df3c2b7634696",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "O projeto trata de cargos públicos (administração pública), mas um dos ministérios é o da Educação, e a ementa não diz quais funções serão exercidas; o projeto não coube bem em nenhum dos assuntos",
-  "motivo_resumo": "O texto não diz que \"provimento efetivo\" significa vagas para concursados; essa explicação é uma interpretação do termo",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
-   "Cria cargos de provimento efetivo em dois ministérios",
-   "Ministérios: Educação e Gestão e Inovação em Serviços Públicos",
-   "Plenário aprovou o substitutivo da Comissão de Administração e Serviço Público",
-   "Um destaque ficou ressalvado na votação"
+   "Cria cargos de provimento efetivo (servidores permanentes)",
+   "Atinge o Ministério da Educação",
+   "Atinge o Ministério da Gestão e da Inovação em Serviços Públicos"
   ],
-  "resumo": "O projeto cria cargos de provimento efetivo, ou seja, vagas para servidores concursados, no Ministério da Educação e no Ministério da Gestão e da Inovação em Serviços Públicos. A ementa não detalha quantidade nem funções dos cargos. O Plenário aprovou o substitutivo da Comissão de Administração e Serviço Público.",
+  "resumo": "O projeto cria cargos de provimento efetivo no Ministério da Educação e no Ministério da Gestão e da Inovação em Serviços Públicos. Provimento efetivo é o preenchimento de cargos por concurso público, para servidores com carreira permanente. A ementa não detalha quantos cargos são nem quais funções terão.",
   "tags": [
    "cargos públicos",
-   "servidores",
-   "concurso",
+   "concurso público",
+   "servidores federais",
    "Ministério da Educação",
    "Ministério da Gestão"
   ]
  },
  "2593628": {
-  "assunto": "Outros",
-  "assunto_secundario": "Trabalho e Direitos",
+  "assunto": "Administração Pública e Congresso",
+  "assunto_secundario": null,
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "6b0bb80044ba024b",
+  "entrada": "3c9ef887a9eaedb0",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "O projeto trata da carreira de servidores públicos, que pode ser vista como administração pública ou como tema de trabalho; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Altera a Lei nº 12.300, de 28 de julho de 2010",
    "Modifica o Plano de Carreira dos Servidores do Senado Federal",
-   "O Plenário aprovou o projeto, ressalvado o destaque"
+   "A ementa não detalha as mudanças específicas"
   ],
-  "resumo": "O projeto muda a Lei nº 12.300/2010 para modificar o Plano de Carreira dos Servidores do Senado Federal. A ementa não detalha quais mudanças serão feitas. O Plenário aprovou o projeto, ressalvado um destaque.",
+  "resumo": "O projeto muda a Lei nº 12.300, de 2010, para modificar o Plano de Carreira dos Servidores do Senado Federal. A ementa não detalha quais pontos do plano de carreira serão alterados e menciona ainda \"outras providências\" sem explicá-las.",
   "tags": [
    "servidores do Senado",
    "plano de carreira",
-   "Senado Federal",
-   "servidor público"
+   "carreira",
+   "Senado Federal"
   ]
  },
  "2606313": {
@@ -1410,29 +1421,30 @@
   ]
  },
  "2617614": {
-  "assunto": "Outros",
-  "assunto_secundario": null,
+  "assunto": "Administração Pública e Congresso",
+  "assunto_secundario": "Relações Internacionais e Defesa",
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
   "confianca_resumo": "alta",
-  "entrada": "0af7631b6d573bee",
+  "entrada": "967394e509f89568",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Altera o Regimento Interno da Câmara dos Deputados",
    "Cria a Secretaria de Monitoramento e Fiscalização das Decisões do Sistema Interamericano de Direitos Humanos",
-   "O Plenário aprovou o Projeto de Resolução nº 22, de 2026"
+   "A ementa não detalha como a secretaria funcionará"
   ],
-  "resumo": "O projeto muda o Regimento Interno da Câmara dos Deputados, que reúne as regras de funcionamento da Casa. A mudança cria a Secretaria de Monitoramento e Fiscalização das Decisões do Sistema Interamericano de Direitos Humanos. O Plenário aprovou o projeto.",
+  "resumo": "O projeto muda o Regimento Interno da Câmara dos Deputados, que reúne as regras de funcionamento da Casa. A mudança cria a Secretaria de Monitoramento e Fiscalização das Decisões do Sistema Interamericano de Direitos Humanos. A ementa não detalha as funções da secretaria.",
   "tags": [
    "regimento interno",
-   "Câmara dos Deputados",
+   "secretaria da Câmara",
    "direitos humanos",
-   "secretaria",
-   "sistema interamericano"
+   "sistema interamericano",
+   "resolução"
   ]
  },
  "2618177": {
@@ -1489,28 +1501,31 @@
   ]
  },
  "348782": {
-  "assunto": "Outros",
-  "assunto_secundario": null,
+  "assunto": "Administração Pública e Congresso",
+  "assunto_secundario": "Relações Internacionais e Defesa",
   "conferencia": "claude-haiku-4-5-20251001",
-  "confianca_assunto": "media",
+  "conferencia_obs": [
+   "um bloco de países dessa região - o texto original não traz informações sobre a natureza ou configuração da ASEAN como bloco regional"
+  ],
+  "confianca_assunto": "alta",
   "confianca_resumo": "media",
-  "entrada": "b4fdb144a1991a7d",
+  "entrada": "ccb165ecad9cdbf7",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_assunto": null,
   "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
   "pode_diferir": false,
   "pontos_chave": [
-   "Cria o Grupo Parlamentar Brasil - ASEAN",
-   "A ementa não explica o funcionamento do grupo",
-   "O Plenário aprovou o Projeto de Resolução nº 43, de 2007"
+   "Cria o Grupo Parlamentar Brasil–ASEAN",
+   "ASEAN significa Associação de Nações do Sudeste Asiático",
+   "A ementa não detalha o funcionamento nem as atribuições do grupo"
   ],
-  "resumo": "O projeto cria o Grupo Parlamentar Brasil - Associação de Nações do Sudeste Asiático (ASEAN). A ementa não detalha como o grupo vai funcionar nem quais serão suas atividades. O Plenário aprovou o projeto.",
+  "resumo": "O projeto cria o Grupo Parlamentar Brasil–ASEAN. A ASEAN é a Associação de Nações do Sudeste Asiático, um bloco de países dessa região. A ementa não detalha como o grupo vai funcionar nem quais serão suas tarefas.",
   "tags": [
-   "ASEAN",
    "grupo parlamentar",
+   "ASEAN",
    "Sudeste Asiático",
-   "relações internacionais"
+   "Brasil-ASEAN"
   ]
  },
  "541855": {
