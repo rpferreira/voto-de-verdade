@@ -332,6 +332,28 @@ def impressao(entrada):
 
 # ---------------------------------------------------------------- conferências automáticas
 
+def _norm(texto):
+    return " ".join(re.sub(r"[^\w\s]", " ", sem_acento(texto)).split())
+
+
+# Frases em que a conferência só repete que "o texto não diz" algo: isso não é informação inventada.
+NEGATIVAS = ("a ementa nao", "a nova ementa nao", "o texto nao", "o texto original nao", "nao ha ", "nao informa", "nao detalha",
+             "nao especifica")
+
+
+def obs_relevantes(obs, entrada):
+    """Tira do que a conferência apontou o que não é problema: trechos que estão no próprio texto original e
+    frases do tipo "a ementa não detalha ...". Sobra só o que de fato parece informação sem apoio."""
+    base = _norm(entrada["base"])
+    saida = []
+    for o in obs or []:
+        n = _norm(o)
+        if not n or n.startswith(NEGATIVAS) or n in base:
+            continue
+        saida.append(o)
+    return saida
+
+
 def sinal_palavras(entrada, principal, secundario):
     """Compara o assunto da IA com as palavras da ementa. Devolve ('apoia'|'neutro'|'contra', assunto sugerido)."""
     t = sem_acento(entrada["base"])
@@ -398,8 +420,11 @@ def combinar_resumo(a, v, entrada):
     if v["veredito"] == "nao_apoiado":
         return None, "baixa", ["o resumo feito pela IA não era sustentado pelo texto original, então foi descartado"]
     if v["veredito"] == "parcialmente_apoiado":
-        nivel = min(nivel, "media", key=NIVEL.get)
-        motivos.append("uma conferência automática achou partes do resumo sem apoio no texto original")
+        if v.get("sem_apoio") and not obs_relevantes(v.get("sem_apoio"), entrada):
+            pass  # tudo o que a conferência apontou estava no texto ou era só "o texto não detalha"
+        else:
+            nivel = min(nivel, "media", key=NIVEL.get)
+            motivos.append("uma conferência automática achou partes do resumo sem apoio no texto original")
     # Votação sobre substitutivo ou emenda (pode_diferir) não baixa a confiança: tem um aviso próprio na tela.
     if len((entrada["ementa"] or "").strip()) < 30:
         nivel = min(nivel, "media", key=NIVEL.get)
@@ -440,7 +465,7 @@ def processar(p, entrada, chave, contas):
         "resumo": limitar(resumo, 500) if resumo else None,
         "confianca_resumo": conf_r, "motivo_resumo": "; ".join(mot_r) or None,
         "pode_diferir": entrada["pode_diferir"],
-        "conferencia_obs": (v.get("sem_apoio") or [])[:4] if v["veredito"] != "apoiado" else [],
+        "conferencia_obs": (v.get("sem_apoio") or [])[:8] if v["veredito"] != "apoiado" else [],
         "pontos_chave": [limitar(x, 160) for x in (a.get("pontos_chave") or [])[:4]] if resumo else [],
         "tags": [limitar(x, 40) for x in (a.get("tags") or [])[:5]],
         "modelo": MODELO_PRINCIPAL, "conferencia": MODELO_CONFERENCIA,
@@ -493,6 +518,34 @@ def carregar_projetos(banco, cache):
     return nominais + outros
 
 
+def reavaliar(args):
+    """Refaz só a confiança do resumo dos projetos já feitos, sem chamar a IA e sem gastar nada: tira o aviso quando
+    tudo o que a conferência apontou estava no próprio texto ou era só "o texto não detalha"."""
+    with open(args.cache, encoding="utf-8") as f:
+        cache = json.load(f)
+    with open(args.resumos, encoding="utf-8") as f:
+        resumos = json.load(f)
+    entradas = {str(p["id"]): e for p, e, _i in carregar_projetos(args.banco, cache)}
+    limpos = mantidos = 0
+    for pid, r in resumos.items():
+        mot = r.get("motivo_resumo") or ""
+        if r.get("confianca_resumo") != "media" or not r.get("resumo") or "conferência automática" not in mot:
+            continue
+        e = entradas.get(pid)
+        if not e or not r.get("conferencia_obs"):
+            continue
+        if obs_relevantes(r["conferencia_obs"], e):
+            mantidos += 1
+            continue
+        outros = [x for x in mot.split("; ") if "conferência automática" not in x]
+        r["motivo_resumo"] = "; ".join(outros) or None
+        r["confianca_resumo"] = "media" if outros else "alta"
+        limpos += 1
+    salvar(resumos, args.resumos)
+    print(f"Reavaliação sem custo: {limpos} avisos de resumo retirados, {mantidos} mantidos.")
+    return 0
+
+
 def salvar(resumos, caminho):
     tmp = caminho + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
@@ -511,7 +564,11 @@ def main():
     ap.add_argument("--ids", default="", help="só estes projetos (ids separados por vírgula), para testes")
     ap.add_argument("--espalhar", action="store_true",
                     help="em vez de seguir a ordem normal, pega projetos espalhados por toda a fila (bom para testes)")
+    ap.add_argument("--reavaliar", action="store_true",
+                    help="refaz só a confiança dos resumos já feitos, sem chamar a IA (não gasta nada)")
     args = ap.parse_args()
+    if args.reavaliar:
+        return reavaliar(args)
 
     chave = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     if not chave:
@@ -592,6 +649,12 @@ def main():
                 cont[r[campo]] = cont.get(r[campo], 0) + 1
         print(f"Confiança do {nome} (todos os projetos já feitos): {cont}")
     if estado["fatal"]:
+        if "saldo de créditos" in estado["fatal"]:
+            # Sem crédito não é falha da rotina: os projetos novos ficam sem resumo (o site mostra só a ementa)
+            # até haver saldo de novo. A execução não fica vermelha.
+            print(f"AVISO: {estado['fatal']}")
+            print("       Os projetos que faltam ficam sem resumo de IA até você recarregar o saldo; o site mostra a ementa.")
+            return 0
         print(f"ERRO: {estado['fatal']}", file=sys.stderr)
         return 1
     return 0
