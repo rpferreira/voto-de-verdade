@@ -9,6 +9,9 @@ on:
       limite_resumos:
         description: "Quantos projetos resumir com IA nesta execução (use 5 para um teste barato)"
         default: "300"
+      espalhar:
+        description: "Para testes: pegar projetos espalhados por toda a lista, e não só os mais recentes (sim ou nao)"
+        default: "nao"
 
 permissions:
   contents: write
@@ -52,7 +55,11 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           LIMITE_RESUMOS: ${{ github.event.inputs.limite_resumos || '300' }}
-        run: python coleta/resumir_projetos.py --limite "$LIMITE_RESUMOS" --tempo-max 80
+          ESPALHAR: ${{ github.event.inputs.espalhar || 'nao' }}
+        run: |
+          EXTRA=""
+          if [ "$ESPALHAR" = "sim" ]; then EXTRA="--espalhar"; fi
+          python coleta/resumir_projetos.py --limite "$LIMITE_RESUMOS" --tempo-max 80 $EXTRA
 
       - name: Guardar os resumos, mesmo se a etapa anterior falhou
         if: always()
