@@ -1,4 +1,265 @@
 {
+ "2253943": {
+  "assunto": "Educação",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "baixa",
+  "confianca_resumo": "alta",
+  "entrada": "cf15848e9aaeabad",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de servidores da educação pública, mas muda regras de uma lei sobre finanças públicas e pessoal na pandemia; duas leituras automáticas escolheram assuntos diferentes (Educação e Impostos e Economia)",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei Complementar nº 173, de 2020, do programa de enfrentamento à Covid-19",
+   "Ressalva os servidores da educação pública das restrições da lei",
+   "O Plenário aprovou o substitutivo da Comissão de Finanças e Tributação"
+  ],
+  "resumo": "O projeto muda a Lei Complementar nº 173, de 2020, que criou o programa de enfrentamento à Covid-19. A mudança retira os servidores da educação pública das restrições previstas nessa lei. O Plenário aprovou o substitutivo da Comissão de Finanças e Tributação.",
+  "tags": [
+   "servidores da educação",
+   "professores",
+   "Covid-19",
+   "Lei Complementar 173",
+   "restrições"
+  ]
+ },
+ "2305157": {
+  "assunto": "Outros",
+  "assunto_secundario": "Segurança Pública",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "17981db5e0f3bb86",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Aprova o texto de uma emenda a um protocolo internacional sobre assistência jurídica em assuntos penais",
+   "A emenda foi assinada em Montevidéu, Uruguai, em 17 de dezembro de 2018",
+   "O Plenário aprovou o projeto de decreto legislativo"
+  ],
+  "resumo": "O projeto aprova o texto de uma emenda ao Protocolo de Assistência Jurídica Mútua em Assuntos Penais, assinada em Montevidéu, no Uruguai, em 17 de dezembro de 2018. A ementa não detalha o que a emenda muda no protocolo. O Plenário aprovou o projeto.",
+  "tags": [
+   "acordo internacional",
+   "Uruguai",
+   "cooperação jurídica",
+   "protocolo",
+   "assuntos penais"
+  ]
+ },
+ "2313995": {
+  "assunto": "Infraestrutura e Transporte",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "ee13f01e6b3f9d70",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de contas de água e luz, serviços de infraestrutura, mas também pode ser lido como proteção ao consumidor",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Suspende o lançamento de cobrança adicional na remuneração por água e/ou energia elétrica",
+   "Vale durante Emergência ou Estado de Calamidade Pública",
+   "Aplica-se a desastres naturais ou causados por ação humana",
+   "O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Desenvolvimento Urbano"
+  ],
+  "resumo": "O projeto cria uma medida excepcional para suspender a cobrança adicional sobre o fornecimento de água e/ou energia elétrica. A suspensão vale durante situação de Emergência ou Estado de Calamidade Pública decretada por desastre natural ou causado por ação humana. O Plenário aprovou o substitutivo da Comissão de Desenvolvimento Urbano.",
+  "tags": [
+   "conta de luz",
+   "conta de água",
+   "calamidade pública",
+   "desastre",
+   "tarifa"
+  ]
+ },
+ "2338858": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Educação",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "5d76d95dc352736a",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de direitos das mulheres, mas acontece em universidades, e as duas leituras são razoáveis para o foco principal",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata do combate à violência contra a mulher em ambiente universitário",
+   "Define diretrizes gerais, segundo a ementa",
+   "Plenário aprovou o substitutivo da relatora da Comissão de Defesa dos Direitos da Mulher"
+  ],
+  "resumo": "O projeto estabelece diretrizes gerais para o combate à violência contra a mulher em ambiente universitário. O Plenário aprovou o substitutivo adotado pela relatora da Comissão de Defesa dos Direitos da Mulher.",
+  "tags": [
+   "violência contra a mulher",
+   "universidade",
+   "assédio",
+   "direitos da mulher",
+   "ensino superior"
+  ]
+ },
+ "2357053": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "4e8fd7b211eb993f",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Institui um regime fiscal sustentável, com base no art. 6º da Emenda Constitucional nº 126/2022",
+   "Altera a Lei de Responsabilidade Fiscal (Lei Complementar nº 101/2000)",
+   "O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Finanças e Tributação, ressalvados os destaques"
+  ],
+  "resumo": "O projeto cria um regime fiscal sustentável, com o objetivo declarado de garantir a estabilidade macroeconômica do País e criar condições para o crescimento socioeconômico. Também altera a Lei de Responsabilidade Fiscal (Lei Complementar nº 101, de 2000). A ementa não detalha as regras do novo regime.",
+  "tags": [
+   "arcabouço fiscal",
+   "regime fiscal",
+   "Lei de Responsabilidade Fiscal",
+   "contas públicas",
+   "estabilidade macroeconômica"
+  ]
+ },
+ "2382675": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": "Tecnologia e Comunicação",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "20720c523150922f",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "A ementa fala de política industrial, tecnológica e de comércio exterior juntas, e não dá para saber qual foco pesa mais",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Define diretrizes para a política industrial, tecnológica e de comércio exterior",
+   "O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Ciência, Tecnologia e Inovação",
+   "A ementa não detalha o conteúdo das diretrizes"
+  ],
+  "resumo": "O projeto trata de diretrizes, ou seja, orientações gerais, para a formulação da política industrial, tecnológica e de comércio exterior do Brasil. A ementa não detalha quais são essas diretrizes. O Plenário aprovou o substitutivo adotado pelo relator da Comissão de Ciência, Tecnologia e Inovação.",
+  "tags": [
+   "política industrial",
+   "comércio exterior",
+   "indústria",
+   "inovação",
+   "tecnologia"
+  ]
+ },
+ "2398369": {
+  "assunto": "Outros",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "0671d7c88973f590",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto muda regras internas da Câmara, mas a ementa não explica se trata de direitos de um grupo; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera o Regimento Interno da Câmara dos Deputados",
+   "Cria a Bancada Negra da Câmara dos Deputados",
+   "Plenário aprovou o substitutivo adotado pelo relator da Mesa Diretora"
+  ],
+  "resumo": "O projeto muda o Regimento Interno da Câmara dos Deputados para criar a Bancada Negra da Câmara. A ementa não detalha como a bancada funcionará. O Plenário aprovou o substitutivo adotado pelo relator da Mesa Diretora.",
+  "tags": [
+   "Bancada Negra",
+   "Regimento Interno",
+   "Câmara dos Deputados",
+   "Mesa Diretora"
+  ]
+ },
+ "2405120": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Saúde",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "3cd33bc0970521d2",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Abrange mulheres com diagnóstico de câncer de mama, em tratamento ou aguardando remissão",
+   "Trata das condições de trabalho dessas mulheres",
+   "A ementa não detalha as regras previstas",
+   "O Plenário aprovou o projeto"
+  ],
+  "resumo": "O projeto trata das condições de trabalho de mulheres que têm diagnóstico de câncer de mama, estão em tratamento ou aguardam a remissão da doença. A ementa não detalha quais regras específicas são previstas. O Plenário aprovou o projeto.",
+  "tags": [
+   "câncer de mama",
+   "trabalhadoras",
+   "tratamento oncológico",
+   "condições de trabalho",
+   "remissão"
+  ]
+ },
+ "2452837": {
+  "assunto": "Outros",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "7b2270edf879f0fb",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata da administração pública (servidores da Câmara), mas também pode ser lido como tema de remuneração e direitos de trabalhadores; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Altera a Lei nº 12.777, de 28 de dezembro de 2012",
+   "Vale para servidores ativos, inativos e pensionistas da Câmara dos Deputados",
+   "Trata de vantagens pessoais nominalmente identificadas",
+   "O Plenário aprovou o Projeto de Lei nº 3.159, de 2024"
+  ],
+  "resumo": "O projeto muda a Lei nº 12.777, de 2012, para definir regras sobre as vantagens pessoais nominalmente identificadas de servidores ativos, aposentados e pensionistas do Quadro de Pessoal da Câmara dos Deputados. A ementa não detalha quais são essas regras. O Plenário aprovou o projeto.",
+  "tags": [
+   "servidores da Câmara",
+   "vantagens pessoais",
+   "pensionistas",
+   "remuneração",
+   "Lei 12.777"
+  ]
+ },
+ "2501358": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Educação",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "8787133365c81f6f",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "A ementa só cita a estratégia para crianças de 0 a 5 anos, sem dizer se o foco é direitos da criança, educação ou saúde; uma segunda leitura escolheu Educação, que é o assunto secundário",
+  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Institui a Estratégia de Desenvolvimento Infantil (EDI 0-5)",
+   "A ementa não detalha as ações da estratégia",
+   "Plenário aprovou a subemenda substitutiva global da Comissão de Educação, ressalvados os destaques"
+  ],
+  "resumo": "O projeto cria a Estratégia de Desenvolvimento Infantil, chamada EDI 0-5. A ementa não detalha como ela funcionará nem quais ações prevê. O Plenário aprovou a subemenda substitutiva global adotada pelo relator da Comissão de Educação.",
+  "tags": [
+   "primeira infância",
+   "desenvolvimento infantil",
+   "crianças",
+   "EDI 0-5"
+  ]
+ },
  "2580259": {
   "assunto": "Tecnologia e Comunicação",
   "assunto_secundario": "Impostos e Economia",
@@ -26,6 +287,33 @@
    "fundo"
   ]
  },
+ "2585316": {
+  "assunto": "Outros",
+  "assunto_secundario": "Educação",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "dbfb722513a54da3",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de cargos públicos (administração pública), mas um dos ministérios é o da Educação, e a ementa não diz quais funções serão exercidas; o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": "O texto não diz que \"provimento efetivo\" significa vagas para concursados; essa explicação é uma interpretação do termo",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Cria cargos de provimento efetivo em dois ministérios",
+   "Ministérios: Educação e Gestão e Inovação em Serviços Públicos",
+   "Plenário aprovou o substitutivo da Comissão de Administração e Serviço Público",
+   "Um destaque ficou ressalvado na votação"
+  ],
+  "resumo": "O projeto cria cargos de provimento efetivo, ou seja, vagas para servidores concursados, no Ministério da Educação e no Ministério da Gestão e da Inovação em Serviços Públicos. A ementa não detalha quantidade nem funções dos cargos. O Plenário aprovou o substitutivo da Comissão de Administração e Serviço Público.",
+  "tags": [
+   "cargos públicos",
+   "servidores",
+   "concurso",
+   "Ministério da Educação",
+   "Ministério da Gestão"
+  ]
+ },
  "2606313": {
   "assunto": "Trabalho e Direitos",
   "assunto_secundario": "Segurança Pública",
@@ -50,6 +338,32 @@
    "recursos",
    "direitos das mulheres",
    "meninas"
+  ]
+ },
+ "2607474": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "63ce067848c7d076",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Abre crédito extraordinário de R$ 266.512.000,00",
+   "O valor vai para o Ministério da Integração e do Desenvolvimento Regional",
+   "A ementa diz apenas \"para os fins que especifica\"",
+   "A Medida Provisória nº 1.339/2026 foi aprovada em Plenário"
+  ],
+  "resumo": "A medida provisória libera um crédito extraordinário de R$ 266.512.000,00 para o Ministério da Integração e do Desenvolvimento Regional. A ementa não detalha para quais fins o dinheiro será usado. O Plenário aprovou a medida provisória.",
+  "tags": [
+   "crédito extraordinário",
+   "medida provisória",
+   "orçamento",
+   "Integração e Desenvolvimento Regional"
   ]
  },
  "2611313": {
@@ -104,6 +418,32 @@
    "navegação fluvial"
   ]
  },
+ "2617614": {
+  "assunto": "Outros",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "0af7631b6d573bee",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Altera o Regimento Interno da Câmara dos Deputados",
+   "Cria a Secretaria de Monitoramento e Fiscalização das Decisões do Sistema Interamericano de Direitos Humanos",
+   "O Plenário aprovou o Projeto de Resolução nº 22, de 2026"
+  ],
+  "resumo": "O projeto muda o Regimento Interno da Câmara dos Deputados, que reúne as regras de funcionamento da Casa. A mudança cria a Secretaria de Monitoramento e Fiscalização das Decisões do Sistema Interamericano de Direitos Humanos. O Plenário aprovou o projeto.",
+  "tags": [
+   "regimento interno",
+   "Câmara dos Deputados",
+   "direitos humanos",
+   "secretaria",
+   "sistema interamericano"
+  ]
+ },
  "2618177": {
   "assunto": "Impostos e Economia",
   "assunto_secundario": "Infraestrutura e Transporte",
@@ -129,6 +469,58 @@
    "Oriente Médio",
    "preço da energia",
    "lei complementar"
+  ]
+ },
+ "348782": {
+  "assunto": "Outros",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "b4fdb144a1991a7d",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "o projeto não coube bem em nenhum dos assuntos",
+  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Cria o Grupo Parlamentar Brasil - ASEAN",
+   "A ementa não explica o funcionamento do grupo",
+   "O Plenário aprovou o Projeto de Resolução nº 43, de 2007"
+  ],
+  "resumo": "O projeto cria o Grupo Parlamentar Brasil - Associação de Nações do Sudeste Asiático (ASEAN). A ementa não detalha como o grupo vai funcionar nem quais serão suas atividades. O Plenário aprovou o projeto.",
+  "tags": [
+   "ASEAN",
+   "grupo parlamentar",
+   "Sudeste Asiático",
+   "relações internacionais"
+  ]
+ },
+ "541855": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": "Outros",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "eb8f84a9ce8ead1e",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei de Responsabilidade Fiscal (Lei Complementar nº 101/2000)",
+   "Define casos em que parcerias e contratações ficam fora do limite de despesa com pessoal",
+   "A ementa original tratava de encargos e contribuições a entidades de previdência",
+   "O Plenário aprovou o substitutivo da Comissão de Finanças e Tributação, ressalvados os destaques"
+  ],
+  "resumo": "O projeto muda a Lei de Responsabilidade Fiscal para definir em quais casos valores de parcerias ou de contratações feitas pelo poder público não entram na conta do limite de gastos com pessoal. A versão inicial tratava de encargos e contribuições devidos a entidades de previdência.",
+  "tags": [
+   "Lei de Responsabilidade Fiscal",
+   "gastos com pessoal",
+   "parcerias",
+   "contratações públicas",
+   "limite de despesas"
   ]
  }
 }
