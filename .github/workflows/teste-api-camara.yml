@@ -1,0 +1,28 @@
+name: Teste de acesso à API da Câmara
+
+# Roda só quando você clicar em "Run workflow" na aba Actions.
+on:
+  workflow_dispatch:
+
+jobs:
+  teste:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Consultar a API da Câmara
+        run: |
+          echo "Executado em $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          for url in \
+            "https://dadosabertos.camara.leg.br/api/v2/deputados?siglaUf=GO&itens=1" \
+            "https://dadosabertos.camara.leg.br/api/v2/votacoes?dataInicio=2026-08-01&dataFim=2026-09-03&itens=1" \
+            "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PLP&numero=74&ano=2026&itens=1"
+          do
+            code=$(curl -s -m 30 -o resposta.json -w "%{http_code}" \
+              -H "Accept: application/json" \
+              -H "User-Agent: transparencia-cidada-teste/0.1" "$url" || true)
+            echo ""
+            echo "HTTP $code  $url"
+            head -c 300 resposta.json
+            echo ""
+            sleep 1
+          done
