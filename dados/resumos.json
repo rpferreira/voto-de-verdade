@@ -554,7 +554,7 @@
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "A ementa não diz o que cada artigo muda; o artigo 157 e o 266 foram associados ao tema só pela ementa detalhada; uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": "A ementa não diz o que cada artigo muda; o artigo 157 e o 266 foram associados ao tema só pela ementa detalhada",
   "pode_diferir": true,
   "pontos_chave": [
    "Altera os artigos 155, 157, 180 e 266 do Código Penal",
@@ -1634,12 +1634,12 @@
    "A ementa não informa as atividades do grupo"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "48f280a3d3cd9bf9",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Institui o grupo parlamentar Brasil-Dinamarca",
@@ -4533,12 +4533,12 @@
    "A ementa não detalha os benefícios da área de livre comércio"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "0f7f6ac401f21513",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Altera a Lei nº 8.256, de 25 de novembro de 1991",
@@ -4727,12 +4727,12 @@
    "A nova ementa não detalha quais são as regras"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "a54def624f364d40",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Tema: transporte aéreo de animais de estimação em voos domésticos",
@@ -5169,12 +5169,12 @@
    "A ementa não detalha como o formulário será aplicado nem em quais situações (esta é uma observação/julgamento sobre o texto, não uma afirmação apoiada no conteúdo)"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "336119578b871691",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Altera a Lei nº 14.149, de 5 de maio de 2021",
@@ -7364,7 +7364,7 @@
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "A ementa não detalha o que o programa Rebe prevê nem o que muda em cada lei; uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": "A ementa não detalha o que o programa Rebe prevê nem o que muda em cada lei",
   "pode_diferir": true,
   "pontos_chave": [
    "Institui o Programa Renda Básica Energética (Rebe)",
@@ -8425,12 +8425,12 @@
    "A ementa não detalha outras medidas"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "6944bcd250593033",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Concede anistia a participantes de manifestações de motivação política",
@@ -10606,12 +10606,12 @@
    "A ementa não detalha as funções do novo ministério"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "e51a6ac499130a42",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Altera a Lei nº 14.600, de 19 de junho de 2023",
@@ -11670,12 +11670,12 @@
    "A ementa não detalha como esse acesso será garantido"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "79aedd166f42c193",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Altera a Lei de Diretrizes e Bases da Educação Nacional (Lei nº 9.394/1996)",
@@ -12590,12 +12590,12 @@
    "A ementa não detalha as etapas nem os requisitos"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "21133c726094773f",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Define regras para o desmembramento simplificado de Municípios",
@@ -13299,7 +13299,7 @@
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "A ementa cita a Lei 13.105/2015, mas não diz que é o Código de Processo Civil; isso foi interpretado; uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": "A ementa cita a Lei 13.105/2015, mas não diz que é o Código de Processo Civil; isso foi interpretado",
   "pode_diferir": true,
   "pontos_chave": [
    "Altera o Código de Processo Penal (Decreto-Lei 3.689/1941)",
@@ -13715,12 +13715,12 @@
    "A ementa não detalha os fins específicos do gasto"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "736fb24cae774bdb",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Crédito extraordinário de R$ 12.179.438.240,00",
@@ -14918,12 +14918,12 @@
    "A ementa não detalha regras, objetivos ou recursos do programa"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "e6b91c45035d15ff",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Institui o Programa Nacional de Fomento às Escolas Resilientes",
@@ -16465,12 +16465,12 @@
    "A ementa não detalha penalidades - o texto original não menciona penalidades, portanto não é apropriado afirmar que a ementa 'não detalha' algo que não é sequer mencionado"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "d9db5119e211b9cb",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Altera a Lei nº 12.305/2010, a Política Nacional de Resíduos Sólidos",
@@ -16959,12 +16959,12 @@
    "A ementa não detalha as regras previstas no acordo"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "f8f945c8ac4d0f0a",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Aprova acordo entre o Brasil e o Reino dos Países Baixos",
@@ -17702,12 +17702,12 @@
    "A ementa não explica o conteúdo da resolução"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "0fb47fac4702f76a",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Susta (anula) os efeitos da Resolução nº 258/2024 do Conanda",
@@ -21940,12 +21940,12 @@
    "a ementa não detalha suas regras"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "7160e1c6cc3738fc",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Trata de acordo provisório de comércio entre Mercosul e União Europeia",
@@ -22858,12 +22858,12 @@
    "A ementa não detalha como ficam os novos limites"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "2c6a4ca3d38a397f",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Altera os limites da Floresta Nacional do Jamanxim",
@@ -23240,12 +23240,12 @@
    "A ementa não detalha o trajeto nem as regras da rota"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "f515e6aea2956c5b",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": false,
   "pontos_chave": [
    "Cria a Rota Turística da Fé Jardim da Imaculada",
@@ -23808,12 +23808,12 @@
    "A ementa não detalha quem poderia usar o desconto nem como ele funcionaria"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "99a4b544cc69c5b4",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Institui a consignação em folha de pagamento para aluguéis residenciais",
@@ -23891,12 +23891,12 @@
    "A ementa não detalha fontes de recursos nem critérios de acesso"
   ],
   "confianca_assunto": "alta",
-  "confianca_resumo": "media",
+  "confianca_resumo": "alta",
   "entrada": "3fa83fd502527bd7",
   "gerado_em": "2026-10-07",
   "modelo": "claude-sonnet-5-5",
   "motivo_assunto": null,
-  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
    "Cria o Fundo Nacional de Assistência ao Estudante de Nível Superior (FUNAES)",
