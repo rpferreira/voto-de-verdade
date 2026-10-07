@@ -1,1 +1,134 @@
-{}
+{
+ "2580259": {
+  "assunto": "Tecnologia e Comunicação",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "ff4b22b15e94fa57",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de telecomunicações, mas também mexe em regras de orçamento e finanças públicas (Lei de Responsabilidade Fiscal)",
+  "motivo_resumo": "A ementa não explica o que muda na Lei nº 9.998/2000, e o substitutivo aprovado não foi recebido",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei Complementar nº 101/2000 (Lei de Responsabilidade Fiscal)",
+   "Veda limitar empenho e movimentação financeira das despesas do fundo de telecomunicações",
+   "Também altera a Lei nº 9.998/2000, sem detalhar como na ementa",
+   "Plenário aprovou o substitutivo adotado pela Comissão de Finanças e Tributação"
+  ],
+  "resumo": "O projeto muda a Lei de Responsabilidade Fiscal para proibir que o governo limite o empenho e a movimentação financeira das despesas do Fundo de Universalização dos Serviços de Telecomunicações. Também altera a Lei nº 9.998/2000 \"para os fins que especifica\", sem detalhar quais.",
+  "tags": [
+   "FUST",
+   "telecomunicações",
+   "contingenciamento",
+   "Lei de Responsabilidade Fiscal",
+   "fundo"
+  ]
+ },
+ "2606313": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Segurança Pública",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "d689f40bd0925293",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O projeto trata de direitos de mulheres, mas também de combate ao feminicídio, tema ligado à segurança pública",
+  "motivo_resumo": "Só a ementa foi recebida; a votação foi de um substitutivo cujo conteúdo não está no texto",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata do Sistema Nacional de Enfrentamento da Violência contra Meninas e Mulheres",
+   "Prevê destinação de recursos a ações contra o feminicídio",
+   "Plenário aprovou o substitutivo adotado pela relatora da Comissão de Defesa dos Direitos da Mulher"
+  ],
+  "resumo": "O projeto trata do Sistema Nacional de Enfrentamento da Violência contra Meninas e Mulheres. Também define a destinação de recursos para ações contra o feminicídio e para garantir a vida de meninas e mulheres.",
+  "tags": [
+   "feminicídio",
+   "violência contra a mulher",
+   "recursos",
+   "meninas e mulheres",
+   "lei complementar"
+  ]
+ },
+ "2611313": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "alta",
+  "confianca_resumo": "media",
+  "entrada": "d29557c0c0e233db",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": "A ementa é genérica e o texto da subemenda aprovada não foi informado, então faltam detalhes das regras",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata de benefícios tributários e despesas obrigatórias em 2026",
+   "É um projeto de lei complementar",
+   "Plenário aprovou subemenda substitutiva adotada pelo relator da Comissão de Finanças e Tributação"
+  ],
+  "resumo": "O projeto trata de regras sobre benefícios tributários (vantagens ou reduções em impostos) e despesas obrigatórias do governo no ano de 2026. A ementa não detalha quais regras são essas. Na votação, foi aprovada uma subemenda substitutiva, cujo texto não foi recebido.",
+  "tags": [
+   "benefícios fiscais",
+   "despesas obrigatórias",
+   "orçamento 2026",
+   "lei complementar"
+  ]
+ },
+ "2611992": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": "Infraestrutura e Transporte",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "d8d784cc85f33975",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O tema é uma cobrança sobre frete, mas ligada ao transporte por navegação em portos do Norte e Nordeste",
+  "motivo_resumo": "A votação foi de um substitutivo, que não recebi; o resumo segue só a ementa, e o novo prazo não aparece nela",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Prorroga o prazo da não cobrança do AFRMM, adicional sobre o frete",
+   "Vale para cabotagem, navegação interior fluvial e lacustre",
+   "Exige origem ou destino em porto da Região Norte ou Nordeste",
+   "Câmara aprovou o substitutivo adotado pela Comissão de Finanças e Tributação"
+  ],
+  "resumo": "O projeto muda a Lei nº 14.301/2022 para estender o prazo em que o Adicional ao Frete para Renovação da Marinha Mercante (AFRMM) não é cobrado. Vale para navegação de cabotagem, fluvial e em lagos, quando a origem ou o destino for porto do Norte ou do Nordeste.",
+  "tags": [
+   "AFRMM",
+   "frete marítimo",
+   "cabotagem",
+   "Norte e Nordeste",
+   "marinha mercante"
+  ]
+ },
+ "2618177": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": "Infraestrutura e Transporte",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "confianca_assunto": "media",
+  "confianca_resumo": "media",
+  "entrada": "f6f779424c4f4dc9",
+  "gerado_em": "2026-10-07",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "A ementa trata de renúncia de receita (economia), mas o tema é energia, e o texto não diz quais tributos ou setores são afetados",
+  "motivo_resumo": "A ementa é geral e o texto votado foi um substitutivo, que não foi recebido, então não há detalhes das medidas",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata de regras para renúncias de receita",
+   "Objetivo: reduzir impactos econômicos do choque no mercado internacional de energia",
+   "O choque decorre do conflito no Oriente Médio",
+   "Plenário aprovou o substitutivo reformulado da relatora da Comissão de Minas e Energia"
+  ],
+  "resumo": "O projeto define regras para o governo abrir mão de receitas (renúncias de receita). O objetivo é reduzir os impactos econômicos do choque no mercado internacional de energia, causado pelo conflito no Oriente Médio. A ementa não detalha quais medidas ou tributos serão incluídos.",
+  "tags": [
+   "renúncia de receita",
+   "energia",
+   "Oriente Médio",
+   "crise energética",
+   "lei complementar"
+  ]
+ }
+}
