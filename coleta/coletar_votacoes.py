@@ -228,7 +228,7 @@ def carregar_cache():
         except (OSError, ValueError):
             print(f"   Aviso: não consegui ler {CACHE}; vou começar do zero.")
             cache = {}
-    for chave in ("janelas", "votos", "props", "deputados", "detalhes"):
+    for chave in ("janelas", "votos", "props", "deputados", "detalhes", "partido_no_voto"):
         cache.setdefault(chave, {})
     cache.setdefault("recentes", [])
     cache.setdefault("deputados_atuais", [])
@@ -309,21 +309,27 @@ def coletar_plenario(ini, fim, cache, atualizar):
 def buscar_votos(ids, cache):
     """Guarda em cache os votos de cada votação: lista de [id do deputado, tipo de voto].
     Lista vazia = votação simbólica. Devolve os ids que continuaram com erro."""
-    faltam = [i for i in ids if str(i) not in cache["votos"]]
+    # também refaz as consultas guardadas antes de existir o partido no dia do voto
+    faltam = [i for i in ids if str(i) not in cache["votos"]
+              or (cache["votos"][str(i)] and str(i) not in cache["partido_no_voto"])]
     print(f"   {len(ids) - len(faltam)} já estavam em cache; faltam {len(faltam)}.", flush=True)
 
     def uma(vid):
         st, r = get(f"/votacoes/{vid}/votos")
         if st != 200:
             return False
-        lista = []
+        lista, partidos = [], {}
         for x in r.get("dados", []):
             dep = x.get("deputado_") or {}
             if dep.get("id") is None:
                 continue
             lista.append([dep["id"], x.get("tipoVoto")])
+            if dep.get("siglaPartido"):
+                partidos[str(dep["id"])] = dep["siglaPartido"]  # partido informado junto com o voto
             cache["deputados"][str(dep["id"])] = [dep.get("nome"), dep.get("siglaPartido"), dep.get("siglaUf")]
         cache["votos"][str(vid)] = lista
+        if lista:
+            cache["partido_no_voto"][str(vid)] = partidos
         return True
 
     erros = []
