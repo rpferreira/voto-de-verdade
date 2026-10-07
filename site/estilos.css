@@ -120,7 +120,7 @@ h1:focus { outline: none; }
   .topo nav a, .topo nav span { font-size: 0.9375rem; }
 }
 .topo nav a, .topo nav span { font-weight: 600; }
-.topo nav [aria-current="page"] { color: var(--tinta); text-decoration: none; border-bottom: 3px solid var(--cobalto); }
+.topo nav a[aria-current="page"] { color: var(--tinta); text-decoration: none; border-bottom: 3px solid var(--cobalto); }
 .topo nav .em-breve { color: var(--tinta-suave); font-weight: 500; }
 
 /* ---------- abertura da tela inicial ---------- */
@@ -341,6 +341,28 @@ details.ajuda p { margin: 0.5rem 0 0; color: var(--tinta-suave); }
 .botao-link { display: inline-block; font-weight: 700; padding: 0.55rem 1.1rem; border: 2px solid var(--cobalto); border-radius: var(--raio); text-decoration: none; min-height: 2.75rem; }
 .botao-link:hover { background: var(--cobalto); color: var(--sobre-cobalto); }
 @media (forced-colors: active) { .seg-S, .seg-N, .seg-O { background: CanvasText; } .voto--S, .voto--N { forced-color-adjust: none; } }
+
+
+/* ---------- deputados ---------- */
+.lista-dep { list-style: none; margin: 0; padding: 0; border-top: 3px solid var(--tinta); display: grid; }
+@media (min-width: 50rem) { .lista-dep { grid-template-columns: 1fr 1fr; column-gap: 2.5rem; } }
+.linha-dep { display: grid; gap: 0.1rem; padding: 0.8rem 0.5rem; margin-inline: -0.5rem; border-bottom: 1px solid var(--linha); color: var(--tinta); text-decoration: none; }
+.linha-dep__nome { font-weight: 700; font-size: 1.125rem; }
+.linha-dep__sub { color: var(--tinta-suave); font-size: 0.95rem; }
+.linha-dep:hover, .linha-dep:focus-visible { background: var(--cobalto); color: var(--sobre-cobalto); }
+.linha-dep:hover .linha-dep__sub, .linha-dep:focus-visible .linha-dep__sub { color: inherit; }
+.linha-dep:focus-visible { outline-offset: -3px; outline-color: var(--tinta); }
+.deputado__nome { color: var(--tinta); text-underline-offset: 0.18em; }
+.deputado__nome:hover { color: var(--cobalto); }
+.cabeca-dep { display: flex; gap: 1.25rem; align-items: flex-start; padding-block: 1rem 1.5rem; }
+.cabeca-dep h1 { margin: 0; font-size: clamp(2rem, 6vw, 3.25rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.024em; text-wrap: balance; }
+.cabeca-dep__sub { margin: 0.5rem 0 0; font-size: 1.1875rem; color: var(--tinta-suave); font-weight: 600; }
+.foto-dep { width: 6rem; height: 8rem; object-fit: cover; border-radius: var(--raio); background: var(--linha); flex: none; }
+.votos-dep { list-style: none; margin: 0; padding: 0; border-top: 3px solid var(--tinta); }
+.voto-dep { padding: 1rem 0; border-bottom: 1px solid var(--linha); display: grid; gap: 0.35rem; max-width: 70ch; }
+.voto-dep p { margin: 0; }
+.voto-dep__topo { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; justify-content: space-between; }
+.voto-dep__titulo { font-weight: 700; font-size: 1.125rem; line-height: 1.35; }
 
 /* ---------- rodapé ---------- */
 .rodape { border-top: 1px solid var(--linha); margin-top: 2rem; }

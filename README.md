@@ -129,6 +129,8 @@ A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Tel
 - **Início** (`#/`): os assuntos, com busca e filtros.
 - **Página do assunto** (`#/assunto/<assunto>`): os projetos, com resumo, aviso quando a IA não tem certeza e as votações de cada projeto.
 - **Votação** (`#/votacao/<id>`): resultado, como cada partido votou e o voto de cada deputado, com filtros por nome, partido, estado e voto. Os filtros ficam no endereço, então dá para compartilhar o link.
+- **Deputados** (`#/deputados`): busca por nome, partido e estado.
+- **Página do deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, com contagem por voto e por assunto e filtros. Sem nota e sem ranking.
 
 Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. A atualização diária já faz isso e publica o site no GitHub Pages (ligue em Settings > Pages > Source: GitHub Actions).
 
