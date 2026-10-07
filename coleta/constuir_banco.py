@@ -72,6 +72,7 @@ CREATE TABLE votos (
     votacao_id TEXT NOT NULL REFERENCES votacoes(id),
     deputado_id INTEGER NOT NULL REFERENCES deputados(id),
     voto TEXT NOT NULL,
+    partido TEXT,
     PRIMARY KEY (votacao_id, deputado_id)
 );
 CREATE TABLE execucoes (
@@ -201,8 +202,9 @@ def main():
         con.execute("INSERT INTO votacoes VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     (vt["id"], vt["data"], vt["projeto_id"], vt["descricao"], vt["aprovacao"], vt["tipo"],
                      vt["confianca"], vt["aviso"], *vt["n"]))
-        con.executemany("INSERT OR IGNORE INTO votos VALUES (?,?,?)",
-                        [(vt["id"], dep, voto) for dep, voto in vt["lista"] if voto is not None])
+        part = cache.get("partido_no_voto", {}).get(str(vt["id"]), {})
+        con.executemany("INSERT OR IGNORE INTO votos VALUES (?,?,?,?)",
+                        [(vt["id"], dep, voto, part.get(str(dep))) for dep, voto in vt["lista"] if voto is not None])
 
     # execuções
     for e in cache.get("execucoes", []):
@@ -220,11 +222,13 @@ def main():
     sem_projeto = con.execute("SELECT COUNT(*) FROM votacoes WHERE projeto_id IS NULL").fetchone()[0]
     sem_assunto = con.execute("SELECT COUNT(*) FROM projetos WHERE assunto IS NULL").fetchone()[0]
     por_tipo = dict(con.execute("SELECT tipo_votacao, COUNT(*) FROM votacoes GROUP BY 1").fetchall())
+    sem_partido = con.execute("SELECT COUNT(*) FROM votos WHERE partido IS NULL").fetchone()[0]
     por_conf = dict(con.execute("SELECT confianca, COUNT(*) FROM votacoes GROUP BY 1").fetchall())
     con.close()
     print(f"Banco criado em {args.saida}: {n}")
     print(f"Votações por tipo: {por_tipo}. Votações sem projeto: {sem_projeto}. Projetos sem assunto: {sem_assunto}.")
     print(f"Votações por confiança da classificação: {por_conf} (as que não são 'alta' aparecem com aviso na tela).")
+    print(f"Votos sem o partido do dia do voto: {sem_partido} (esperado: 0 depois da primeira rodada completa).")
     if erros:
         print(f"ERRO: {len(erros)} referências quebradas no banco.", file=sys.stderr)
         sys.exit(1)
