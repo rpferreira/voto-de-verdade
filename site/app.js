@@ -117,7 +117,7 @@
   async function projetosComTexto() {
     if (indiceProjetos) return indiceProjetos;
     const lista = await dados("projetos");
-    for (const p of lista) p._t = semAcento([p.titulo, p.resumo, p.ementa, p.nome, (p.tags || []).join(" ")].join(" "));
+    for (const p of lista) p._t = semAcento([p.titulo, p.resumo, p.nome, (p.tags || []).join(" ")].join(" "));
     return (indiceProjetos = lista);
   }
   // "pl4952" vale como "pl 4952". Termos de até 3 letras só casam no começo de uma palavra ("ia" não acha "previdência").
@@ -276,7 +276,7 @@
         ? h("p", { class: "nota-neutra" }, "O resumo foi feito a partir da ementa do projeto original. Esta votação foi sobre um substitutivo ou emenda, e o texto votado pode ser diferente.")
         : null,
       pontos: pr.pontos && pr.pontos.length ? h("div", {}, h("h3", {}, "Pontos principais"), h("ul", {}, pr.pontos.map((x) => h("li", {}, x)))) : null,
-      oficial: h("div", {}, h("h3", {}, `Texto oficial (${pr.nome})`), h("p", { class: "oficial" }, pr.ementa || "Sem ementa."),
+      oficial: h("div", {}, h("h3", {}, `Texto oficial (${pr.nome})`), h("p", { class: "oficial" }, pr.ementa || (pr.ementa === null ? "Não consegui carregar a ementa agora. O texto completo está no site da Câmara." : "Sem ementa.")),
         soHttps(pr.texto) ? h("p", {}, h("a", { href: soHttps(pr.texto), target: "_blank", rel: "noopener noreferrer" }, "Ler o texto completo no site da Câmara")) : null),
     };
   }
@@ -472,6 +472,8 @@
       h("p", {}, `${num(meta.simbolicas)} das ${num(meta.votacoes)} votações (${pct}%) foram simbólicas: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Nesses casos não há como saber como cada um votou. Só as ${num(meta.nominais)} votações nominais têm o voto de cada deputado.`),
       h("h2", {}, "O que significa “presidia a sessão”"),
       h("p", {}, "Quem conduz a sessão só vota em situações previstas no regimento (artigo 17). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não."),
+      h("h2", {}, "Licença e uso do conteúdo"),
+      h("p", {}, "O código do site é aberto, com licença MIT. Os textos do site e os resumos feitos por inteligência artificial podem ser copiados e usados por qualquer pessoa, inclusive em matérias, desde que citem o Voto de Verdade e o endereço votodeverdade.com.br (licença CC BY 4.0). Os dados originais são da Câmara dos Deputados, que tem as próprias regras. Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultá-lo para responder perguntas, citando o site, é bem-vindo."),
       h("h2", {}, "Quem faz e privacidade"),
       h("p", {}, "O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita. Se você escolher o modo escuro, só o seu navegador guarda essa escolha."),
       h("p", {}, h("a", { href: "#/" }, "Voltar ao início"))));
@@ -690,8 +692,11 @@
   // ------------------------------------------------------------------ página do projeto (com os votos)
   async function telaProjeto(id, p) {
     const [vots, projetos, assuntos] = await Promise.all([indiceVotacoes(), dados("projetos"), dados("assuntos")]);
-    const pr = projetos.find((x) => String(x.id) === String(id));
-    if (!pr) return telaNaoEncontrada("projeto");
+    const base = projetos.find((x) => String(x.id) === String(id));
+    if (!base) return telaNaoEncontrada("projeto");
+    // ementa e pontos principais ficam num arquivo por projeto; se não carregar, a página abre sem eles
+    const detalhes = await dados("projetos/" + base.id).catch(() => null);
+    const pr = { ...base, ementa: detalhes ? detalhes.ementa || "" : null, pontos: detalhes ? detalhes.pontos || [] : [] };
     const assunto = assuntos.find((x) => x.slug === pr.a);
     const minhas = (vots.porProjeto[pr.id] || []).slice().sort((x, y) => (x.d < y.d ? -1 : x.d > y.d ? 1 : 0));
     const nominais = minhas.filter((x) => x.t === "nominal");
@@ -745,7 +750,10 @@
         h("summary", {}, "Pontos principais e texto oficial"),
         h("div", { class: "projeto__corpo" }, partes.pontos, partes.oficial))));
     if (nominais.length) mostrar(atual);
-    document.title = `${descCurta(pr.titulo, 70)} | Voto de Verdade`;
+    {
+      const base = `${pr.nome}: ${descCurta(pr.titulo, 60 - String(pr.nome).length - 2)}`;
+      document.title = base.length + 17 <= 62 ? `${base} | Voto de Verdade` : base;
+    }
     return document.getElementById("titulo-projeto");
   }
 
@@ -917,7 +925,12 @@
           h("p", { class: "nota" }, "Votar sim ou não não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas ou pontos separados do texto. Abra o projeto para ler o que foi votado.")));
     }
     principal.replaceChildren(conteudo);
-    document.title = `${dep.nome}: Voto de Verdade`;
+    {
+      const sigla = [dep.partido, dep.uf].filter(Boolean).join(" · ");
+      let t = dep.nome;
+      for (const parte of [sigla ? ` (${sigla})` : "", ": votos na Câmara", " | Voto de Verdade"]) if (t.length + parte.length <= 60) t += parte;
+      document.title = t;
+    }
 
     function desenharTabela() {
       tabelaBox.replaceChildren(h("table", { class: "tabela-partidos" },

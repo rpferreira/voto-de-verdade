@@ -53,6 +53,22 @@ def curto(t, limite):
     return corte[: i if i > limite // 2 else limite - 1].rstrip(" ,;:") + "…"
 
 
+def titulo_projeto_seo(nome, titulo, marca):
+    """«PL 1234/2024: texto curto | Voto de Verdade», com cerca de 60 caracteres. A marca só entra se couber sem cortar o título."""
+    base = f"{nome}: {curto(titulo, 60 - len(nome) - 2)}"
+    sufixo = f" | {marca}"
+    return base + sufixo if len(base) + len(sufixo) <= 62 else base
+
+
+def titulo_deputado_seo(nome, sigla, marca):
+    """«Nome (PARTIDO · UF): votos na Câmara | Voto de Verdade», sem passar de cerca de 60 caracteres (corta o que não couber)."""
+    t = nome
+    for parte in ((f" ({sigla})" if sigla else ""), ": votos na Câmara", f" | {marca}"):
+        if len(t) + len(parte) <= 60:
+            t += parte
+    return t
+
+
 def titulo_completo(pr):
     """Se o título foi cortado com «…» e o resumo começa com o mesmo texto, usa a primeira frase inteira do resumo."""
     t, r = pr.get("titulo") or "", pr.get("resumo") or ""
@@ -258,6 +274,11 @@ def main():
     with open(os.path.join(args.site, "index.html"), encoding="utf-8") as f:
         modelo = f.read()
     projetos = carregar(args.site, "projetos.json")
+    for p in projetos:  # ementa e pontos principais ficam num arquivo por projeto
+        arq = os.path.join(args.site, "dados", "projetos", f'{p["id"]}.json')
+        if os.path.exists(arq):
+            with open(arq, encoding="utf-8") as f:
+                p.update(json.load(f))
     votacoes = carregar(args.site, "votacoes.json")
     deputados = carregar(args.site, "deputados.json")
     assuntos = carregar(args.site, "assuntos.json")
@@ -301,9 +322,8 @@ def main():
             votos = ("Votação secreta: o voto de cada deputado não é divulgado." if pr["tipo"] == "secreta" else
                      "Votação simbólica: o resultado foi anunciado sem registrar o voto de cada deputado.")
         resumo = pr.get("resumo") or pr.get("ementa") or ""
-        descricao = curto(resumo, 150)
-        if ult:
-            descricao += f' Votação de {data_br(ult["d"])}: {placar_texto(ult["s"])}. Veja como cada deputado votou.'
+        sufixo_desc = f' Votação de {data_br(ult["d"])}: {placar_texto(ult["s"])}.' if ult else ""
+        descricao = curto(resumo, max(60, 158 - len(sufixo_desc))) + sufixo_desc
         avisos = aviso_ia(pr)
         assunto = nome_assunto.get(pr["a"], "")
 
@@ -365,7 +385,7 @@ def main():
              "dateModified": pr["ultima"], **({"sameAs": pr["texto"]} if pr.get("texto") else {}),
              "about": assunto, "publisher": {"@type": "GovernmentOrganization", "name": "Câmara dos Deputados"}},
             migalhas_ld([("Assuntos", URL + "/"), (assunto, f"{URL}/assunto/{pr['a']}/"), (pr["nome"], None)])]}
-        g.montar(f'projeto/{pr["id"]}', f'projeto/{pr["id"]}', f"{pr['nome']}: {curto(pr['titulo'], 56)} | {NOME}", descricao, corpo,
+        g.montar(f'projeto/{pr["id"]}', f'projeto/{pr["id"]}', titulo_projeto_seo(pr["nome"], pr["titulo"], NOME), descricao, corpo,
                  estruturados=ld, markdown="\n".join(md) + "\n")
 
     # ---- deputados
@@ -385,9 +405,10 @@ def main():
             n_vot = len(votos_dep)
             resumo = (f'Votou em {n_vot} {"votação nominal" if n_vot == 1 else "votações nominais"}, de {data_br(meta["de"])} a {data_br(meta["ate"])}: '
                       f'{total.get("S", 0)} sim e {total.get("N", 0)} não.')
+            resumo_curto = f'Votou em {n_vot} {"votação nominal" if n_vot == 1 else "votações nominais"}: {total.get("S", 0)} sim e {total.get("N", 0)} não.'
         else:
-            resumo = "Sem voto registrado nas votações nominais do período."
-        descricao = f'Veja como {d["nome"]} ({sigla}) votou na Câmara dos Deputados. {resumo} Sem nota e sem ranking.'
+            resumo = resumo_curto = "Sem voto registrado nas votações nominais do período."
+        descricao = curto(f'Veja como {d["nome"]} ({sigla}) votou na Câmara. {resumo_curto} Sem nota e sem ranking.', 160)
         ordenados = sorted(((por_id_votacao[vid], cod) for vid, cod in votos_dep if vid in por_id_votacao),
                            key=lambda x: x[0]["d"], reverse=True)
         recentes, vistos, md_votos = [], set(), []
@@ -418,7 +439,7 @@ def main():
         ld = {"@context": "https://schema.org", "@graph": [
             {"@type": "ProfilePage", "url": f"{URL}/deputado/{d['id']}/", "name": d["nome"], "inLanguage": "pt-BR", "mainEntity": pessoa},
             migalhas_ld([("Deputados", f"{URL}/deputados/"), (d["nome"], None)])]}
-        g.montar(f'deputado/{d["id"]}', f'deputado/{d["id"]}', f'{d["nome"]}: {NOME}', descricao, corpo,
+        g.montar(f'deputado/{d["id"]}', f'deputado/{d["id"]}', titulo_deputado_seo(d["nome"], sigla, NOME), descricao, corpo,
                  estruturados=ld, markdown="\n".join(md) + "\n")
         n_dep += 1
 
@@ -427,8 +448,8 @@ def main():
         todos = sorted((p for p in projetos if p["a"] == a["slug"] or p["s"] == a["slug"]),
                        key=lambda p: (p["ind"], p["ultima"] or ""), reverse=True)
         meus = todos[:150]
-        descricao = (f'{a["descricao"].capitalize()}. {a["n"]} projetos votados na Câmara dos Deputados, '
-                     f'{a["n_ind"]} com o voto de cada deputado. Sem nota e sem ranking.')
+        descricao = curto(f'{a["descricao"].capitalize()}. {a["n"]} projetos votados na Câmara dos Deputados, '
+                          f'{a["n_ind"]} com o voto de cada deputado. Sem nota e sem ranking.', 160)
         corpo = (
             '<div class="miolo">'
             f'<nav class="migalhas" aria-label="Você está em"><ol><li><a href="../../">Assuntos</a></li><li aria-current="page">{esc(a["nome"])}</li></ol></nav>'
@@ -488,6 +509,9 @@ def main():
          "Ninguém revisa os resumos antes de irem ao ar, e por enquanto o site não tem um canal para pedir correções. Se algo parecer estranho, confira no texto oficial."),
         ("Por que nem todo projeto mostra o voto de cada deputado",
          f"{meta['simbolicas']} das {meta['votacoes']} votações ({pct}%) foram simbólicas: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado."),
+        ("Licença e uso do conteúdo",
+         "O código do site é aberto, com licença MIT. Os textos do site e os resumos feitos por inteligência artificial podem ser copiados e usados por qualquer pessoa, inclusive em matérias, desde que citem o Voto de Verdade e o endereço votodeverdade.com.br (licença CC BY 4.0). Os dados originais são da Câmara dos Deputados, que tem as próprias regras. "
+         "Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultá-lo para responder perguntas, citando o site, é bem-vindo."),
         ("Quem faz e privacidade",
          "O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita."),
     ]
@@ -541,6 +565,7 @@ def main():
                          f"{meta['projetos']} projetos com assunto e resumo feitos por inteligência artificial, e o voto de cada deputado nas "
                          f"{meta['nominais']} votações nominais. Dados originais: Dados Abertos da Câmara dos Deputados."),
          "url": URL + "/", "inLanguage": "pt-BR", "isAccessibleForFree": True, "isBasedOn": FONTE_DADOS,
+         "license": "https://creativecommons.org/licenses/by/4.0/",
          "temporalCoverage": f"{meta['de']}/{meta['ate']}", "spatialCoverage": "Brasil", "dateModified": meta["gerado_em"],
          "keywords": ["Câmara dos Deputados", "votações", "deputados federais", "transparência", "Brasil"],
          "creator": {"@type": "Organization", "name": NOME, "url": URL + "/"}, "distribution": dist}]}
@@ -572,13 +597,14 @@ def main():
     linhas.append("</urlset>")
     g.escrever("sitemap.xml", "\n".join(linhas) + "\n")
     # Buscadores e agentes de IA podem ler tudo. O sinal de uso diz que pode indexar e usar para responder
-    # perguntas; sobre treinar modelos, o site não manifesta preferência.
-    g.escrever("robots.txt", f"User-agent: *\nAllow: /\nContent-Signal: search=yes, ai-input=yes\n\nSitemap: {URL}/sitemap.xml\n")
+    # perguntas (citando o site), mas pede que o conteúdo não seja usado para treinar modelos.
+    g.escrever("robots.txt", f"User-agent: *\nAllow: /\nContent-Signal: search=yes, ai-input=yes, ai-train=no\n\nSitemap: {URL}/sitemap.xml\n")
 
     arquivos_dados = [
         ("meta.json", "números gerais e datas de cobertura"),
         ("assuntos.json", "os assuntos, com quantidade de projetos"),
         ("projetos.json", "um registro por projeto: título, resumo em linguagem simples, assunto, avisos da inteligência artificial, links"),
+        ("projetos/<id do projeto>.json", "a ementa (texto oficial) e os pontos principais de um projeto: {\"ementa\": \"...\", \"pontos\": [\"...\"]}"),
         ("votacoes.json", "uma linha por votação: data, tipo (nominal, simbólica, secreta), resultado e placar"),
         ("deputados.json", "um registro por deputado: nome, partido, estado, se está em exercício"),
         ("votacoes/<id da votação>.json", "o voto de cada deputado numa votação nominal: {\"v\": [[id do deputado, código do voto, partido], ...]}"),
@@ -592,9 +618,10 @@ def main():
     leia += [f"- `{URL}/dados/{n}`: {d}" for n, d in arquivos_dados]
     leia += ["", f"Códigos de voto: {codigos}.", "",
              "## Campos principais", "",
-             "- Projeto (`projetos.json`): `id`, `nome` (ex.: PL 1234/2024), `titulo`, `resumo`, `ementa` (texto oficial), `texto` (link oficial), "
+             "- Projeto (`projetos.json`): `id`, `nome` (ex.: PL 1234/2024), `titulo`, `resumo`, `texto` (link oficial), "
              "`a` (assunto principal) e `s` (secundário), `ca`/`cr` (confiança do assunto/do resumo: alta, média ou baixa), `aa`/`ar` (avisos), "
-             "`pontos`, `tags`, `n` (votações), `ind` (tem voto de cada deputado), `ultima` (data), `aprovada`, `tipo`.",
+             "`tags`, `n` (votações), `ind` (tem voto de cada deputado), `ultima` (data), `aprovada`, `tipo`.",
+             "- Detalhes do projeto (`projetos/<id>.json`): `ementa` (texto oficial) e `pontos` (pontos principais, em frases curtas).",
              "- Votação (`votacoes.json`): `id`, `p` (id do projeto), `d` (data), `t` (nominal, simbolica ou secreta), `ap` (aprovada), `desc`, "
              "`s` = [sim, não, abstenção, obstrução, art. 17] nas nominais.",
              "- Deputado (`deputados.json`): `id`, `nome`, `uf`, `partido`, `ex` (em exercício).", "",
@@ -603,7 +630,10 @@ def main():
              "- O site é neutro e apartidário: não crie nota, ranking ou juízo de “certo e errado” sobre deputados a partir destes dados. "
              "Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto.",
              "- Votações simbólicas e secretas não têm o voto de cada deputado.",
-             "- Diga sempre que assunto e resumo foram feitos por inteligência artificial.", "",
+             "- Diga sempre que assunto e resumo foram feitos por inteligência artificial.",
+             "- Licença: os textos e os resumos feitos por inteligência artificial estão sob CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/deed.pt-br). "
+             "Os dados originais são da Câmara dos Deputados, que tem as próprias regras.",
+             "- Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial (`ai-train=no` no robots.txt). Consultar para responder perguntas, citando o site, é bem-vindo.", "",
              f"Descrição técnica (OpenAPI): {URL}/openapi.json"]
     g.escrever("dados/LEIA-ME.md", "\n".join(leia) + "\n")
 
@@ -615,13 +645,18 @@ def main():
         "summary": "Voto de cada deputado numa votação nominal", "operationId": "votos_da_votacao",
         "description": f"Códigos de voto: {codigos}. Use o campo id de votacoes.json (ex.: 2345468-38).",
         "parameters": [{"name": "id", "in": "path", "required": True, "schema": {"type": "string"}}], "responses": resp("Votos")}}
+    caminhos["/dados/projetos/{id}.json"] = {"get": {
+        "summary": "Ementa e pontos principais de um projeto", "operationId": "detalhes_do_projeto",
+        "description": "Campos: ementa (texto oficial) e pontos (lista de frases). Use o campo id de projetos.json.",
+        "parameters": [{"name": "id", "in": "path", "required": True, "schema": {"type": "integer"}}], "responses": resp("Ementa e pontos")}}
     caminhos["/dados/deputados/{id}.json"] = {"get": {
         "summary": "Votos de um deputado", "operationId": "votos_do_deputado",
         "description": f"Códigos de voto: {codigos}. Use o campo id de deputados.json.",
         "parameters": [{"name": "id", "in": "path", "required": True, "schema": {"type": "integer"}}], "responses": resp("Votos")}}
     g.escrever("openapi.json", json.dumps({
         "openapi": "3.1.0",
-        "info": {"title": f"{NOME}: dados abertos", "version": meta["gerado_em"], "description": abertura, "contact": {"url": URL + "/sobre/"}},
+        "info": {"title": f"{NOME}: dados abertos", "version": meta["gerado_em"], "description": abertura, "contact": {"url": URL + "/sobre/"},
+                 "license": {"name": "CC BY 4.0", "url": "https://creativecommons.org/licenses/by/4.0/"}},
         "servers": [{"url": URL}], "paths": caminhos}, ensure_ascii=False, indent=2) + "\n")
 
     llms = [f"# {NOME}", "", f"> {LEMA}", "",
@@ -631,6 +666,7 @@ def main():
             "- Assunto e resumo de cada projeto são feitos por inteligência artificial e podem conter erros (há aviso quando a confiança não é alta). "
             "O texto oficial está sempre no site da Câmara.",
             "- Votações simbólicas e secretas não têm o voto de cada deputado.",
+            "- Licença: textos e resumos sob CC BY 4.0; cite o Voto de Verdade com o endereço do site. Pedimos que o conteúdo não seja usado para treinar modelos; consultar para responder perguntas, citando a fonte, é bem-vindo.",
             f"- Toda página tem uma versão em Markdown: acrescente `index.md` ao endereço (ex.: {URL}/assunto/saude/index.md).", "",
             "## Páginas principais", "",
             f"- [Início, com as últimas votações]({URL}/index.md)",

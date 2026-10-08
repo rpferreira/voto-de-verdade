@@ -94,6 +94,15 @@ def envenenar(site):
             x["desc"] = (x.get("desc") or "") + HTML + SCRIPT
 
     mexer("projetos.json", projetos)
+    # ementa e pontos principais ficam num arquivo por projeto: envenena esses também
+    for x in json.load(open(os.path.join(site, "dados", "projetos.json"), encoding="utf-8"))[:40]:
+        caminho = os.path.join(site, "dados", "projetos", f"{x['id']}.json")
+        with open(caminho, encoding="utf-8") as f:
+            det = json.load(f)
+        det["ementa"] = (det.get("ementa") or "") + HTML + SCRIPT
+        det["pontos"] = list(det.get("pontos") or []) + [HTML + SCRIPT, "javascript:window.__pwn=4"]
+        with open(caminho, "w", encoding="utf-8") as f:
+            json.dump(det, f, ensure_ascii=False)
     mexer("deputados.json", deputados)
     mexer("assuntos.json", assuntos)
     mexer("votacoes.json", votacoes)
