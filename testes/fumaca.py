@@ -7,7 +7,8 @@ Uso (depois de gerar o site com site/gerar_paginas.py --saida _site):
 
 Confere: início (assuntos, últimas votações, busca), assunto, projeto com o voto de cada deputado (o placar
 filtra a lista), deputado, deputados por estado, páginas
-prontas (título, prévia de compartilhamento), tela estreita sem rolagem para o lado e modo escuro.
+prontas (título, prévia de compartilhamento), buscadores e agentes de IA (conteúdo sem JavaScript, dados estruturados,
+llms.txt, ferramentas WebMCP), tela estreita sem rolagem para o lado e modo escuro.
 Sai com código 1 se algo falhar.
 """
 import functools
@@ -160,6 +161,34 @@ with sync_playwright() as p:
     confere(pg.evaluate("getComputedStyle(document.body).backgroundColor").startswith("rgb(11, 16, 24)"), "escolha continua depois de recarregar")
     pg.locator(".tema:visible").first.click()
     confere(pg.evaluate("getComputedStyle(document.body).backgroundColor").startswith("rgb(245, 246, 250)"), "botão volta ao modo claro")
+
+    print("Buscadores e agentes de IA")
+    sem_js = navegador.new_context(java_script_enabled=False).new_page()
+    sem_js.goto(base + "/")
+    confere(sem_js.locator("h1").inner_text().startswith("Como a Câmara votou"), "início tem conteúdo sem JavaScript")
+    confere(sem_js.locator('a[href^="assunto/"]').count() == len(assuntos), "início sem JavaScript leva a todos os assuntos")
+    sem_js.goto(f"{base}/projeto/{com_voto['id']}/")
+    confere(sem_js.locator("h1").inner_text().strip() != "" and sem_js.locator('a[href*="deputado/"]').count() > 100,
+            "projeto sem JavaScript lista os deputados com link")
+    for rota in ["/", f"/projeto/{com_voto['id']}/", f"/deputado/{dep['id']}/", f"/assunto/{assuntos[0]['slug']}/", "/deputados/", "/sobre/"]:
+        sem_js.goto(base + rota)
+        blocos = sem_js.locator('script[type="application/ld+json"]').all_inner_texts()
+        try:
+            ok = bool(blocos) and all(json.loads(b) for b in blocos)
+        except ValueError:
+            ok = False
+        confere(ok, f"dados estruturados válidos em {rota}")
+    for arq in ["llms.txt", "openapi.json", "robots.txt", "sitemap.xml", "dados/LEIA-ME.md", "index.md", f"projeto/{com_voto['id']}/index.md"]:
+        r = sem_js.request.get(f"{base}/{arq}")
+        confere(r.ok and len(r.text()) > 50, f"{arq} existe")
+    confere("Content-Signal" in sem_js.request.get(base + "/robots.txt").text(), "robots.txt libera busca e uso por agentes")
+    confere(json.loads(sem_js.request.get(base + "/openapi.json").text())["openapi"].startswith("3."), "openapi.json válido")
+    pg = nova()
+    pg.add_init_script("window.__ferr=[]; document.modelContext={registerTool(t){window.__ferr.push(t.name);return Promise.resolve()}};")
+    pg.goto(base + "/")
+    pg.wait_for_selector(".tiles", timeout=15000)
+    nomes = pg.evaluate("window.__ferr")
+    confere(set(nomes) == {"listar_assuntos", "buscar_projetos", "votos_do_projeto", "buscar_deputado", "votos_do_deputado"}, f"ferramentas WebMCP registradas {nomes}")
 
     navegador.close()
 servidor.shutdown()
