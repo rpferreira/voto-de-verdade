@@ -188,8 +188,8 @@ rotina faz pausas entre as consultas para não ser bloqueada. Nos dias seguintes
 
 ## Limitações conhecidas
 
-- **Sem revisão humana.** A rede de segurança são os avisos de confiança e um canal de "Reportar erro", que
-  ainda precisa de um responsável para receber e tratar os relatos.
+- **Sem revisão humana.** A rede de segurança são os avisos de confiança. Um canal de "Reportar erro" está no
+  backlog, com baixa prioridade, e o site não tem esse botão por enquanto.
 - **Resumos por IA.** Podem conter erros. A confiança e a conferência automática reduzem o risco, mas não o eliminam.
   Os 13 assuntos são fixos. Em testes com 59 projetos, "Outros" ficou com 13 de 40 no começo, e todos eram regras
   internas do Congresso, servidores, acordos internacionais, datas e homenagens. Por isso existem os assuntos
