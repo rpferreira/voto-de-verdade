@@ -34,7 +34,7 @@ import threading
 import time
 import unicodedata
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date
+from datetime import date, datetime
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -495,6 +495,26 @@ class Contas:
         return total
 
 
+def registrar_custo(caminho, gasto, contas, estado, sem_saldo):
+    """Guarda quanto cada execução gastou (e se acabou o saldo), para o monitoramento acompanhar."""
+    try:
+        with open(caminho, encoding="utf-8") as f:
+            historico = json.load(f)
+    except (OSError, ValueError):
+        historico = []
+    historico.append({
+        "data": datetime.now().isoformat(timespec="seconds"),
+        "usd": round(gasto, 4),
+        "tokens": {m: list(t) for m, t in contas.tokens.items()},
+        "feitos": estado["feitos"],
+        "erros": len(estado["erros"]),
+        "sem_saldo": sem_saldo,
+    })
+    with open(caminho, "w", encoding="utf-8") as f:
+        json.dump(historico[-400:], f, ensure_ascii=False, indent=1)
+        f.write("\n")
+
+
 # ---------------------------------------------------------------- principal
 
 def carregar_projetos(banco, cache):
@@ -562,6 +582,7 @@ def main():
     ap.add_argument("--banco", default="dados/voto_de_verdade.db")
     ap.add_argument("--cache", default="dados/cache_v5.json")
     ap.add_argument("--resumos", default="dados/resumos.json")
+    ap.add_argument("--custo", default="dados/custo.json", help="histórico de gasto de cada execução (lido pelo monitoramento)")
     ap.add_argument("--limite", type=int, default=300, help="máximo de projetos nesta execução")
     ap.add_argument("--tempo-max", type=float, default=80, help="minutos; depois disso não começa projetos novos")
     ap.add_argument("--paralelo", type=int, default=6, help="projetos ao mesmo tempo")
@@ -646,6 +667,8 @@ def main():
         print(f"   projeto {pid}: {msg}")
     gasto = contas.custo()
     print(f"Gasto estimado nesta execução: US$ {gasto:.2f} (tokens: {contas.tokens}).")
+    sem_saldo = bool(estado["fatal"]) and "saldo de créditos" in estado["fatal"]
+    registrar_custo(args.custo, gasto, contas, estado, sem_saldo)
     for nome, campo in (("assunto", "confianca_assunto"), ("resumo", "confianca_resumo")):
         cont = {}
         for r in resumos.values():

@@ -155,9 +155,12 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `coleta/coletar_votacoes.py` | Coleta e classifica as votações |
 | `coleta/construir_banco.py` | Monta o banco SQLite |
 | `coleta/resumir_projetos.py` | Assunto e resumo por IA, com confiança |
+| `coleta/monitorar.py` | Monitoramento: confere custo, dados e site no ar, e abre alerta na aba Issues |
 | `coleta/guardar_no_repositorio.sh` | Guarda arquivos da rotina no repositório, repetindo se alguém mexeu nele |
 | `dados/cache_v5.json` | Tudo o que veio da API (a base do banco) |
 | `dados/resumos.json` | Assunto e resumo de cada projeto, com confiança (escrito pela IA) |
+| `dados/custo.json` | Quanto cada rodada de resumos gastou com a IA (escrito pela rotina) |
+| `dados/monitor.json` | Histórico das conferências do monitoramento (escrito pela rotina) |
 | `site/` | O site (`index.html`, `estilos.css`, `app.js`, fontes, `og.png`) |
 | `site/exportar_dados.py` | Passa o banco para os JSON que o site lê (`site/dados/`) |
 | `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404 |
@@ -167,6 +170,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `docs/espacamento.md` | As regras de espaçamento: escala, papéis e padrões |
 | `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, dados do site, fotos e publicação |
 | `.github/workflows/publicar-site.yml` | Põe o site no ar (depois da rotina diária e a cada mudança em `site/`) |
+| `.github/workflows/vigiar-site.yml` | Todo dia à noite, confere se o site está no ar e com dados recentes |
 | `.github/workflows/testar-site.yml` | Testa o site em cada pull request |
 
 ## Rodar a rotina
@@ -194,9 +198,45 @@ python3 coleta/construir_banco.py                  # monta dados/voto_de_verdade
 Para um teste rápido, use `--desde 2026-06-01`. A primeira coleta completa leva de 30 a 50 minutos, porque a
 rotina faz pausas entre as consultas para não ser bloqueada. Nos dias seguintes leva poucos minutos.
 
+## Monitoramento
+
+Ninguém precisa abrir o GitHub para saber se está tudo bem: o que sai do normal chega por e-mail.
+
+**Quando.** No fim de cada atualização diária (job `monitorar`) e, separado, uma vez por dia às 18h30 de
+Brasília (workflow `Vigiar o site`, que só olha o site no ar).
+
+**O que confere** (`coleta/monitorar.py`):
+
+| Área | Vira erro (alerta) quando | Vira só aviso quando |
+| --- | --- | --- |
+| Execução | a atualização ou a publicação terminaram com falha | |
+| Dados | não foram gerados hoje; o número de votações, projetos, deputados ou votos **diminuiu**; algum voto, votação ou projeto aponta para algo que não existe; a coleta registrou problemas; a parte de projetos com aviso de incerteza saltou mais de 5 pontos de um dia para o outro | faz mais de 45 dias sem votação; mais de 50 projetos sem resumo; mais de 25% com aviso de incerteza |
+| Custo da IA | a rodada gastou mais de US$ 5; o mês passou de US$ 30; o saldo de créditos acabou | o mês passou de 70% do limite; projetos deram erro na rodada |
+| Site no ar | a página inicial, os dados, o mapa do site, uma página de projeto ou uma de deputado não abrem; os dados no ar são mais velhos que os de hoje | |
+
+**Como avisa.** Um erro deixa a execução vermelha (o GitHub manda e-mail) e abre um alerta na aba
+**Issues**, com o marcador `monitoramento` e a lista do que falhou. Se os problemas mudam, o alerta é
+atualizado; quando tudo volta ao normal, ele se fecha sozinho. Avisos ficam só no relatório da execução
+(aba Actions, resumo da execução).
+
+**Para receber o e-mail.** Em GitHub, Settings, Notifications, marque as notificações de **Actions**
+("Failed workflows only" basta) e deixe ligado o aviso por e-mail.
+
+**Mudar os limites.** Em Settings, Secrets and variables, Actions, aba **Variables**, crie
+`LIMITE_CUSTO_RODADA`, `LIMITE_CUSTO_MES`, `LIMITE_PENDENTES`, `DIAS_SEM_VOTACAO` ou `LIMITE_INCERTOS`.
+Sem elas valem os números da tabela.
+
+**Histórico.** `dados/monitor.json` guarda o resultado de cada dia (as contagens também servem de base para
+perceber se algo diminuiu) e `dados/custo.json`, o gasto de cada rodada de resumos. Como esses arquivos mudam
+todo dia, o repositório nunca fica parado, o que também impede o GitHub de desligar as rotinas agendadas
+depois de 60 dias sem atividade.
+
+**No computador.** `python coleta/monitorar.py` confere os arquivos; com `--site https://usuario.github.io/repositorio`,
+confere também o site no ar.
+
 ## Como saber se deu certo
 
-- A execução fica verde na aba Actions. Se ficar vermelha, o log do passo **Coletar os dados da Câmara**
+- A execução fica verde na aba Actions (inclusive o job **monitorar**, veja a seção Monitoramento). Se ficar vermelha, o log do passo **Coletar os dados da Câmara**
   diz o que falhou, e a rodada seguinte tenta de novo o que faltou.
 - No fim do passo **Construir o banco de dados**, o log mostra:
   - quantas votações há por tipo (nominal, simbólica, secreta);

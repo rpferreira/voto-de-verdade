@@ -1,0 +1,36 @@
+name: Vigiar o site
+
+# Uma vez por dia, em outro horário da atualização, confere se o site está no ar e com dados recentes.
+# Pega o que a conferência da atualização diária não vê: o site cair no meio do dia, ou a atualização
+# nem ter rodado. Se achar problema, a execução fica vermelha (o GitHub avisa por e-mail) e abre um
+# alerta na aba Issues, que fecha sozinho quando o site volta.
+on:
+  schedule:
+    - cron: "30 21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  vigiar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar o Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Conferir o site no ar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python coleta/monitorar.py --apenas-site --espera 0 \
+            --site "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" \
+            --execucao-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --titulo "Alerta: o site está fora do ar ou desatualizado" --alerta
