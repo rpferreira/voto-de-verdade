@@ -1,0 +1,12 @@
+# Mantém as versões fixas (das ações do GitHub e do programa de teste) em dia:
+# o Dependabot abre um pull request quando sai versão nova, e os testes rodam nele.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/testes"
+    schedule:
+      interval: "weekly"

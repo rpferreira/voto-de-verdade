@@ -3,7 +3,7 @@
    Endereços (hash): #/   #/assunto/<slug>?q=...&todos=1   #/projeto/<id>?votacao=<id>&q=...&pt=PT&uf=GO&v=S
    #/deputados?q=...&pt=PT&uf=GO   #/deputado/<id>?q=...&a=<assunto>&v=S   #/sobre
    As páginas prontas (projeto/<id>/, deputado/<id>/, assunto/<slug>/) são feitas por site/gerar_paginas.py,
-   com título e prévia próprios para Google e WhatsApp; elas abrem o mesmo aplicativo (window.ROTA_INICIAL).
+   com título e prévia próprios para Google e WhatsApp; elas abrem o mesmo aplicativo (rota inicial no bloco de configuração).
    Os filtros ficam no endereço para poder compartilhar. */
 (function () {
   "use strict";
@@ -28,7 +28,9 @@
   const principal = document.getElementById("conteudo");
   const memoria = {};
   const POR_PAGINA = 30;
-  const RAIZ = window.RAIZ || "";
+  // Configuração da página (raiz relativa, rota inicial e doação): vem num bloco de dados, não em script embutido.
+  const CONFIG = (() => { try { return JSON.parse(document.getElementById("config").textContent) || {}; } catch (e) { return {}; } })();
+  const RAIZ = CONFIG.raiz || "";
 
   // ------------------------------------------------------------------ utilidades
   async function dados(nome) {
@@ -61,13 +63,18 @@
     return el;
   }
 
+  // Endereço com "%" malformado (por exemplo #/assunto/%) não pode derrubar o roteador: vira "não encontrado".
+  const decodificar = (t) => { try { return decodeURIComponent(t); } catch (e) { return t; } };
+  // Só aceitamos link https que venha dos dados; qualquer outro esquema (javascript:, data:…) é ignorado.
+  const soHttps = (u) => (typeof u === "string" && /^https:\/\//i.test(u) ? u : null);
+
   function lerRota() {
     const hash = location.hash;
     let bruto = hash.replace(/^#\/?/, "");
     // Nas páginas prontas (projeto/123/) o endereço não tem "#": a rota vem da própria página.
-    if (!hash && window.ROTA_INICIAL) bruto = window.ROTA_INICIAL;
+    if (!hash && CONFIG.rota) bruto = CONFIG.rota;
     const [caminho, consulta = ""] = bruto.split("?");
-    return { partes: caminho.split("/").filter(Boolean).map(decodeURIComponent), p: new URLSearchParams(consulta) };
+    return { partes: caminho.split("/").filter(Boolean).map(decodificar), p: new URLSearchParams(consulta) };
   }
 
   function gravarEndereco(caminho, params) {
@@ -270,7 +277,7 @@
         : null,
       pontos: pr.pontos && pr.pontos.length ? h("div", {}, h("h3", {}, "Pontos principais"), h("ul", {}, pr.pontos.map((x) => h("li", {}, x)))) : null,
       oficial: h("div", {}, h("h3", {}, `Texto oficial (${pr.nome})`), h("p", { class: "oficial" }, pr.ementa || "Sem ementa."),
-        pr.texto ? h("p", {}, h("a", { href: pr.texto, target: "_blank", rel: "noopener noreferrer" }, "Ler o texto completo no site da Câmara")) : null),
+        soHttps(pr.texto) ? h("p", {}, h("a", { href: soHttps(pr.texto), target: "_blank", rel: "noopener noreferrer" }, "Ler o texto completo no site da Câmara")) : null),
     };
   }
 
@@ -753,11 +760,10 @@
   }
 
   // ------------------------------------------------------------------ deputados (busca) e página do deputado
-  const CAMARA_FOTO = (id) => `https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg`;
-  // A foto fica guardada aqui (fotos/<id>.jpg); se ainda não estiver, tenta a da Câmara; se não houver, some.
+  // A foto fica guardada aqui (fotos/<id>.jpg). Se faltar, some: o navegador de quem visita nunca fala com outro endereço.
   const fotoDeputado = (id) => h("img", {
     class: "foto-dep", src: `${RAIZ}fotos/${id}.jpg`, alt: "", width: "100", height: "133", loading: "lazy", referrerpolicy: "no-referrer",
-    onerror: (e) => { const img = e.target; if (img.dataset.tentou) img.remove(); else { img.dataset.tentou = "1"; img.src = CAMARA_FOTO(id); } },
+    onerror: (e) => e.target.remove(),
   });
 
   async function telaDeputados(p) {
@@ -973,7 +979,7 @@
       h("h1", { id: "titulo-apoie", tabindex: "-1" }, "Apoie o Voto de Verdade"),
       h("p", {}, "O Voto de Verdade é gratuito e não tem anúncios. Se ele foi útil para você, pode fazer uma doação única, no valor que quiser. Não é assinatura: não há cobrança recorrente."),
       h("p", { class: "apoie__acao" },
-        h("a", { class: "botao", href: window.DOACAO, rel: "noopener noreferrer" }, "Fazer uma doação")),
+        h("a", { class: "botao", href: soHttps(CONFIG.doacao), rel: "noopener noreferrer" }, "Fazer uma doação")),
       h("p", { class: "nota" }, "Você vai para o serviço de pagamento, que processa a doação. O Voto de Verdade não vê nem guarda os dados do seu pagamento."),
       h("h2", {}, "O que a doação não muda"),
       h("p", {}, "O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos."),
@@ -1016,7 +1022,7 @@
       else if (partes[0] === "projeto" && partes[1]) titulo = await telaProjeto(partes[1], p);
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
       else if (partes[0] === "sobre") titulo = await telaSobre();
-      else if (partes[0] === "apoie" && window.DOACAO) titulo = telaApoie();
+      else if (partes[0] === "apoie" && soHttps(CONFIG.doacao)) titulo = telaApoie();
       else if (partes[0] === "deputados") titulo = await telaDeputados(p);
       else if (partes[0] === "deputado" && partes[1]) titulo = await telaDeputado(partes[1], p);
       else titulo = telaNaoEncontrada();

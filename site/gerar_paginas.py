@@ -76,6 +76,11 @@ def contagem_assunto(a):
     return f'{proj(ni)} com voto de cada deputado ({a["n"]} no total)'
 
 
+def so_https(url):
+    """Só deixa passar link https (nunca javascript:, data: etc.), mesmo que venha dos dados."""
+    return url if isinstance(url, str) and url.lower().startswith("https://") else ""
+
+
 def jsonld(obj):
     """<script> de dados estruturados (schema.org)."""
     return ('<script type="application/ld+json">'
@@ -186,12 +191,15 @@ class Gerador:
             ('href="fontes/', f'href="{raiz}fontes/'),
             ('href="estilos.css"', f'href="{raiz}estilos.css"'),
             ('src="app.js"', f'src="{raiz}app.js"'),
+            ('src="tema.js"', f'src="{raiz}tema.js"'),
             ('class="marca" href="#/"', f'class="marca" href="{raiz or "./"}"'),
             ('id="nav-assuntos" href="#/"', f'id="nav-assuntos" href="{raiz or "./"}"'),
             ('id="nav-deputados" href="#/deputados"', f'id="nav-deputados" href="{raiz}deputados/"'),
             ('<a href="#/sobre">', f'<a href="{raiz}sobre/">'),
-            ('<script>window.RAIZ = "";</script>',
-             f'<script>window.RAIZ = {json.dumps(raiz)}; window.ROTA_INICIAL = {json.dumps(rota)}; window.DOACAO = {json.dumps(self.doacao)};</script>'),
+            ('<script type="application/json" id="config">{"raiz":""}</script>',
+             '<script type="application/json" id="config">'
+             + json.dumps({"raiz": raiz, "rota": rota, "doacao": self.doacao}, ensure_ascii=False).replace("</", "<\\/")
+             + "</script>"),
         ]
         for velho, novo in trocas:
             if velho not in pagina:
@@ -259,7 +267,7 @@ def main():
     except FileNotFoundError:
         config = {}
     doacao = config.get("doacao") or {}
-    g = Gerador(modelo, URL, args.saida, doacao.get("url", ""))
+    g = Gerador(modelo, URL, args.saida, so_https(doacao.get("url")))
     nome_assunto = {a["slug"]: a["nome"] for a in assuntos}
     nome_dep = {d["id"]: d for d in deputados}
     por_projeto = {}
@@ -327,7 +335,7 @@ def main():
             + "".join(f'<p class="nota">{esc(a)}</p>' for a in avisos)
             + f'<section class="bloco"><h2>Como cada deputado votou</h2><p class="nota">{esc(votos)}</p>{grupos_html}</section>'
             f'<p class="nota">Assunto: <a href="{raiz}assunto/{pr["a"]}/">{esc(assunto)}</a>. {esc(fonte_aviso)}</p>'
-            + (f'<p><a href="{esc(pr["texto"])}" rel="noopener noreferrer">Texto completo no site da Câmara</a></p>' if pr.get("texto") else "")
+            + (f'<p><a href="{esc(so_https(pr.get("texto")))}" rel="noopener noreferrer">Texto completo no site da Câmara</a></p>' if so_https(pr.get("texto")) else "")
             + "</div>")
 
         md = [f"# {pr['titulo']}", "",
@@ -491,7 +499,7 @@ def main():
                            "url": f"{URL}/sobre/", "inLanguage": "pt-BR"})
 
     # ---- apoie (só quando há um link de doação em site/config.json)
-    if doacao.get("url"):
+    if so_https(doacao.get("url")):
         g.montar("apoie", "apoie", f"Apoie o {NOME}",
                  "Faça uma doação única, sem assinatura, para manter o Voto de Verdade no ar. Doar não muda o que o site mostra: sem nota e sem ranking.",
                  '<div class="miolo texto-longo"><h1>Apoie o Voto de Verdade</h1>'
