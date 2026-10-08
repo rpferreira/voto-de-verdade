@@ -17,6 +17,7 @@ o papel, não um número. Quanto mais distante o parentesco, maior o espaço.
 | `--margem` | 16, 32 (≥ 40rem) | Lateral da página | |
 | `--calha` | 32, 48 (≥ 56rem) | Entre colunas | |
 | `--recuo-icone` | 56 | Uso único | Texto da busca, para caber a lupa |
+| `--recuo-seta` | 48 | Uso único | Texto das listas suspensas, para caber a seta |
 | `--topo-fixo` | 80 | Uso único | Margem de rolagem sob o cabeçalho fixo |
 
 Os papéis apontam para a **escala** (`--e-meio` 4, `--e-1` 8, `--e-2` 16 … `--e-10` 80), que fica só em `:root`.
