@@ -1,0 +1,22 @@
+{
+ "historico": [
+  {
+   "data": "2026-10-08",
+   "contagens": {
+    "votacoes": 941,
+    "projetos": 902,
+    "deputados": 644,
+    "nominais": 215,
+    "votos": 89688
+   },
+   "pendentes": 1,
+   "pct_incertos": 11.5,
+   "gerado_em": "2026-10-08",
+   "custo_mes_usd": 0.0,
+   "erros": [],
+   "avisos": [
+    "Coleta: 1 projetos sem busca única (veja o relatório)."
+   ]
+  }
+ ]
+}
