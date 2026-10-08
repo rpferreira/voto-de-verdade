@@ -829,7 +829,7 @@
           h("h1", { id: "titulo-deputado", tabindex: "-1" }, dep.nome),
           h("p", { class: "cabeca-dep__sub" }, partidoAgora, dep.ex ? "" : " · não está em exercício agora"),
           historico ? h("p", { class: "nota" }, historico) : null,
-          h("p", { class: "cabeca-projeto__acoes", style: "margin-top:.75rem" }, botaoCompartilhar("deputado/" + dep.id, `${dep.nome}: Voto de Verdade`)))),
+          h("p", { class: "cabeca-projeto__acoes", style: "margin-top:1rem" }, botaoCompartilhar("deputado/" + dep.id, `${dep.nome}: Voto de Verdade`)))),
       temVotos
         ? h("section", { "aria-labelledby": "resumo-dep" },
             h("h2", { id: "resumo-dep" }, "Votos registrados"),
