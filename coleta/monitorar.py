@@ -150,6 +150,11 @@ def checar_dados(rel, raiz, hoje, anterior, args):
         problemas.append(f"{len(sem_projeto)} votações apontam para um projeto que não existe (ex.: {', '.join(map(str, sem_projeto[:3]))})")
     if sem_arquivo:
         problemas.append(f"{len(sem_arquivo)} votações nominais sem o arquivo de votos (ex.: {', '.join(sem_arquivo[:3])})")
+    pasta_proj = os.path.join(dados, "projetos")
+    arquivos_proj = set(os.listdir(pasta_proj)) if os.path.isdir(pasta_proj) else set()
+    sem_detalhe = [p["id"] for p in projetos if f"{p['id']}.json" not in arquivos_proj]
+    if sem_detalhe:
+        problemas.append(f"{len(sem_detalhe)} projetos sem o arquivo de ementa e pontos principais (ex.: {', '.join(map(str, sem_detalhe[:3]))})")
     if codigos_ruins:
         problemas.append(f"{codigos_ruins} votos com código desconhecido")
     if dep_desconhecido:

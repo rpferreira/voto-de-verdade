@@ -113,9 +113,15 @@ with sync_playwright() as p:
     pg = nova()
     pg.goto(f"{base}/projeto/{com_voto['id']}/")
     pg.wait_for_selector(".deputados li", timeout=15000)
-    confere(" | Voto de Verdade" in pg.title(), "título próprio da página do projeto")
+    confere(com_voto["nome"] in pg.title() and len(pg.title()) <= 62, "título próprio da página do projeto (com o número do projeto, até ~60 caracteres)")
     confere(pg.locator('meta[property="og:image"]').get_attribute("content").endswith("/og.png"), "prévia de compartilhamento")
     confere(pg.locator("h1").inner_text().strip() != "", "página do projeto abre com a tela completa")
+    with open(os.path.join(pasta, "dados", "projetos", f"{com_voto['id']}.json"), encoding="utf-8") as f:
+        detalhe = json.load(f)
+    pg.wait_for_selector(".oficial", state="attached", timeout=15000)
+    confere(" ".join(pg.locator(".oficial").first.text_content().split()) == detalhe["ementa"], "ementa do projeto vem do arquivo próprio (projetos/<id>.json)")
+    confere(not any(k in projetos[0] for k in ("ementa", "pontos")), "projetos.json (lista) não carrega ementa nem pontos principais")
+    confere(os.path.getsize(os.path.join(pasta, "dados", "projetos.json")) < 900_000, "projetos.json abaixo de 900 KB")
     dep = deputados[0]
     pg.goto(f"{base}/deputado/{dep['id']}/")
     pg.wait_for_selector(".cabeca-dep h1", timeout=15000)

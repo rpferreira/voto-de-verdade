@@ -7,7 +7,8 @@ Uso (na raiz do repositório):
 
 Só usa a biblioteca padrão do Python. Arquivos gerados:
     assuntos.json   os assuntos, com contagens (tela inicial)
-    projetos.json   um registro enxuto por projeto (busca e página do assunto)
+    projetos.json   um registro enxuto por projeto (busca e página do assunto), sem a ementa e os pontos principais
+    projetos/<id>.json   a ementa (texto oficial) e os pontos principais de um projeto (página do projeto)
     meta.json       totais e período dos dados (rodapé e textos de ajuda)
     votacoes.json   uma linha por votação (lista de votações de cada projeto e tela de votação)
     deputados.json  nome, partido e estado de cada deputado
@@ -122,6 +123,7 @@ def main():
         v["ultima"], v["aprovada"], v["tipo"] = r["data"], bool(r["aprovacao"]), r["tipo_votacao"]
 
     projetos = []
+    detalhes = {}  # id do projeto -> ementa e pontos principais (arquivo próprio, para a lista ficar leve)
     for r in con.execute("SELECT * FROM projetos WHERE assunto IS NOT NULL ORDER BY id"):
         v = vot.get(r["id"])
         if not v:
@@ -133,7 +135,6 @@ def main():
             "nome": f'{r["tipo"]} {r["numero"]}/{r["ano"]}',
             "titulo": primeira_frase(resumo or r["ementa"]),
             "resumo": resumo,
-            "ementa": " ".join((r["ementa"] or "").split()),
             "texto": r["url_texto_integral"],
             "a": slugs.get(r["assunto"]),
             "s": slugs.get(r["assunto_secundario"]),
@@ -142,7 +143,6 @@ def main():
             "cr": r["confianca_resumo"],
             "ar": ia,
             "subst": subst,
-            "pontos": carregar_json_texto(r["pontos_chave"]),
             "tags": carregar_json_texto(r["tags"]),
             "n": v["n"],
             "ind": v["ind"],
@@ -150,6 +150,7 @@ def main():
             "aprovada": v["aprovada"],
             "tipo": v["tipo"],
         })
+        detalhes[r["id"]] = {"ementa": " ".join((r["ementa"] or "").split()), "pontos": carregar_json_texto(r["pontos_chave"])}
     projetos.sort(key=lambda p: (p["ultima"] or "", p["id"]), reverse=True)
 
     assuntos = []
@@ -254,9 +255,18 @@ def main():
 
     gravar("assuntos.json", assuntos)
     gravar("projetos.json", projetos)
+    pasta_proj = os.path.join(args.saida, "projetos")
+    os.makedirs(pasta_proj, exist_ok=True)
+    for antigo in os.listdir(pasta_proj):
+        if antigo.endswith(".json"):
+            os.remove(os.path.join(pasta_proj, antigo))
+    for p in projetos:
+        with open(os.path.join(pasta_proj, f"{p['id']}.json"), "w", encoding="utf-8") as f:
+            json.dump(detalhes[p["id"]], f, ensure_ascii=False, separators=(",", ":"))
     gravar("meta.json", meta)
     gravar("votacoes.json", votacoes)
     gravar("deputados.json", deputados)
+    print(f"   {pasta_proj}/: {len(projetos)} arquivos")
     print(f"   {pasta_votos}/: {n_arquivos} arquivos")
     print(f"   {pasta_dep}/: {len(por_dep)} arquivos")
     print(f"Pronto: {len(assuntos)} assuntos, {len(projetos)} projetos, {meta['votacoes']} votações.")
