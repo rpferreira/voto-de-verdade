@@ -239,6 +239,11 @@ def main():
         with open(os.path.join(pasta_dep, f"{did}.json"), "w", encoding="utf-8") as f:
             json.dump({"v": [[vid, codigo] for _, vid, codigo, _ in itens], "pt": partidos},
                       f, ensure_ascii=False, separators=(",", ":"))
+    # deputado sem nenhum voto nominal: arquivo vazio, para a página dele mostrar «sem votos» e não um erro
+    for dep in deputados:
+        if dep["id"] not in por_dep:
+            with open(os.path.join(pasta_dep, f"{dep['id']}.json"), "w", encoding="utf-8") as f:
+                json.dump({"v": [], "pt": []}, f, separators=(",", ":"))
     con.close()
 
     def gravar(nome, dado):

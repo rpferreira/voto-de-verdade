@@ -216,6 +216,7 @@ h3 { font-weight: 500; }
 .tile__desc { color: var(--tinta-suave); font-size: 0.975rem; line-height: 1.5rem; }
 .tile__num { display: flex; align-items: baseline; gap: var(--junto); margin-top: var(--item); font-variant-numeric: tabular-nums; color: var(--tinta-suave); font-size: 0.95rem; }
 .tile__num b { color: var(--tinta); font-size: 1.6rem; font-weight: 500; line-height: 2rem; letter-spacing: -0.02em; }
+.tile__sub { color: var(--tinta-suave); font-size: 0.875rem; line-height: 1.25rem; }
 
 /* ---------- controles ---------- */
 .campo label { display: block; margin-bottom: var(--junto); font-size: 0.95rem; color: var(--tinta-suave); }
@@ -267,8 +268,16 @@ details.ajuda p { margin: var(--perto) 0 0; color: var(--tinta-suave); }
 .botao--leve:hover { background: var(--cobalto-claro); filter: none; }
 .botao--pequeno { min-height: 2.5rem; padding: var(--junto) var(--item); font-size: 0.95rem; }
 .mais { margin-top: var(--grupo); }
-.vazio { margin: var(--item) 0; display: grid; gap: var(--item); justify-items: start; }
-.vazio p { margin: 0; }
+.vazio { margin: var(--item) 0; padding: var(--item); display: grid; grid-template-columns: 3rem minmax(0, 1fr); column-gap: var(--item); align-items: start; max-width: 44rem; background: var(--superficie); border-radius: var(--raio); box-shadow: 0 0 0 1px var(--linha); }
+.vazio__icone { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--cobalto-claro); color: var(--cobalto); }
+.vazio__icone .icone { width: 1.5rem; height: 1.5rem; }
+.vazio__corpo { display: grid; gap: var(--perto); justify-items: start; min-width: 0; }
+.vazio__titulo { margin: 0; font-size: 1.25rem; line-height: 1.75rem; font-weight: 500; color: var(--tinta); }
+.vazio__texto { margin: 0; color: var(--tinta-suave); max-width: 60ch; }
+.vazio__acoes { display: flex; flex-wrap: wrap; gap: var(--perto); margin-top: var(--perto); }
+.vazio__acoes .botao { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.vazio--pagina { margin-top: var(--grupo); padding: var(--grupo); }
+@media (max-width: 30rem) { .vazio { grid-template-columns: 1fr; row-gap: var(--item); } }
 
 /* ---------- migalhas e cabeçalhos ---------- */
 .migalhas { padding-top: var(--grupo); font-size: 0.95rem; }
