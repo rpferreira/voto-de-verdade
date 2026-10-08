@@ -51,6 +51,7 @@
   --e-7: 3.5rem;      /* 56 */
   --e-8: 4rem;        /* 64 */
   --e-10: 5rem;       /* 80 */
+  --e-12: 6rem;       /* 96 */
   /* Papéis: é isto que os componentes usam, nunca a escala direto. Quanto mais distante o parentesco, maior o espaço. */
   --junto: var(--e-meio);   /* partes de uma coisa só: rótulo e campo, título e subtítulo de uma linha */
   --perto: var(--e-1);      /* itens do mesmo grupo: ícone e texto, chips, botões lado a lado; título pequeno e seu conteúdo */
@@ -63,7 +64,7 @@
   --calha: var(--e-4);      /* entre colunas (48px a partir de 56rem) */
   /* Papéis de uso único. */
   --recuo-icone: var(--e-7); /* texto da busca, para caber a lupa */
-  --topo-fixo: var(--e-10);  /* margem de rolagem sob o cabeçalho fixo */
+  --topo-fixo: var(--e-12);  /* margem de rolagem sob o cabeçalho fixo (cabe em duas linhas) */
   --recuo-seta: var(--e-6);  /* texto de listas suspensas, para caber a seta */
   --titulo: 470;
   --sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -123,7 +124,7 @@ h3 { font-weight: 500; }
   -webkit-backdrop-filter: saturate(1.4) blur(12px); backdrop-filter: saturate(1.4) blur(12px);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--linha) 70%, transparent);
 }
-.topo__miolo { display: flex; align-items: center; justify-content: space-between; gap: var(--item); padding-block: var(--perto); }
+.topo__miolo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--item); padding-block: var(--perto); }
 .marca { display: inline-flex; align-items: center; gap: var(--perto); color: var(--tinta); text-decoration: none; white-space: nowrap; font-size: 1.2rem; font-weight: 600; line-height: 1.5rem; letter-spacing: -0.02em; }
 .marca svg { width: 2rem; height: auto; color: var(--cobalto); flex: none; }
 .topo__acoes { display: flex; align-items: center; gap: var(--perto); }

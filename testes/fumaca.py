@@ -142,6 +142,13 @@ with sync_playwright() as p:
         confere(sem_rolagem_lateral(pg), f"sem rolagem para o lado em {rota}")
     confere(not pg.erros, "celular sem erros no console " + str(pg.erros))
 
+    print("Reflow a 320 px (WCAG 1.4.10, zoom de 400%)")
+    pg = nova(320)
+    for rota in ["/", f"/#/projeto/{com_voto['id']}", f"/#/deputado/{dep['id']}", "/#/deputados", "/#/assunto/saude", "/#/sobre"]:
+        pg.goto(base + rota)
+        pg.wait_for_timeout(1000)
+        confere(sem_rolagem_lateral(pg), f"sem rolagem para o lado a 320 px em {rota}")
+
     print("Modo escuro")
     pg = nova(1280, "dark")
     pg.goto(base + f"/#/projeto/{com_voto['id']}")
