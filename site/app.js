@@ -8,6 +8,23 @@
 (function () {
   "use strict";
 
+  // Modo escuro: segue o aparelho até a pessoa escolher; a escolha fica só neste navegador.
+  (function () {
+    const botoes = document.querySelectorAll(".tema");
+    if (!botoes.length) return;
+    const sistema = window.matchMedia("(prefers-color-scheme: dark)");
+    const escuro = () => (document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : sistema.matches);
+    const mostrar = () => botoes.forEach((b) => b.setAttribute("aria-pressed", String(escuro())));
+    botoes.forEach((b) => b.addEventListener("click", () => {
+      const novo = escuro() ? "light" : "dark";
+      document.documentElement.dataset.theme = novo;
+      try { localStorage.setItem("tema", novo); } catch (e) { /* sem armazenamento: vale só até recarregar */ }
+      mostrar();
+    }));
+    sistema.addEventListener("change", mostrar);
+    mostrar();
+  })();
+
   const principal = document.getElementById("conteudo");
   const memoria = {};
   const POR_PAGINA = 30;
@@ -394,7 +411,7 @@
       h("h2", {}, "O que significa “presidia a sessão”"),
       h("p", {}, "Quem conduz a sessão só vota em situações previstas no regimento (artigo 17). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não."),
       h("h2", {}, "Quem faz e privacidade"),
-      h("p", {}, "O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita."),
+      h("p", {}, "O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita. Se você escolher o modo escuro, só o seu navegador guarda essa escolha."),
       h("p", {}, h("a", { href: "#/" }, "Voltar ao início"))));
     document.title = "Como o site funciona: Voto de Verdade";
     return document.getElementById("titulo-sobre");

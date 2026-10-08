@@ -149,6 +149,18 @@ with sync_playwright() as p:
     confere(fundo.startswith("rgb(11, 16, 24)"), "fundo escuro no modo escuro")
     confere(not pg.erros, "modo escuro sem erros no console " + str(pg.erros))
 
+    print("Botão de modo escuro")
+    pg = nova(1280, "light")
+    pg.goto(base + "/")
+    pg.wait_for_selector(".tiles", timeout=15000)
+    pg.locator(".tema:visible").first.click()
+    confere(pg.evaluate("getComputedStyle(document.body).backgroundColor").startswith("rgb(11, 16, 24)"), "botão liga o modo escuro")
+    pg.reload()
+    pg.wait_for_selector(".tiles", timeout=15000)
+    confere(pg.evaluate("getComputedStyle(document.body).backgroundColor").startswith("rgb(11, 16, 24)"), "escolha continua depois de recarregar")
+    pg.locator(".tema:visible").first.click()
+    confere(pg.evaluate("getComputedStyle(document.body).backgroundColor").startswith("rgb(245, 246, 250)"), "botão volta ao modo claro")
+
     navegador.close()
 servidor.shutdown()
 print()
