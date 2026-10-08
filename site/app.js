@@ -452,6 +452,8 @@
         h("div", {},
           h("h1", { id: "titulo-assunto", tabindex: "-1" }, a.nome),
           h("p", {}, a.descricao.charAt(0).toUpperCase() + a.descricao.slice(1) + "."))),
+      h("p", { class: "guia-votacao" },
+        h("strong", {}, "Votação simbólica: "), "os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Por isso só os projetos da aba “Com voto de cada deputado” mostram como cada um votou; “Todos os projetos” inclui também os votados de forma simbólica ou secreta."),
       h("div", { class: "abas", role: "group", "aria-label": "Quais projetos mostrar" }, abaInd, abaTodos),
       h("form", { class: "filtros filtros--compacto", role: "search", "aria-label": `Procurar em ${a.nome}`, onsubmit: (e) => e.preventDefault() },
         h("div", { class: "campo" }, h("label", { for: "busca-a" }, "Procurar neste assunto"), campoBusca),
