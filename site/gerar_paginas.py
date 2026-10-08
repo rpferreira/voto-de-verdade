@@ -247,7 +247,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--site", default=os.path.dirname(os.path.abspath(__file__)))
     ap.add_argument("--saida", default="_site")
-    ap.add_argument("--url", default=os.environ.get("SITE_URL", "https://rpferreira.github.io/voto-de-verdade"))
+    ap.add_argument("--url", default=os.environ.get("SITE_URL", "https://votodeverdade.com.br"))
     args = ap.parse_args()
     URL = args.url.rstrip("/")
 

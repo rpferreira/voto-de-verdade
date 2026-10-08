@@ -5,6 +5,15 @@ Mostra ao cidadão como cada deputado federal votou, por assunto e por deputado,
 Os dados vêm da API de Dados Abertos da Câmara dos Deputados. Este repositório guarda a rotina que
 busca esses dados todo dia e monta o banco de dados que alimenta o site.
 
+## Endereço do site
+
+O site fica em **https://votodeverdade.com.br** (domínio registrado no registro.br, publicado pelo GitHub Pages).
+O DNS é configurado no painel do registro.br e o domínio é informado em *Settings → Pages → Custom domain*; como o
+site é publicado por workflow, não existe arquivo `CNAME` no repositório. O endereço antigo
+(`rpferreira.github.io/voto-de-verdade`) redireciona sozinho para o novo. Se o domínio mudar, troque o endereço em
+`site/gerar_paginas.py` (padrão do `--url`), em `site/index.html` e nos dois workflows que passam `--site`
+(`atualizacao-diaria.yml` e `vigiar-site.yml`).
+
 ## Princípios do produto
 
 - **Sem nota e sem ranking.** O site mostra o que cada deputado votou, não quem é "melhor" ou "mais fiel".
