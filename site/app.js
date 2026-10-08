@@ -199,7 +199,7 @@
       placar = h("span", { class: "mini-placar" },
         h("span", { class: "barra-voto", "aria-hidden": "true" },
           ORDEM_VOTO.map((c, i) => (v.s[i] ? h("i", { class: "seg-" + c, style: `width:${(v.s[i] / soma) * 100}%` }) : null))),
-        h("span", {}, `${num(v.s[0])} sim · ${num(v.s[1])} não${outros ? ` · ${num(outros)} outros` : ""}`));
+        h("span", {}, `${num(v.s[0])} sim · ${num(v.s[1])} não${outros ? ` · ${num(outros)} ${outros === 1 ? "outro" : "outros"}` : ""}`));
     }
     const resultado = v ? (v.ap ? "Votação aprovada" : "Votação rejeitada") : (pr.aprovada ? "Votação aprovada" : "Votação rejeitada");
     const sem = !v ? TIPO_SEM[pr.tipo] || TIPO_SEM.simbolica : null;
@@ -300,9 +300,9 @@
 
     principal.replaceChildren(h("div", { class: "miolo" },
       h("section", { class: "heroi", "aria-labelledby": "titulo-inicio" },
-        h("h1", { id: "titulo-inicio", tabindex: "-1" }, "Como a Câmara votou o que importa para você?"),
+        h("h1", { id: "titulo-inicio", tabindex: "-1" }, "Veja como a Câmara votou, assunto por assunto"),
         h("div", { class: "heroi__lado" },
-          h("p", { class: "heroi__texto" }, "Escolha um assunto, veja os projetos votados e o voto de cada deputado federal."),
+          h("p", { class: "heroi__texto" }, "Escolha um tema e leia o que foi votado, com o voto de cada deputado federal."),
           h("form", { class: "heroi__busca", role: "search", "aria-label": "Procurar assunto ou projeto", onsubmit: (e) => e.preventDefault() },
             h("label", { for: "busca", class: "so-leitor" }, "Procure por um tema ou palavra"), campoBusca),
           h("p", { class: "heroi__link" }, "Já sabe quem? ", h("a", { href: "#/deputados" }, "Procure um deputado pelo nome")))),
@@ -577,7 +577,7 @@
           h("div", { class: "painel-placar" },
             placar,
             h("p", { class: "nota" }, `${plural(nTotal, "deputado registrou", "deputados registraram")} voto; quem faltou não aparece. Toque em um número para ver só esses deputados.`),
-            total.P ? h("p", { class: "nota" }, "“Presidia a sessão”: quem conduz a sessão só vota em casos especiais, e isso aparece assim.") : null)),
+            total.P ? h("p", { class: "nota" }, "“Presidia a sessão”: quem conduz a sessão só vota em casos especiais. Nesses casos o registro aparece assim, e não como sim ou não.") : null)),
         opc.descricao || null,
         h("div", { class: "bloco" }, filtros, estadoTxt, lista, maisBox, ajudaVotos));
 
@@ -715,7 +715,7 @@
     principal.replaceChildren(h("div", { class: "miolo" },
       h("section", { class: "abertura", "aria-labelledby": "titulo-deputados" },
         h("h1", { id: "titulo-deputados", tabindex: "-1" }, "Procure um deputado federal"),
-        h("p", { class: "abertura__texto" }, "Veja como cada um votou nas votações em que o voto de cada deputado foi registrado. Sem nota e sem ranking.")),
+        h("p", { class: "abertura__texto" }, "Veja como cada deputado votou nas votações nominais, as únicas em que o voto de cada um fica registrado. Sem nota e sem ranking.")),
       h("form", { class: "filtros", role: "search", "aria-label": "Procurar deputado", onsubmit: (e) => e.preventDefault() },
         h("div", {}, h("p", { class: "rotulo", id: "rotulo-uf" }, "Deputados do seu estado"), h("ul", { class: "chips-uf", "aria-labelledby": "rotulo-uf" }, chips)),
         h("div", { class: "filtros__linha" },
@@ -813,7 +813,7 @@
             h("h2", { id: "resumo-dep" }, "Votos registrados"),
             placar,
             h("p", { class: "nota" }, `${plural(votos.length, "votação nominal", "votações nominais")} com voto registrado, de ${data(meta.de)} a ${data(meta.ate)}. Votações simbólicas e votações em que o deputado faltou não aparecem. Toque em um número para ver só aquele voto.`),
-            total.P ? h("p", { class: "nota" }, "“Presidia a sessão”: quem conduz a sessão só vota em casos especiais, por isso o voto aparece assim.") : null)
+            total.P ? h("p", { class: "nota" }, "“Presidia a sessão”: quem conduz a sessão só vota em casos especiais. Nesses casos o registro aparece assim, e não como sim ou não.") : null)
         : h("p", { class: "aviso-previa" }, "Não há voto registrado deste deputado nas votações nominais do período."));
 
     if (temVotos) {
@@ -896,7 +896,7 @@
       h("p", {}, "O Voto de Verdade é gratuito e não tem anúncios. Se ele foi útil para você, pode fazer uma doação única, no valor que quiser. Não é assinatura: não há cobrança recorrente."),
       h("p", { class: "apoie__acao" },
         h("a", { class: "botao", href: window.DOACAO, rel: "noopener noreferrer" }, "Fazer uma doação")),
-      h("p", { class: "nota" }, "Você vai para o serviço de pagamento, que cuida de tudo. O Voto de Verdade não vê nem guarda os dados do seu pagamento."),
+      h("p", { class: "nota" }, "Você vai para o serviço de pagamento, que processa a doação. O Voto de Verdade não vê nem guarda os dados do seu pagamento."),
       h("h2", {}, "O que a doação não muda"),
       h("p", {}, "O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos."),
       h("h2", {}, "Para onde vai o dinheiro"),

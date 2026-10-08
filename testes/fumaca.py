@@ -68,7 +68,7 @@ with sync_playwright() as p:
     pg = nova()
     pg.goto(base + "/")
     pg.wait_for_selector("#t-recentes", timeout=15000)
-    confere(pg.locator("h1").inner_text().startswith("Como a Câmara votou"), "título da página inicial")
+    confere(pg.locator("h1").inner_text().startswith("Veja como a Câmara votou"), "título da página inicial")
     confere(pg.locator(".tiles > li").count() == len(assuntos), f"{len(assuntos)} assuntos na tela inicial")
     confere(pg.locator("#t-recentes").count() == 1, "seção de últimas votações")
     pg.fill("#busca", "vacina")
@@ -172,7 +172,7 @@ with sync_playwright() as p:
     print("Buscadores e agentes de IA")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
     sem_js.goto(base + "/")
-    confere(sem_js.locator("h1").inner_text().startswith("Como a Câmara votou"), "início tem conteúdo sem JavaScript")
+    confere(sem_js.locator("h1").inner_text().startswith("Veja como a Câmara votou"), "início tem conteúdo sem JavaScript")
     confere(sem_js.locator('a[href^="assunto/"]').count() == len(assuntos), "início sem JavaScript leva a todos os assuntos")
     sem_js.goto(f"{base}/projeto/{com_voto['id']}/")
     confere(sem_js.locator("h1").inner_text().strip() != "" and sem_js.locator('a[href*="deputado/"]').count() > 100,
