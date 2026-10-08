@@ -147,6 +147,15 @@ class Gerador:
         apoio = ""
         if self.doacao:
             apoio = f'<p class="rodape__apoie">O Voto de Verdade é gratuito. <a href="{raiz}apoie/">Apoie com uma doação única</a>, sem assinatura.</p>'
+        botao = ""
+        if self.doacao:
+            botao = (f'<a class="apoie-topo" href="{raiz}apoie/" aria-label="Apoie o Voto de Verdade com uma doação única"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" '
+                     'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'
+                     '<span class="apoie-topo__txt">Apoie</span></a>')
+        if self.doacao:
+            pagina = pagina.replace('<header class="topo">', '<header class="topo" data-apoio>', 1)
+        ini, fim = pagina.index("<!--INICIO-APOIO-TOPO-->"), pagina.index("<!--FIM-APOIO-TOPO-->")
+        pagina = pagina[:ini] + botao + pagina[fim + len("<!--FIM-APOIO-TOPO-->"):]
         ini, fim = pagina.index("<!--INICIO-APOIO-->"), pagina.index("<!--FIM-APOIO-->")
         pagina = pagina[:ini] + apoio + pagina[fim + len("<!--FIM-APOIO-->"):]
         trocas = [

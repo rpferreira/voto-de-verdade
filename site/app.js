@@ -260,8 +260,10 @@
       return saida;
     };
     const margem = (v) => Math.abs(v.s[0] - v.s[1]) / (v.s[0] + v.s[1]);
-    const recentes = unicos(nominais.slice().sort((a, b) => (a.d < b.d ? 1 : a.d > b.d ? -1 : a.id < b.id ? 1 : -1)), 5);
-    const apertadas = unicos(nominais.filter((v) => v.s[0] + v.s[1] >= 100 && margem(v) < 0.15).sort((a, b) => margem(a) - margem(b)), 5);
+    const maisRecente = (a, b) => (a.d < b.d ? 1 : a.d > b.d ? -1 : a.id < b.id ? 1 : -1);
+    const recentes = unicos(nominais.slice().sort(maisRecente), 5);
+    // As cinco mais apertadas, mostradas da mais recente para a mais antiga.
+    const apertadas = unicos(nominais.filter((v) => v.s[0] + v.s[1] >= 100 && margem(v) < 0.15).sort((a, b) => margem(a) - margem(b)), 5).sort(maisRecente);
     return { recentes, apertadas };
   }
 
