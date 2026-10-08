@@ -262,9 +262,13 @@
     const estado = { q: p.get("q") || "" };
     let limiteBusca = 8;
 
+    // Sugestão no próprio campo: os assuntos com mais projetos na base.
+    const TERMO_CURTO = { "impostos-e-economia": "impostos", "trabalho-e-direitos": "trabalho", "seguranca-publica": "segurança pública", "administracao-publica-e-congresso": "servidores públicos", "relacoes-internacionais-e-defesa": "acordos internacionais" };
+    const sugestoes = assuntos.filter((x) => x.slug !== "outros").sort((x, y) => y.n - x.n).slice(0, 3)
+      .map((x) => TERMO_CURTO[x.slug] || x.nome.toLowerCase()).join(", ") + "…";
     const campoBusca = h("input", {
       id: "busca", type: "search", name: "q", autocomplete: "off", spellcheck: "false",
-      placeholder: "aposentadoria, aluguel, vacina…", value: estado.q, enterkeyhint: "search",
+      placeholder: sugestoes, value: estado.q, enterkeyhint: "search",
     });
     const estadoTxt = h("p", { class: "estado so-leitor", role: "status", "aria-live": "polite" });
     const resultados = h("div", {});
