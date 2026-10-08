@@ -418,8 +418,16 @@ def main():
          "Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
         ("De onde vêm os dados",
          f"Do portal de Dados Abertos da Câmara dos Deputados. O site mostra {meta['votacoes']} votações em plenário, de {data_br(meta['de'])} a {data_br(meta['ate'])}, e é atualizado todos os dias."),
+        ("Só a Câmara dos Deputados, por enquanto",
+         "O site cobre os deputados federais. O Senado, as assembleias estaduais e as câmaras de vereadores não estão aqui."),
+        ("Quais votações o site mostra",
+         "Um projeto costuma passar por várias votações no plenário. Aqui entram só as que decidem sobre o projeto em si, isto é, aprovar ou rejeitar. "
+         "Ficam de fora as votações de urgência (que só decidem se o projeto anda mais rápido), de requerimentos, de emendas ou destaques isolados (que votam a mudança de um trecho) e de procedimento. "
+         "Por isso um projeto que foi votado muitas vezes pode aparecer com uma só votação. "
+         "Às vezes a Câmara vota um substitutivo, um texto novo que troca o original. Essa votação aparece, com um aviso: o resumo foi feito a partir da ementa do projeto original, e o texto votado pode ser diferente."),
         ("Assunto e resumo são feitos por inteligência artificial",
-         "Uma inteligência artificial lê o texto oficial de cada projeto, escolhe o assunto e escreve um resumo em linguagem simples. Ela pode errar. Quando há dúvida, o projeto mostra um aviso."),
+         "Uma inteligência artificial lê o texto oficial de cada projeto, escolhe o assunto e escreve um resumo em linguagem simples. Ela pode errar. Quando há dúvida, o projeto mostra um aviso. "
+         "Ninguém revisa os resumos antes de irem ao ar, e por enquanto o site não tem um canal para pedir correções. Se algo parecer estranho, confira no texto oficial."),
         ("Por que nem todo projeto mostra o voto de cada deputado",
          f"{meta['simbolicas']} das {meta['votacoes']} votações ({pct}%) foram simbólicas: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado."),
         ("Quem faz e privacidade",
