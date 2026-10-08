@@ -127,10 +127,10 @@ o cidadão pedir: o filtro de confiança vem desligado.
 A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Telas prontas:
 
 - **Início** (`#/`): busca em destaque e os assuntos em cartões coloridos.
-- **Página do assunto** (`#/assunto/<assunto>`): os projetos votados, com resumo, avisos de incerteza e, dentro de cada projeto, o voto de cada deputado (com filtros por nome, partido, estado e voto). Duas abas: só os projetos em que cada deputado votou, ou todos.
-- **Votação** (`#/votacao/<id>`): a mesma lista em página própria, com a tabela de como cada partido votou. Os filtros ficam no endereço, então dá para compartilhar o link.
+- **Página do assunto** (`#/assunto/<assunto>`): a lista de projetos votados, com duas abas: só os que têm o voto de cada deputado, ou todos. Cada linha mostra o placar e abre a página do projeto.
+- **Página do projeto** (`#/projeto/<id>`): título e resumo (com aviso quando a IA tem dúvida), o placar, como cada partido votou e o voto de cada deputado, com filtros por nome, partido, estado e voto. Se o projeto teve mais de uma votação, dá para escolher qual ver. Os filtros ficam no endereço, então dá para compartilhar o link. O endereço antigo `#/votacao/<id>` abre a mesma página.
 - **Deputados** (`#/deputados`): busca por nome, partido e estado.
-- **Página do deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, com contagem por voto e por assunto e filtros. Sem nota e sem ranking.
+- **Página do deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, com filtros por assunto e voto. Cada voto abre a página do projeto. Sem nota e sem ranking.
 - **Como o site funciona** (`#/sobre`): de onde vêm os dados, o que a IA faz, por que nem toda votação mostra o voto de cada deputado.
 
 Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. A atualização diária já faz isso e publica o site no GitHub Pages (ligue em Settings > Pages > Source: GitHub Actions).
