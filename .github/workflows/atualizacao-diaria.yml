@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 # Nunca duas atualizações ao mesmo tempo.
 concurrency:
@@ -75,7 +76,7 @@ jobs:
 
       - name: Guardar os resumos, mesmo se a etapa anterior falhou
         if: always()
-        run: bash coleta/guardar_no_repositorio.sh "Resumos dos projetos (IA)" dados/resumos.json
+        run: bash coleta/guardar_no_repositorio.sh "Resumos dos projetos (IA)" dados/resumos.json dados/custo.json
 
       # Refaz o banco, agora com os resumos.
       - name: Construir o banco de dados com os resumos
@@ -118,3 +119,47 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/publicar-site.yml
+
+  # Confere custo, dados e site no ar. Se achar problema, esta execução fica vermelha (o GitHub avisa por e-mail)
+  # e um alerta é aberto na aba Issues; ele fecha sozinho quando tudo volta ao normal.
+  # Roda mesmo se a atualização ou a publicação falharam, justamente para avisar disso.
+  monitorar:
+    needs: [atualizar, publicar]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: Baixar o repositório (versão de agora, com os dados de hoje)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Instalar o Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Conferir
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LIMITE_CUSTO_RODADA: ${{ vars.LIMITE_CUSTO_RODADA }}
+          LIMITE_CUSTO_MES: ${{ vars.LIMITE_CUSTO_MES }}
+          LIMITE_PENDENTES: ${{ vars.LIMITE_PENDENTES }}
+          DIAS_SEM_VOTACAO: ${{ vars.DIAS_SEM_VOTACAO }}
+          LIMITE_INCERTOS: ${{ vars.LIMITE_INCERTOS }}
+        run: |
+          python coleta/monitorar.py \
+            --site "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" \
+            --atualizar "${{ needs.atualizar.result }}" \
+            --publicar "${{ needs.publicar.result }}" \
+            --execucao-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --salvar --alerta
+
+      # Guarda o histórico mesmo se a conferência achou problemas. Como muda todo dia, também mantém o
+      # repositório "ativo" (o GitHub desliga rotinas agendadas de repositórios parados por 60 dias).
+      - name: Guardar o histórico da conferência
+        if: always()
+        run: bash coleta/guardar_no_repositorio.sh "Histórico do monitoramento" dados/monitor.json
