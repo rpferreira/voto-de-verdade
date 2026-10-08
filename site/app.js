@@ -187,7 +187,7 @@
           h("span", { class: "tile__nome" }, a.nome),
           h("span", { class: "tile__desc" }, a.descricao),
           h("span", { class: "tile__num" }, h("b", {}, n.toLocaleString("pt-BR")), ` ${n === 1 ? "projeto" : "projetos"}${rotulo ? " " + rotulo : ""}`),
-          rotulo ? null : h("span", { class: "tile__sub" }, `${a.n_ind.toLocaleString("pt-BR")} com voto de cada deputado`)))));
+          null))));
       anunciar(estadoTxt, linhas.length
         ? (estado.q ? `${plural(linhas.length, "assunto", "assuntos")} com “${estado.q}”` : "")
         : `Nenhum assunto com “${estado.q}”. Tente uma palavra mais simples, como “saúde” ou “imposto”.`);
@@ -249,16 +249,12 @@
     return c.slice(0, i > 40 ? i : 79) + "…";
   };
 
-  function cartaoProjeto(pr, slug, nomes, votacoes) {
+  // Uma linha da lista de projetos: leva à página do projeto, que já mostra os votos.
+  function linhaProjeto(pr, slug, nomes, votacoes) {
     const incerto = (pr.ca && pr.ca !== "alta") || (pr.cr && pr.cr !== "alta");
-    const minhas = (votacoes.porProjeto[pr.id] || []).slice().sort((x, y) => (x.d < y.d ? -1 : x.d > y.d ? 1 : 0));
-    const nominais = minhas.filter((x) => x.t === "nominal");
+    const minhas = votacoes.porProjeto[pr.id] || [];
+    const nominais = minhas.filter((x) => x.t === "nominal").sort((x, y) => (x.d < y.d ? -1 : 1));
     const ultima = nominais[nominais.length - 1];
-    const rotuloAbrir = nominais.length ? "Ver os votos" : "Abrir";
-    const abrir = h("span", { class: "projeto__abrir", "aria-hidden": "true" }, rotuloAbrir);
-    const detalhes = h("details", { class: "projeto" });
-    detalhes.addEventListener("toggle", () => { abrir.textContent = detalhes.open ? "Fechar" : rotuloAbrir; });
-
     let placar = null;
     if (ultima && ultima.s) {
       const soma = ultima.s.reduce((a, b) => a + b, 0), outros = ultima.s[2] + ultima.s[3] + ultima.s[4];
@@ -267,53 +263,13 @@
           ORDEM_VOTO.map((c, i) => (ultima.s[i] ? h("i", { class: "seg-" + c, style: `width:${(ultima.s[i] / soma) * 100}%` }) : null))),
         h("span", {}, `${ultima.s[0].toLocaleString("pt-BR")} sim · ${ultima.s[1].toLocaleString("pt-BR")} não${outros ? ` · ${outros.toLocaleString("pt-BR")} outros` : ""}`));
     }
-
-    const outro = pr.a === slug ? (pr.s ? `Também trata de ${nomes[pr.s]}` : null) : `Assunto principal: ${nomes[pr.a]}`;
-    detalhes.append(h("summary", {},
-      h("span", { class: "projeto__titulo" }, pr.titulo),
-      h("span", { class: "projeto__meta" },
-        h("span", {}, h("b", {}, data(pr.ultima))),
-        h("span", { class: "chip" }, pr.aprovada ? "Aprovado" : "Rejeitado"),
-        !nominais.length && h("span", {}, pr.tipo === "secreta" ? "Votação secreta" : "Votação simbólica"),
-        incerto && h("span", { class: "selo-aviso" }, "Classificação incerta"),
-        outro && h("span", {}, outro)),
-      placar, abrir));
-
-    // O corpo só é montado quando alguém abre o projeto (os votos são baixados nesse momento).
-    let montado = false;
-    detalhes.addEventListener("toggle", () => {
-      if (!detalhes.open || montado) return;
-      montado = true;
-      const partes = blocosProjeto(pr);
-      const corpo = h("div", { class: "projeto__corpo" }, partes[0], partes[1]);
-      if (nominais.length) {
-        const caixa = h("div", { class: "votos-projeto" });
-        const mostrar = (v) => caixa.replaceChildren(...[
-          v.c !== "alta" && v.av ? h("div", { class: "cartao-aviso" }, h("strong", {}, "Atenção"), h("p", {}, v.av)) : null,
-          h("p", { class: "oficial" }, v.desc),
-          painelVotos(v, { tabela: false }),
-          h("p", {}, h("a", { href: "#/votacao/" + encodeURIComponent(v.id) }, "Abrir esta votação em página própria, com os votos por partido"))].filter(Boolean));
-        const cabeca = h("div", { class: "votos-projeto__topo" }, h("h3", {}, "Como cada deputado votou"));
-        if (nominais.length > 1) {
-          const sel = h("select", { id: "vp-" + pr.id },
-            nominais.slice().reverse().map((v) => h("option", { value: v.id }, `${data(v.d)}: ${descCurta(v.desc)}`)));
-          sel.addEventListener("change", () => mostrar(nominais.find((v) => v.id === sel.value)));
-          cabeca.append(h("div", { class: "campo" },
-            h("label", { for: "vp-" + pr.id }, `Este projeto teve ${nominais.length} votações com o voto de cada deputado`), sel));
-        }
-        mostrar(nominais[nominais.length - 1]);
-        corpo.append(h("div", { class: "votos-projeto__bloco" }, cabeca, caixa));
-      } else {
-        corpo.append(h("p", { class: "nota" }, minhas.some((x) => x.t === "secreta")
-          ? "Votação secreta: o voto de cada deputado não é divulgado."
-          : "Votação simbólica: o resultado foi anunciado sem registrar o voto de cada deputado, então não há como mostrar como cada um votou."));
-      }
-      corpo.append(h("details", { class: "ajuda ajuda--solta" },
-        h("summary", {}, "Pontos principais e texto oficial"),
-        h("div", { class: "projeto__corpo" }, partes[2], partes[3])));
-      detalhes.append(corpo);
-    });
-    return h("li", {}, detalhes);
+    const sem = !nominais.length ? (pr.tipo === "secreta" ? "Votação secreta" : "Votação simbólica, sem o voto de cada deputado") : null;
+    return h("li", {}, h("a", { class: "proj", href: "#/projeto/" + pr.id },
+      h("span", { class: "proj__titulo" }, pr.titulo),
+      h("span", { class: "proj__meta" },
+        h("span", {}, data(pr.ultima)), h("span", {}, pr.aprovada ? "Aprovado" : "Rejeitado"), sem && h("span", {}, sem),
+        incerto && h("span", { class: "selo-aviso" }, "Classificação incerta")),
+      placar));
   }
 
   async function telaAssunto(slug, p) {
@@ -329,7 +285,7 @@
       ord: p.get("ord") === "antiga" ? "antiga" : "recente",
       res: ["aprovado", "rejeitado"].includes(p.get("res")) ? p.get("res") : "", cert: p.get("cert") === "1",
     };
-    let limite = POR_PAGINA;
+    let limite = Math.min(600, Math.max(POR_PAGINA, parseInt(p.get("n"), 10) || 0));
 
     const campoBusca = h("input", { id: "busca-a", type: "search", autocomplete: "off", spellcheck: "false", value: estado.q, placeholder: "uma palavra do projeto", enterkeyhint: "search" });
     const seletorOrd = h("select", { id: "ord-a" }, h("option", { value: "recente" }, "Mais recentes primeiro"), h("option", { value: "antiga" }, "Mais antigos primeiro"));
@@ -367,7 +323,8 @@
       if (reiniciar) limite = POR_PAGINA;
       estado.q = campoBusca.value.trim(); estado.ord = seletorOrd.value; estado.res = seletorRes.value; estado.cert = caixaCert.checked;
       gravarEndereco("assunto/" + slug, limparParams({
-        q: estado.q, todos: estado.todos && nInd ? "1" : "", ord: estado.ord === "recente" ? "" : estado.ord, res: estado.res, cert: estado.cert ? "1" : "" }));
+        q: estado.q, todos: estado.todos && nInd ? "1" : "", ord: estado.ord === "recente" ? "" : estado.ord, res: estado.res, cert: estado.cert ? "1" : "",
+        n: limite > POR_PAGINA ? String(limite) : "" }));
 
       const ts = termos(estado.q);
       const comFiltros = base.filter((x) =>
@@ -382,7 +339,7 @@
       const r = (estado.todos ? comFiltros : comFiltros.filter((x) => x.ind)).slice();
       r.sort((x, y) => (estado.ord === "recente" ? (y.ultima > x.ultima ? 1 : -1) : (x.ultima > y.ultima ? 1 : -1)) || y.id - x.id);
       const mostrados = r.slice(0, limite);
-      lista.replaceChildren(...mostrados.map((x) => cartaoProjeto(x, slug, nomes, votacoes)));
+      lista.replaceChildren(...mostrados.map((x) => linhaProjeto(x, slug, nomes, votacoes)));
       anunciar(estadoTxt, r.length ? plural(r.length, "projeto", "projetos") : "");
       vazio.replaceChildren();
       if (!r.length) {
@@ -404,7 +361,7 @@
     for (const el of [seletorOrd, seletorRes, caixaCert]) el.addEventListener("change", () => atualizar(true));
     abaInd.addEventListener("click", () => { estado.todos = false; atualizar(true); });
     abaTodos.addEventListener("click", () => { estado.todos = true; atualizar(true); });
-    atualizar(true);
+    atualizar(false);
     return document.getElementById("titulo-assunto");
   }
 
@@ -522,7 +479,7 @@
       function atualizar(reiniciar) {
         if (reiniciar) limite = 60;
         estado.q = campoQ.value.trim(); estado.pt = selPt.value; estado.uf = selUf.value; estado.v = selV.value;
-        if (opc.url) gravarEndereco("votacao/" + encodeURIComponent(v.id), limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, v: estado.v }));
+        if (opc.gravar) opc.gravar(limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, v: estado.v }));
         desenharTabela();
         const r = filtrar([]).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
         const mostrados = r.slice(0, limite);
@@ -548,49 +505,82 @@
     }
   }
 
-  // ------------------------------------------------------------------ tela de votação (página própria, com link para compartilhar)
-  async function telaVotacao(id, p) {
+  // ------------------------------------------------------------------ página do projeto (com os votos)
+  async function telaProjeto(id, p) {
     const [vots, projetos, assuntos] = await Promise.all([indiceVotacoes(), dados("projetos"), dados("assuntos")]);
-    const v = vots.porId[id];
-    if (!v) return telaNaoEncontrada();
-    const pr = projetos.find((x) => x.id === v.p);
+    const pr = projetos.find((x) => String(x.id) === String(id));
     if (!pr) return telaNaoEncontrada();
     const assunto = assuntos.find((x) => x.slug === pr.a);
-    const outras = (vots.porProjeto[pr.id] || []).filter((x) => x.id !== v.id).sort((x, y) => (x.d < y.d ? 1 : -1));
-    const nominal = v.t === "nominal";
+    const minhas = (vots.porProjeto[pr.id] || []).slice().sort((x, y) => (x.d < y.d ? -1 : x.d > y.d ? 1 : 0));
+    const nominais = minhas.filter((x) => x.t === "nominal");
+    let atual = nominais.find((x) => x.id === p.get("votacao")) || nominais[nominais.length - 1];
 
-    principal.replaceChildren(h("div", { class: "miolo" },
+    const caixa = h("div", { class: "votos-projeto" });
+    const mostrar = (v) => {
+      atual = v;
+      const params = new URLSearchParams(p);
+      params.set("votacao", v.id);
+      caixa.replaceChildren(...[
+        h("p", { class: "nota" }, `${data(v.d)} · ${v.ap ? "Aprovada" : "Rejeitada"}`),
+        h("p", { class: "oficial" }, v.desc),
+        v.c !== "alta" && v.av ? h("div", { class: "cartao-aviso" }, h("strong", {}, "Atenção"), h("p", {}, v.av)) : null,
+        painelVotos(v, { tabela: true, p: params, gravar: (q) => { q.set("votacao", v.id); gravarEndereco("projeto/" + pr.id, q); } })].filter(Boolean));
+    };
+
+    const secaoVotos = h("section", { class: "bloco", "aria-labelledby": "votos-titulo" }, h("h2", { id: "votos-titulo" }, "Como cada deputado votou"));
+    if (nominais.length) {
+      if (nominais.length > 1) {
+        const sel = h("select", { id: "sel-votacao" },
+          nominais.slice().reverse().map((v) => h("option", { value: v.id }, `${data(v.d)}: ${descCurta(v.desc)}`)));
+        sel.value = atual.id;
+        sel.addEventListener("change", () => { const novo = nominais.find((v) => v.id === sel.value); p = new URLSearchParams(); mostrar(novo); gravarEndereco("projeto/" + pr.id, new URLSearchParams({ votacao: novo.id })); });
+        secaoVotos.append(h("div", { class: "campo campo--largo" }, h("label", { for: "sel-votacao" }, `Este projeto teve ${nominais.length} votações com o voto de cada deputado. Escolha uma:`), sel));
+      }
+      secaoVotos.append(caixa);
+    } else {
+      secaoVotos.append(h("p", { class: "nota" }, minhas.some((x) => x.t === "secreta")
+        ? "Votação secreta: o voto de cada deputado não é divulgado."
+        : "Votação simbólica: os partidos chegaram a um acordo e o resultado foi anunciado sem registrar o voto de cada deputado. Por isso não há como mostrar como cada um votou."));
+      secaoVotos.append(h("ul", { class: "lista-simples" }, minhas.map((v) => h("li", {}, `${data(v.d)} · ${v.ap ? "Aprovada" : "Rejeitada"}. ${v.desc}`))));
+    }
+    const partes = blocosProjeto(pr);
+    const outrasSimbolicas = nominais.length ? minhas.filter((x) => x.t !== "nominal") : [];
+
+    principal.replaceChildren(h("div", { class: "miolo pagina-projeto" },
       h("nav", { class: "migalhas", "aria-label": "Você está em" },
         h("ol", {},
           h("li", {}, h("a", { href: "#/" }, "Assuntos")),
           assunto ? h("li", {}, h("a", { href: "#/assunto/" + assunto.slug }, assunto.nome)) : null,
-          h("li", { "aria-current": "page" }, "Votação de " + data(v.d)))),
-      h("header", { class: "cabeca-assunto" },
-        h("p", { class: "cabeca-assunto__projeto" }, pr.nome),
-        h("h1", { id: "titulo-votacao", tabindex: "-1" }, `Votação de ${data(v.d)}`),
-        h("p", { class: "cabeca-assunto__resultado" }, `${v.ap ? "Aprovada" : "Rejeitada"}. ${nominal ? "Cada deputado votou." : TIPO[v.t] || ""}`),
-        pr.resumo
-          ? h("div", { class: "sobre-projeto" }, h("span", { class: "rotulo-ia" }, "Resumo do projeto feito por inteligência artificial"), h("p", {}, pr.resumo))
-          : h("div", { class: "sobre-projeto" }, h("p", {}, pr.ementa || ""))),
-      h("section", { class: "votacao-oficial", "aria-labelledby": "oficial-titulo" },
-        h("h2", { id: "oficial-titulo" }, "O que foi votado"),
-        h("p", { class: "oficial" }, v.desc),
-        v.c !== "alta" && v.av ? h("div", { class: "cartao-aviso" }, h("strong", {}, "Atenção"), h("p", {}, v.av)) : null),
-      nominal
-        ? h("section", { "aria-labelledby": "placar-titulo" }, h("h2", { id: "placar-titulo" }, "Resultado"), painelVotos(v, { tabela: true, url: true, p }))
-        : h("div", { class: "aviso-previa" }, h("p", {}, v.t === "secreta"
-            ? "Esta votação foi secreta. A Câmara não divulga o voto de cada deputado."
-            : "Esta votação foi simbólica: os partidos chegaram a um acordo e o resultado foi anunciado sem registrar o voto de cada deputado. Por isso não há como mostrar como cada um votou.")),
+          h("li", { "aria-current": "page" }, pr.nome))),
+      h("header", { class: "cabeca-projeto" },
+        h("h1", { id: "titulo-projeto", tabindex: "-1" }, pr.titulo),
+        h("p", { class: "cabeca-projeto__meta" }, `${pr.nome} · votado em ${data(pr.ultima)} · ${pr.aprovada ? "aprovado" : "rejeitado"}`)),
+      h("div", { class: "resumo-projeto" }, resumoSemRepetir(pr), partes[1]),
+      secaoVotos,
+      outrasSimbolicas.length ? h("p", { class: "nota" }, `Este projeto também teve ${outrasSimbolicas.length === 1 ? "uma votação simbólica" : outrasSimbolicas.length + " votações simbólicas"}, sem o voto de cada deputado.`) : null,
       h("details", { class: "ajuda ajuda--solta" },
-        h("summary", {}, "Ver os pontos principais e o texto oficial do projeto"),
-        h("div", { class: "projeto__corpo" }, blocosProjeto(pr, true))),
-      outras.length ? h("section", { class: "outras-votacoes", "aria-labelledby": "outras-titulo" },
-        h("h2", { id: "outras-titulo" }, "Outras votações deste projeto"),
-        h("ul", {}, outras.map((o) => h("li", {},
-          o.t === "nominal" ? h("a", { href: "#/votacao/" + encodeURIComponent(o.id) }, data(o.d)) : h("span", {}, data(o.d)),
-          ` · ${o.ap ? "Aprovada" : "Rejeitada"} · ${TIPO[o.t] || ""}`)))) : null));
-    document.title = `Votação de ${data(v.d)}, ${pr.nome}: Voto de Verdade`;
-    return document.getElementById("titulo-votacao");
+        h("summary", {}, "Pontos principais e texto oficial"),
+        h("div", { class: "projeto__corpo" }, partes[2], partes[3]))));
+    if (nominais.length) mostrar(atual);
+    document.title = `${pr.nome}: Voto de Verdade`;
+    return document.getElementById("titulo-projeto");
+  }
+
+  // O título da página é a primeira frase do resumo; aqui vai só o resto, para não repetir.
+  function resumoSemRepetir(pr) {
+    if (!pr.resumo) return blocosProjeto(pr)[0];
+    const resto = pr.resumo.startsWith(pr.titulo) ? pr.resumo.slice(pr.titulo.length).trim() : pr.resumo;
+    return h("div", {}, h("span", { class: "rotulo-ia" }, "Título e resumo feitos por inteligência artificial"), resto ? h("p", {}, resto) : null);
+  }
+
+  // Endereço antigo de uma votação: abre a página do projeto, já nessa votação.
+  async function telaVotacao(id, p) {
+    const vots = await indiceVotacoes();
+    const v = vots.porId[id];
+    if (!v) return telaNaoEncontrada();
+    const q = new URLSearchParams(p); q.set("votacao", id);
+    history.replaceState(null, "", `#/projeto/${v.p}?${q}`);
+    return telaProjeto(String(v.p), q);
   }
 
   // ------------------------------------------------------------------ deputados (busca) e página do deputado
@@ -715,26 +705,28 @@
         ? h("section", { "aria-labelledby": "resumo-dep" },
             h("h2", { id: "resumo-dep" }, "Votos registrados"),
             placar,
-            h("p", { class: "nota" }, `${plural(votos.length, "votação nominal com voto registrado", "votações nominais com voto registrado")}, de ${data(meta.de)} a ${data(meta.ate)}. Votações simbólicas não registram o voto de cada deputado, então não entram aqui. Quando o deputado faltou ou não votou, a votação não aparece.`))
+            h("p", { class: "nota" }, `${plural(votos.length, "votação nominal", "votações nominais")} com voto registrado, de ${data(meta.de)} a ${data(meta.ate)}. Votações simbólicas e votações em que o deputado faltou não aparecem.`))
         : h("p", { class: "aviso-previa" }, "Não há voto registrado deste deputado nas votações nominais do período."));
 
     if (temVotos) {
       conteudo.append(
-        h("section", { class: "bloco", "aria-labelledby": "assuntos-dep" },
-          h("h2", { id: "assuntos-dep" }, "Por assunto"),
-          h("p", { class: "nota" }, "Conta pelo assunto principal de cada projeto. Escolha um assunto para ver só os votos nele."),
-          tabelaBox),
         h("section", { class: "bloco", "aria-labelledby": "lista-dep" },
-          h("h2", { id: "lista-dep" }, "Votação por votação"),
-          h("form", { class: "filtros", role: "search", "aria-label": "Filtrar os votos de " + dep.nome, onsubmit: (e) => e.preventDefault() },
-            h("div", { class: "filtros__linha filtros__linha--4" },
+          h("h2", { id: "lista-dep" }, "Como votou"),
+          h("form", { class: "filtros filtros--compacto", role: "search", "aria-label": "Filtrar os votos de " + dep.nome, onsubmit: (e) => e.preventDefault() },
+            h("div", { class: "filtros__linha filtros__linha--3" },
               h("div", { class: "campo" }, h("label", { for: "busca-v" }, "Procurar nos projetos"), campoQ),
               h("div", { class: "campo" }, h("label", { for: "dep-a" }, "Assunto"), selA),
-              h("div", { class: "campo" }, h("label", { for: "dep-v" }, "Voto"), selV),
-              h("div", { class: "campo" }, h("label", { for: "dep-ord" }, "Ordem"), selOrd)),
+              h("div", { class: "campo" }, h("label", { for: "dep-v" }, "Voto"), selV)),
+            h("details", { class: "ajuda mais-filtros" },
+              h("summary", {}, "Mais opções"),
+              h("div", { class: "campo campo--curto" }, h("label", { for: "dep-ord" }, "Ordem"), selOrd)),
             h("div", { class: "filtros__rodape" }, limpar)),
           estadoTxt, lista, maisBox,
-          h("p", { class: "nota" }, "Votar sim ou não em uma votação não diz, sozinho, se o deputado apoia o assunto do projeto. Muitas votações são sobre emendas, substitutivos ou pontos separados do texto (destaques). Leia o que foi votado em cada uma.")));
+          h("details", { class: "ajuda ajuda--solta" },
+            h("summary", {}, "Ver os votos por assunto"),
+            h("p", { class: "nota" }, "Conta pelo assunto principal de cada projeto. Escolha um assunto para ver só os votos nele."),
+            tabelaBox),
+          h("p", { class: "nota" }, "Votar sim ou não não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas ou pontos separados do texto. Abra o projeto para ler o que foi votado.")));
     }
     principal.replaceChildren(conteudo);
     document.title = `${dep.nome}: Voto de Verdade`;
@@ -764,12 +756,11 @@
       const r = votos.filter((x) => (!ts.length || casa(x._t, ts)) && (!estado.a || x.pr.a === estado.a) && (!estado.v || x.cod === estado.v));
       r.sort((x, y) => (estado.ord === "recente" ? (y.v.d > x.v.d ? 1 : y.v.d < x.v.d ? -1 : 0) : (x.v.d > y.v.d ? 1 : x.v.d < y.v.d ? -1 : 0)) || (x.v.id < y.v.id ? -1 : 1));
       const mostrados = r.slice(0, limite);
-      lista.replaceChildren(...mostrados.map(({ v, pr, cod }) => h("li", { class: "voto-dep" },
-        h("div", { class: "voto-dep__topo" }, h("b", {}, data(v.d)), fichaVoto(cod)),
-        h("p", { class: "voto-dep__titulo" }, pr.titulo),
-        h("p", { class: "oficial" }, `${pr.nome}. ${v.desc}`),
-        h("p", {}, h("a", { href: "#/votacao/" + encodeURIComponent(v.id) }, "Ver a votação e os outros deputados"),
-          " · ", h("a", { href: "#/assunto/" + pr.a }, nomeAssunto[pr.a] || "Assunto"))))); 
+      lista.replaceChildren(...mostrados.map(({ v, pr, cod }) => h("li", {},
+        h("a", { class: "voto-dep", href: "#/projeto/" + pr.id + "?votacao=" + encodeURIComponent(v.id) },
+          h("span", { class: "voto-dep__titulo" }, pr.titulo),
+          h("span", { class: "voto-dep__meta" }, `${pr.nome} · ${data(v.d)} · ${nomeAssunto[pr.a] || ""}`),
+          fichaVoto(cod)))));
       anunciar(estadoTxt, r.length ? `${plural(r.length, "votação", "votações")}${r.length !== votos.length ? ` de ${votos.length.toLocaleString("pt-BR")}` : ""}`
         : "Nenhuma votação com esses filtros. Tire algum filtro ou use outra palavra.");
       limpar.hidden = !(estado.q || estado.a || estado.v);
@@ -814,6 +805,7 @@
     try {
       if (!partes.length) titulo = await telaInicio(p);
       else if (emAssunto && partes[1]) titulo = await telaAssunto(partes[1], p);
+      else if (partes[0] === "projeto" && partes[1]) titulo = await telaProjeto(partes[1], p);
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
       else if (partes[0] === "sobre") titulo = await telaSobre();
       else if (partes[0] === "deputados") titulo = await telaDeputados(p);
@@ -826,9 +818,22 @@
         h("p", {}, "Verifique sua conexão e recarregue a página.")));
       titulo = document.getElementById("titulo-erro");
     }
-    if (moverFoco && titulo) { titulo.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+    if (moverFoco && titulo) {
+      titulo.focus({ preventScroll: true });
+      const voltou = !clicou && posicoes[location.hash] != null;
+      window.scrollTo(0, voltou ? posicoes[location.hash] : 0);
+    }
+    clicou = false;
   }
 
+  // Voltar com o botão do navegador devolve a pessoa ao ponto da lista onde estava.
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  const posicoes = {};
+  let clicou = false, temporizador;
+  document.addEventListener("click", (e) => {
+    if (e.target.closest && e.target.closest('a[href^="#/"]')) { posicoes[location.hash] = window.scrollY; clicou = true; }
+  }, true);
+  window.addEventListener("scroll", () => { clearTimeout(temporizador); temporizador = setTimeout(() => { posicoes[location.hash] = window.scrollY; }, 120); }, { passive: true });
   window.addEventListener("hashchange", () => rotear(true));
   rotear(false);
 })();
