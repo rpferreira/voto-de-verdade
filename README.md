@@ -135,7 +135,7 @@ A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Tel
 
 **Páginas para compartilhar.** `site/gerar_paginas.py` cria uma página para cada projeto (`projeto/<id>/`), deputado (`deputado/<id>/`) e assunto (`assunto/<slug>/`), com título, descrição e imagem de prévia próprios (WhatsApp, Google), mais `sitemap.xml`, `robots.txt` e `404.html`. As páginas abrem o mesmo aplicativo. O botão "Compartilhar" copia o endereço dessa página.
 
-**Visual.** Títulos em Instrument Serif e texto em Atkinson Hyperlegible Next (ambas livres, licença OFL, servidas pelo próprio site). Uma cor de destaque (azul), âmbar só para avisos de incerteza, pesos leves, modo claro e escuro, menos movimento se o sistema pedir.
+**Visual.** Uma fonte só, sem serifa: Atkinson Hyperlegible Next (livre, licença OFL, servida pelo próprio site). Uma cor de destaque (azul), âmbar só para avisos de incerteza, pesos leves, modo claro e escuro, menos movimento se o sistema pedir.
 
 Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. As fotos dos deputados ficam em `site/fotos/` (`python3 site/baixar_fotos.py` baixa só as que faltam). A atualização diária faz tudo isso e publica no GitHub Pages. Mudanças em `site/` publicadas no ramo principal também vão ao ar sozinhas (fluxo **Publicar o site**), sem precisar rodar a atualização diária.
 
