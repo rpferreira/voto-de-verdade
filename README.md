@@ -144,6 +144,8 @@ Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/
 
 **Testes.** `python3 site/gerar_paginas.py --saida _site` e `python3 testes/fumaca.py _site` abrem o site num navegador de verdade e conferem as telas principais (precisa de `pip install playwright` e `playwright install chromium`). O fluxo **Testar o site** roda isso em todo pull request.
 
+**Espaçamento.** O site usa uma grade de 8px com regras, não só múltiplos de 8: escala de passos (4px a 80px), papéis que dizem a relação entre elementos (`--junto`, `--perto`, `--item`, `--grupo`, `--bloco`, `--respiro`, `--margem`, `--calha`) e padrões de uso (cabeçalho de página, linha de lista, cartão, controle). Os componentes só usam papéis. As regras estão em [`docs/espacamento.md`](docs/espacamento.md) e `python3 testes/espacamento.py _site` barra qualquer valor fora da escala (roda em todo pull request).
+
 Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -m http.server --directory site`, e abra http://localhost:8000.
 
 ## Arquivos
@@ -161,6 +163,8 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404 |
 | `site/baixar_fotos.py` | Guarda as fotos dos deputados em `site/fotos/` |
 | `testes/fumaca.py` | Teste de fumaça do site num navegador de verdade |
+| `testes/espacamento.py` | Confere as regras de espaçamento (grade de 8px) no CSS e nas telas |
+| `docs/espacamento.md` | As regras de espaçamento: escala, papéis e padrões |
 | `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, dados do site, fotos e publicação |
 | `.github/workflows/publicar-site.yml` | Põe o site no ar (depois da rotina diária e a cada mudança em `site/`) |
 | `.github/workflows/testar-site.yml` | Testa o site em cada pull request |

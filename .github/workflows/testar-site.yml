@@ -38,3 +38,6 @@ jobs:
 
       - name: Testar
         run: python testes/fumaca.py _site
+
+      - name: Conferir as regras de espaçamento (grade de 8px)
+        run: python testes/espacamento.py _site
