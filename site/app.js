@@ -974,17 +974,18 @@
 
   // ------------------------------------------------------------------ apoie (doação única, por serviço de terceiros)
   function telaApoie() {
+    const servico = CONFIG.servico || "serviço de pagamento";
     principal.replaceChildren(h("div", { class: "miolo texto-longo" },
       h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Apoie"))),
       h("h1", { id: "titulo-apoie", tabindex: "-1" }, "Apoie o Voto de Verdade"),
-      h("p", {}, "O Voto de Verdade é gratuito e não tem anúncios. Se ele foi útil para você, pode fazer uma doação única, no valor que quiser. Não é assinatura: não há cobrança recorrente."),
+      h("p", {}, `O Voto de Verdade é gratuito e não tem anúncios. Se ele foi útil para você, pode fazer uma doação no valor que quiser. Ela é única: o ${servico} oferece a opção de repetir todo mês, mas só vale se você marcar. Para doar, você não precisa preencher e-mail nem mensagem.`),
       h("p", { class: "apoie__acao" },
         h("a", { class: "botao", href: soHttps(CONFIG.doacao), rel: "noopener noreferrer" }, "Fazer uma doação")),
-      h("p", { class: "nota" }, "Você vai para o serviço de pagamento, que processa a doação. O Voto de Verdade não vê nem guarda os dados do seu pagamento."),
+      h("p", { class: "nota" }, `Você vai para o ${servico}, outro site, com regras e política de privacidade próprias. Quem mantém o Voto de Verdade recebe de lá só o que você optar por informar e não vê os dados do seu cartão. O aviso de que não usamos cookies nem rastreio vale para este site, não para o ${servico}.`),
       h("h2", {}, "O que a doação não muda"),
-      h("p", {}, "O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos."),
+      h("p", {}, "O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos. Não é doação a uma associação ou ONG: o site é mantido por uma pessoa e a doação não dá direito a abatimento de imposto."),
       h("h2", {}, "Para onde vai o dinheiro"),
-      h("p", {}, "Para manter o site no ar. O principal custo é a inteligência artificial que escreve os resumos dos projetos."),
+      h("p", {}, "Para manter o site no ar. Os principais custos são a inteligência artificial que escreve os resumos dos projetos e o endereço do site (domínio)."),
       h("p", {}, h("a", { href: "#/" }, "Voltar ao início"))));
     document.title = "Apoie o Voto de Verdade";
     return document.getElementById("titulo-apoie");

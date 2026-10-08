@@ -113,8 +113,9 @@ def aviso_ia(pr):
 
 
 class Gerador:
-    def __init__(self, modelo, url, saida, doacao=""):
+    def __init__(self, modelo, url, saida, doacao="", servico=""):
         self.doacao = doacao
+        self.servico = servico
         self.modelo = modelo
         self.url = url.rstrip("/")
         self.saida = saida
@@ -198,7 +199,7 @@ class Gerador:
             ('<a href="#/sobre">', f'<a href="{raiz}sobre/">'),
             ('<script type="application/json" id="config">{"raiz":""}</script>',
              '<script type="application/json" id="config">'
-             + json.dumps({"raiz": raiz, "rota": rota, "doacao": self.doacao}, ensure_ascii=False).replace("</", "<\\/")
+             + json.dumps({"raiz": raiz, "rota": rota, "doacao": self.doacao, "servico": self.servico}, ensure_ascii=False).replace("</", "<\\/")
              + "</script>"),
         ]
         for velho, novo in trocas:
@@ -267,7 +268,7 @@ def main():
     except FileNotFoundError:
         config = {}
     doacao = config.get("doacao") or {}
-    g = Gerador(modelo, URL, args.saida, so_https(doacao.get("url")))
+    g = Gerador(modelo, URL, args.saida, so_https(doacao.get("url")), (doacao.get("servico") or "").strip())
     nome_assunto = {a["slug"]: a["nome"] for a in assuntos}
     nome_dep = {d["id"]: d for d in deputados}
     por_projeto = {}
@@ -499,12 +500,18 @@ def main():
                            "url": f"{URL}/sobre/", "inLanguage": "pt-BR"})
 
     # ---- apoie (só quando há um link de doação em site/config.json)
+    servico_doacao = (doacao.get("servico") or "").strip() or "serviço de pagamento"
     if so_https(doacao.get("url")):
         g.montar("apoie", "apoie", f"Apoie o {NOME}",
                  "Faça uma doação única, sem assinatura, para manter o Voto de Verdade no ar. Doar não muda o que o site mostra: sem nota e sem ranking.",
                  '<div class="miolo texto-longo"><h1>Apoie o Voto de Verdade</h1>'
-                 '<p>Doe uma vez, o valor que quiser, sem assinatura. Doar não muda o que o site mostra: quem doa não escolhe o que aparece nem ganha destaque.</p>'
-                 f'<p><a href="{esc(doacao["url"])}" rel="noopener noreferrer">Fazer uma doação</a></p></div>',
+                 f'<p>O Voto de Verdade é gratuito e não tem anúncios. Se ele foi útil para você, pode fazer uma doação no valor que quiser. Ela é única: o {esc(servico_doacao)} oferece a opção de repetir todo mês, mas só vale se você marcar. Para doar, você não precisa preencher e-mail nem mensagem.</p>'
+                 f'<p><a href="{esc(doacao["url"])}" rel="noopener noreferrer">Fazer uma doação</a></p>'
+                 f'<p>Você vai para o {esc(servico_doacao)}, outro site, com regras e política de privacidade próprias. Quem mantém o Voto de Verdade recebe de lá só o que você optar por informar e não vê os dados do seu cartão. O aviso de que não usamos cookies nem rastreio vale para este site, não para o {esc(servico_doacao)}.</p>'
+                 '<h2>O que a doação não muda</h2>'
+                 '<p>O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos. Não é doação a uma associação ou ONG: o site é mantido por uma pessoa e a doação não dá direito a abatimento de imposto.</p>'
+                 '<h2>Para onde vai o dinheiro</h2>'
+                 '<p>Para manter o site no ar. Os principais custos são a inteligência artificial que escreve os resumos dos projetos e o endereço do site (domínio).</p></div>',
                  markdown=f"# Apoie o Voto de Verdade\n\nDoação única, sem assinatura: {doacao['url']}\n")
 
     # ---- página inicial (com o endereço de compartilhamento certo e o conteúdo já escrito)
