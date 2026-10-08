@@ -19,6 +19,7 @@ import hashlib
 import html
 import json
 import os
+import re
 import shutil
 import sys
 from urllib.parse import urlparse
@@ -50,6 +51,29 @@ def curto(t, limite):
     corte = t[: limite - 1]
     i = corte.rfind(" ")
     return corte[: i if i > limite // 2 else limite - 1].rstrip(" ,;:") + "…"
+
+
+def titulo_completo(pr):
+    """Se o título foi cortado com «…» e o resumo começa com o mesmo texto, usa a primeira frase inteira do resumo."""
+    t, r = pr.get("titulo") or "", pr.get("resumo") or ""
+    if not t.endswith("…") or not r:
+        return t
+    base = t[:-1].rstrip()
+    if not r.startswith(base):
+        return t
+    m = re.search(r"[.!?](?=\s|$)", r[len(base):])
+    inteiro = r[: len(base) + m.start() + 1] if m else r
+    return inteiro if len(inteiro) <= 400 else t
+
+
+def contagem_assunto(a):
+    """«N projetos com voto de cada deputado (M no total)» ou só o total, no singular/plural certo."""
+    def proj(n):
+        return f"{n} projeto" if n == 1 else f"{n} projetos"
+    ni = a.get("n_ind")
+    if ni is None:
+        return proj(a["n"])
+    return f'{proj(ni)} com voto de cada deputado ({a["n"]} no total)'
 
 
 def jsonld(obj):
@@ -297,7 +321,7 @@ def main():
             '<div class="miolo pagina-projeto">'
             f'<nav class="migalhas" aria-label="Você está em"><ol><li><a href="{raiz}">Assuntos</a></li>'
             f'<li><a href="{raiz}assunto/{pr["a"]}/">{esc(assunto)}</a></li><li aria-current="page">{esc(pr["nome"])}</li></ol></nav>'
-            f'<header class="cabeca-projeto"><h1>{esc(pr["titulo"])}</h1>'
+            f'<header class="cabeca-projeto"><h1>{esc(titulo_completo(pr))}</h1>'
             f'<p class="cabeca-projeto__meta">{esc(pr["nome"])} · última votação em {data_br(pr["ultima"])}</p></header>'
             f'<div class="resumo-projeto"><p>{esc(resumo)}</p></div>'
             + "".join(f'<p class="nota">{esc(a)}</p>' for a in avisos)
@@ -349,7 +373,8 @@ def main():
             total[cod] = total.get(cod, 0) + 1
         sigla = " · ".join(x for x in (d.get("partido"), d.get("uf")) if x)
         if votos_dep:
-            resumo = (f'Votou em {len(votos_dep)} votações nominais, de {data_br(meta["de"])} a {data_br(meta["ate"])}: '
+            n_vot = len(votos_dep)
+            resumo = (f'Votou em {n_vot} {"votação nominal" if n_vot == 1 else "votações nominais"}, de {data_br(meta["de"])} a {data_br(meta["ate"])}: '
                       f'{total.get("S", 0)} sim e {total.get("N", 0)} não.')
         else:
             resumo = "Sem voto registrado nas votações nominais do período."
@@ -488,7 +513,7 @@ def main():
         '<p class="heroi__texto">Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.</p></div></section>'
         + principios_html()
         + '<section class="secao"><h2>Assuntos</h2><ul>'
-        + "".join(f'<li><a href="assunto/{a["slug"]}/">{esc(a["nome"])}</a>: {a["n"]} projetos</li>' for a in assuntos)
+        + "".join(f'<li><a href="assunto/{a["slug"]}/">{esc(a["nome"])}</a>: {contagem_assunto(a)}</li>' for a in assuntos)
         + '</ul></section><section class="secao"><h2>Últimas votações</h2><ul>'
         + "".join(f'<li><a href="projeto/{pr["id"]}/">{esc(curto(pr["titulo"], 120))}</a> ({data_br(v["d"])})</li>' for pr, v in lista_rec)
         + '</ul></section><p><a href="deputados/">Procure um deputado pelo nome</a> · <a href="sobre/">Como o site funciona</a></p></div>')
@@ -515,8 +540,13 @@ def main():
 
     base = urlparse(URL).path.rstrip("/") + "/"
     g.montar("404", "nao-encontrada", f"Página não encontrada: {NOME}", "Página não encontrada.",
-             '<div class="miolo" style="padding-block:3rem"><h1>Não achamos esta página</h1>'
-             f'<p><a href="{base}">Ver todos os assuntos</a></p></div>', raiz=base, noindex=True)
+             '<div class="miolo"><div class="vazio vazio--pagina"><div class="vazio__corpo">'
+             '<h1 class="vazio__titulo">Não achamos esta página</h1>'
+             '<p class="vazio__texto">O endereço pode ter mudado ou estar escrito errado. Comece por um destes caminhos.</p>'
+             f'<div class="vazio__acoes"><a class="botao botao--leve" href="{base}">Ver todos os assuntos</a>'
+             f'<a class="botao botao--leve" href="{base}deputados/">Procurar um deputado</a>'
+             f'<a class="botao botao--leve" href="{base}sobre/">Como o site funciona</a></div></div></div></div>',
+             raiz=base, noindex=True)
     os.replace(os.path.join(args.saida, "404", "index.html"), os.path.join(args.saida, "404.html"))
     os.rmdir(os.path.join(args.saida, "404"))
 
