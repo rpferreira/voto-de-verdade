@@ -92,6 +92,14 @@ jobs:
         if: steps.site.outcome == 'success'
         run: bash coleta/guardar_no_repositorio.sh "Dados do site" site/dados
 
+      # Fotos dos deputados (só as que faltam). Uma falha aqui não impede a atualização.
+      - name: Guardar as fotos dos deputados
+        if: steps.site.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python site/baixar_fotos.py
+          bash coleta/guardar_no_repositorio.sh "Fotos dos deputados" site/fotos
+
       - name: Guardar o banco para consulta (7 dias)
         if: steps.coleta.outcome == 'success'
         uses: actions/upload-artifact@v4
@@ -101,34 +109,12 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
-  # Põe o site no ar (GitHub Pages). Antes de funcionar, ligue em Settings > Pages > Source: GitHub Actions.
-  # Enquanto isso não for feito, este passo falha sem deixar a atualização diária vermelha.
+  # Põe o site no ar (GitHub Pages) com os dados de hoje. Se falhar, esta execução fica vermelha.
   publicar:
     needs: atualizar
     if: needs.atualizar.result == 'success'
-    runs-on: ubuntu-latest
-    continue-on-error: true
     permissions:
       contents: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.pagina.outputs.page_url }}
-    steps:
-      - name: Baixar o repositório já atualizado
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-
-      - name: Preparar o site
-        uses: actions/configure-pages@v5
-
-      - name: Juntar os arquivos do site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-      - name: Publicar
-        id: pagina
-        uses: actions/deploy-pages@v4
+    uses: ./.github/workflows/publicar-site.yml

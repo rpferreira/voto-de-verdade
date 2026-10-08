@@ -3,11 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--INICIO-CABECA-->
   <title>Voto de Verdade: como a Câmara dos Deputados votou</title>
   <meta name="description" content="Escolha um assunto e veja o que a Câmara dos Deputados votou e como cada deputado federal votou. Sem nota e sem ranking.">
+  <link rel="canonical" href="https://rpferreira.github.io/voto-de-verdade/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="Voto de Verdade">
+  <meta property="og:title" content="Voto de Verdade: como a Câmara dos Deputados votou">
+  <meta property="og:description" content="Escolha um assunto e veja o que a Câmara dos Deputados votou e como cada deputado federal votou. Sem nota e sem ranking.">
+  <meta property="og:url" content="https://rpferreira.github.io/voto-de-verdade/">
+  <meta property="og:image" content="https://rpferreira.github.io/voto-de-verdade/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <!--FIM-CABECA-->
   <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231b3fd0'/%3E%3Cpath d='M8 17l5 5 11-12' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232341d8'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-dasharray='0.01 4.1'%3E%3Cpath d='M5 23a11 11 0 0 1 22 0'/%3E%3Cpath d='M10 23a6 6 0 0 1 12 0'/%3E%3C/g%3E%3Ccircle cx='16' cy='23' r='1.6' fill='%23fff'/%3E%3C/svg%3E">
   <link rel="preload" href="fontes/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fontes/instrument-serif-latin-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -15,7 +29,10 @@
 
   <header class="topo">
     <div class="topo__miolo">
-      <a class="marca" href="#/">Voto de Verdade</a>
+      <a class="marca" href="#/">
+        <svg viewBox="0 0 32 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="0.01 4.1"><path d="M2 16a14 14 0 0 1 28 0"/><path d="M7.5 16a8.5 8.5 0 0 1 17 0"/><circle cx="16" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>
+        <span>Voto de Verdade</span>
+      </a>
       <nav aria-label="Principal">
         <ul>
           <li><a id="nav-assuntos" href="#/" aria-current="page">Assuntos</a></li>
@@ -26,17 +43,21 @@
   </header>
 
   <main id="conteudo" tabindex="-1">
+    <!--INICIO-CONTEUDO-->
     <p class="miolo" style="padding-block:3rem">Carregando…</p>
+    <!--FIM-CONTEUDO-->
     <noscript><p class="miolo">Este site precisa de JavaScript para mostrar os dados.</p></noscript>
   </main>
 
   <footer class="rodape">
     <div class="rodape__miolo">
       <p id="rodape-dados">Dados da Câmara dos Deputados (Dados Abertos).</p>
+      <p>Site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usamos cookies nem rastreamos quem visita.</p>
       <p>Assuntos e resumos são feitos por inteligência artificial e podem conter erros. Quando não temos certeza, avisamos. O texto oficial de cada projeto está sempre ao lado. <a href="#/sobre">Como o site funciona</a></p>
     </div>
   </footer>
 
+  <script>window.RAIZ = "";</script>
   <script src="app.js" defer></script>
 </body>
 </html>

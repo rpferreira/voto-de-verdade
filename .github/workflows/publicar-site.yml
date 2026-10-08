@@ -1,0 +1,57 @@
+name: Publicar o site
+
+# Põe o site no ar (GitHub Pages) toda vez que algo da pasta site/ muda no ramo principal,
+# e também depois da atualização diária (que chama este fluxo). Se falhar, a execução fica
+# vermelha e o GitHub avisa por e-mail.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/publicar-site.yml"
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.pagina.outputs.page_url }}
+    steps:
+      - name: Baixar o repositório já atualizado
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Instalar o Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Preparar o site
+        id: config
+        uses: actions/configure-pages@v5
+
+      # Copia o site e cria uma página para cada projeto, deputado e assunto (título e prévia próprios).
+      - name: Montar as páginas
+        run: python site/gerar_paginas.py --saida _site --url "${{ steps.config.outputs.base_url }}"
+
+      - name: Juntar os arquivos do site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Publicar
+        id: pagina
+        uses: actions/deploy-pages@v4

@@ -126,14 +126,20 @@ o cidadão pedir: o filtro de confiança vem desligado.
 
 A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Telas prontas:
 
-- **Início** (`#/`): busca em destaque e os assuntos em cartões coloridos.
-- **Página do assunto** (`#/assunto/<assunto>`): a lista de projetos votados, com duas abas: só os que têm o voto de cada deputado, ou todos. Cada linha mostra o placar e abre a página do projeto.
-- **Página do projeto** (`#/projeto/<id>`): título e resumo (com aviso quando a IA tem dúvida), o placar e o voto de cada deputado, com filtros por nome, partido, estado e voto. Se o projeto teve mais de uma votação, dá para escolher qual ver. Os filtros ficam no endereço, então dá para compartilhar o link. O endereço antigo `#/votacao/<id>` abre a mesma página.
-- **Deputados** (`#/deputados`): busca por nome, partido e estado.
-- **Página do deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, com filtros por assunto e voto. Cada voto abre a página do projeto. Sem nota e sem ranking.
-- **Como o site funciona** (`#/sobre`): de onde vêm os dados, o que a IA faz, por que nem toda votação mostra o voto de cada deputado.
+- **Início**: título, busca e o hemiciclo da última votação (um ponto por deputado). A busca acha projetos e assuntos. Abaixo, os assuntos em cartões coloridos, as últimas votações e as votações decididas por pouca diferença (sim e não a menos de 15% uma da outra).
+- **Assunto** (`#/assunto/<assunto>`): lista de projetos votados, com abas "com o voto de cada deputado" e "todos". Cada linha mostra o placar e abre o projeto.
+- **Projeto** (`#/projeto/<id>`): título e resumo (aviso amarelo só quando a IA tem dúvida sobre o assunto ou o resumo; a nota sobre substitutivo é cinza e discreta), o hemiciclo, o placar e o voto de cada deputado. Tocar num número do placar mostra só aqueles deputados. Filtros por nome, partido, estado e voto. Se o projeto teve mais de uma votação, dá para escolher qual ver. O endereço antigo `#/votacao/<id>` abre a mesma página.
+- **Deputados** (`#/deputados`): atalho por estado, busca por nome e partido.
+- **Deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, com filtros por assunto e voto. Sem nota e sem ranking.
+- **Como o site funciona** (`#/sobre`): de onde vêm os dados, o que a IA faz, por que nem toda votação mostra o voto de cada deputado, quem faz o site e privacidade (sem cookies, sem rastreamento).
 
-Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. A atualização diária já faz isso e publica o site no GitHub Pages (ligue em Settings > Pages > Source: GitHub Actions).
+**Páginas para compartilhar.** `site/gerar_paginas.py` cria uma página para cada projeto (`projeto/<id>/`), deputado (`deputado/<id>/`) e assunto (`assunto/<slug>/`), com título, descrição e imagem de prévia próprios (WhatsApp, Google), mais `sitemap.xml`, `robots.txt` e `404.html`. As páginas abrem o mesmo aplicativo. O botão "Compartilhar" copia o endereço dessa página.
+
+**Visual.** Títulos em Instrument Serif e texto em Atkinson Hyperlegible Next (ambas livres, licença OFL, servidas pelo próprio site). Uma cor de destaque (azul), âmbar só para avisos de incerteza, pesos leves, modo claro e escuro, menos movimento se o sistema pedir.
+
+Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. As fotos dos deputados ficam em `site/fotos/` (`python3 site/baixar_fotos.py` baixa só as que faltam). A atualização diária faz tudo isso e publica no GitHub Pages. Mudanças em `site/` publicadas no ramo principal também vão ao ar sozinhas (fluxo **Publicar o site**), sem precisar rodar a atualização diária.
+
+**Testes.** `python3 site/gerar_paginas.py --saida _site` e `python3 testes/fumaca.py _site` abrem o site num navegador de verdade e conferem as telas principais (precisa de `pip install playwright` e `playwright install chromium`). O fluxo **Testar o site** roda isso em todo pull request.
 
 Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -m http.server --directory site`, e abra http://localhost:8000.
 
@@ -147,9 +153,14 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `coleta/guardar_no_repositorio.sh` | Guarda arquivos da rotina no repositório, repetindo se alguém mexeu nele |
 | `dados/cache_v5.json` | Tudo o que veio da API (a base do banco) |
 | `dados/resumos.json` | Assunto e resumo de cada projeto, com confiança (escrito pela IA) |
-| `site/` | O site (`index.html`, `estilos.css`, `app.js`, fontes) |
+| `site/` | O site (`index.html`, `estilos.css`, `app.js`, fontes, `og.png`) |
 | `site/exportar_dados.py` | Passa o banco para os JSON que o site lê (`site/dados/`) |
-| `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, dados do site e publicação |
+| `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404 |
+| `site/baixar_fotos.py` | Guarda as fotos dos deputados em `site/fotos/` |
+| `testes/fumaca.py` | Teste de fumaça do site num navegador de verdade |
+| `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, dados do site, fotos e publicação |
+| `.github/workflows/publicar-site.yml` | Põe o site no ar (depois da rotina diária e a cada mudança em `site/`) |
+| `.github/workflows/testar-site.yml` | Testa o site em cada pull request |
 
 ## Rodar a rotina
 
@@ -211,6 +222,7 @@ rotina faz pausas entre as consultas para não ser bloqueada. Nos dias seguintes
   confirmar, na primeira rodada real, que é o partido do dia do voto.
 - **Sem ausências.** A API só lista quem votou, então o site não mostra "não votou".
 - **Só a Câmara.** O Senado não está incluído.
+- **Sem votações novas.** Em recesso e em período de eleição a Câmara quase não vota; a data da última votação aparece no rodapé.
 
 ## Fora do escopo
 

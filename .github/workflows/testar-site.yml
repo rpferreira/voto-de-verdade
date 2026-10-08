@@ -1,0 +1,40 @@
+name: Testar o site
+
+# Abre o site num navegador de verdade e confere as telas principais.
+# Roda em todo pull request que mexe no site, para não publicar nada quebrado.
+on:
+  pull_request:
+    paths:
+      - "site/**"
+      - "testes/**"
+      - "coleta/**"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fumaca:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Conferir que os programas em Python não têm erro de escrita
+        run: python -m py_compile coleta/*.py site/*.py testes/*.py
+
+      - name: Instalar o navegador de teste
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Montar o site
+        run: python site/gerar_paginas.py --saida _site
+
+      - name: Testar
+        run: python testes/fumaca.py _site
