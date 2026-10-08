@@ -140,6 +140,10 @@ Regras:
 11. O resumo é lido por cidadãos, que não sabem como ele foi feito. Nunca escreva o que "foi recebido", "foi
     informado" ou "não está disponível para mim". Quando a ementa for vaga, diga só "A ementa não detalha ..." ou
     "O texto oficial não explica ...".
+12. Comece direto pelo que o projeto faz, com um verbo: "Muda", "Cria", "Aprova", "Proíbe". Evite abrir com "O
+    projeto trata de", "O projeto visa" ou "O projeto busca", que não dizem nada. Evite também palavras de efeito
+    ("garantir", "promover", "fortalecer", "aprimorar") quando o texto não diz o resultado; descreva a medida. Não
+    repita a mesma estrutura de frase em resumo e pontos-chave.
 Responda sempre usando a ferramenta registrar_projeto."""
 
 SISTEMA_CLASSIFICADOR = f"""Você classifica projetos da Câmara dos Deputados do Brasil por assunto.

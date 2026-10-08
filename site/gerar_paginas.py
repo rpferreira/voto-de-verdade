@@ -438,7 +438,7 @@ def main():
         g.montar("apoie", "apoie", f"Apoie o {NOME}",
                  "Faça uma doação única, sem assinatura, para manter o Voto de Verdade no ar. Doar não muda o que o site mostra: sem nota e sem ranking.",
                  '<div class="miolo texto-longo"><h1>Apoie o Voto de Verdade</h1>'
-                 '<p>Doe uma vez, o valor que quiser, sem assinatura. Doar não muda o que o site mostra: o site continua neutro e apartidário, sem nota e sem ranking.</p>'
+                 '<p>Doe uma vez, o valor que quiser, sem assinatura. Doar não muda o que o site mostra: quem doa não escolhe o que aparece nem ganha destaque.</p>'
                  f'<p><a href="{esc(doacao["url"])}" rel="noopener noreferrer">Fazer uma doação</a></p></div>',
                  markdown=f"# Apoie o Voto de Verdade\n\nDoação única, sem assinatura: {doacao['url']}\n")
 
@@ -452,8 +452,8 @@ def main():
             lista_rec.append((pr, v))
     corpo = (
         '<div class="miolo"><section class="heroi"><div>'
-        '<h1>Como a Câmara votou o que importa para você?</h1>'
-        '<p class="heroi__texto">Escolha um assunto, veja os projetos votados e o voto de cada deputado federal.</p></div></section>'
+        '<h1>Veja como a Câmara votou, assunto por assunto</h1>'
+        '<p class="heroi__texto">Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.</p></div></section>'
         '<ul class="principios"><li><strong>Neutro e apartidário</strong><span>Sem ligação com partidos, candidatos ou com a Câmara dos Deputados.</span></li>'
         '<li><strong>Sem nota e sem ranking</strong><span>Não damos nota a deputado nem dizemos quem votou certo ou errado.</span></li>'
         '<li><strong>Só o que foi votado</strong><span>O voto de cada deputado, direto dos dados oficiais, com o texto do projeto ao lado.</span></li></ul>'
