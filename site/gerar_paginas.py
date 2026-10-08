@@ -505,7 +505,7 @@ def main():
         g.montar("apoie", "apoie", f"Apoie o {NOME}",
                  "Faça uma doação única, sem assinatura, para manter o Voto de Verdade no ar. Doar não muda o que o site mostra: sem nota e sem ranking.",
                  '<div class="miolo texto-longo"><h1>Apoie o Voto de Verdade</h1>'
-                 '<p>O Voto de Verdade é gratuito e não tem anúncios. Se ele foi útil para você, pode fazer uma doação única, no valor que quiser. Não é assinatura: não há cobrança recorrente. Para doar, você não precisa preencher e-mail nem mensagem.</p>'
+                 f'<p>O Voto de Verdade é gratuito e não tem anúncios. Se ele foi útil para você, pode fazer uma doação no valor que quiser. Ela é única: o {esc(servico_doacao)} oferece a opção de repetir todo mês, mas só vale se você marcar. Para doar, você não precisa preencher e-mail nem mensagem.</p>'
                  f'<p><a href="{esc(doacao["url"])}" rel="noopener noreferrer">Fazer uma doação</a></p>'
                  f'<p>Você vai para o {esc(servico_doacao)}, outro site, com regras e política de privacidade próprias. Quem mantém o Voto de Verdade recebe de lá só o que você optar por informar e não vê os dados do seu cartão. O aviso de que não usamos cookies nem rastreio vale para este site, não para o {esc(servico_doacao)}.</p>'
                  '<h2>O que a doação não muda</h2>'
