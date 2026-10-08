@@ -51,6 +51,9 @@ jobs:
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: _site
+          # Sem isto, a ação deixa de fora tudo que começa com ponto, e o site perderia a pasta .well-known
+          # (catálogo da API e habilidades para agentes de IA).
+          include-hidden-files: true
 
       - name: Publicar
         id: pagina

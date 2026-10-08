@@ -270,6 +270,18 @@ def checar_site(rel, base, hoje, esperado, args):
     else:
         rel.info(f"Mapa do site com {n} endereços.")
 
+    # a pasta .well-known (catálogo da API e habilidades para agentes) começa com ponto e some do site se a
+    # publicação deixar de incluir arquivos ocultos
+    st, txt = buscar(base + "/.well-known/agent-skills/index.json")
+    try:
+        ok_wk = st == 200 and bool(json.loads(txt).get("skills"))
+    except ValueError:
+        ok_wk = False
+    if not ok_wk:
+        rel.erro(f"O catálogo para agentes (.well-known/agent-skills/index.json) não abre (código {st}).")
+    else:
+        rel.info("Catálogo para agentes de IA (.well-known) no ar.")
+
     # uma página de projeto e uma de deputado, achadas nos próprios dados no ar
     st, txt = buscar(base + "/dados/votacoes.json")
     try:
