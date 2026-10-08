@@ -102,11 +102,11 @@ h3 { font-weight: 500; }
 @media (max-width: 30rem) { .marca { font-size: 1.05rem; } .marca svg { width: 1.5rem; } .topo nav a { padding: 0.5rem 0.5rem; font-size: 0.9375rem; } }
 
 /* ---------- tela inicial ---------- */
-.heroi { display: grid; gap: 2rem; padding-block: 2rem 1.5rem; position: relative; }
+.heroi { display: grid; gap: 1.5rem; padding-block: 2rem 1.5rem; position: relative; }
 @media (min-width: 40rem) { .heroi { padding-block: 4rem 2.5rem; } }
-@media (min-width: 62rem) { .heroi { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: 3rem; } }
+@media (min-width: 62rem) { .heroi { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: end; gap: 4rem; } }
 .heroi h1 { margin: 0; max-width: 18ch; font-size: clamp(2.3rem, 7.2vw, 4.4rem); line-height: 1.02; line-height: round(up, 1.02em, 4px); letter-spacing: -0.035em; }
-.heroi__texto { margin: 1rem 0 0; max-width: 42ch; font-size: 1.2rem; line-height: 1.75rem; color: var(--tinta-suave); }
+.heroi__texto { margin: 0; max-width: 42ch; font-size: 1.2rem; line-height: 1.75rem; color: var(--tinta-suave); }
 .heroi__busca { margin-top: 1.5rem; max-width: 36rem; }
 .heroi__busca input[type="search"] {
   width: 100%; min-height: 3.5rem; font: inherit; font-size: 1.15rem; color: var(--tinta); background: var(--superficie);
@@ -118,18 +118,6 @@ h3 { font-weight: 500; }
 .heroi__busca input[type="search"]::placeholder { color: var(--tinta-suave); opacity: 1; }
 .heroi__link { margin: 1rem 0 0 0.5rem; color: var(--tinta-suave); }
 
-.hemiciclo-fig { margin: 0; display: grid; gap: 1rem; }
-.hemiciclo { width: 100%; height: auto; display: block; overflow: visible; }
-.hemiciclo circle { transition: opacity 180ms; }
-.hemiciclo.filtrado circle.apagado { opacity: 0.14; }
-.pt-S { fill: var(--cobalto); }
-.pt-N { fill: var(--tinta); }
-.pt-A { fill: var(--cinza-voto); }
-.pt-O { fill: color-mix(in srgb, var(--cinza-voto) 45%, var(--papel)); stroke: var(--cinza-voto); stroke-width: 0.6; }
-.pt-P { fill: none; stroke: var(--cinza-voto); stroke-width: 0.8; }
-.hemiciclo-fig figcaption { color: var(--tinta-suave); font-size: 0.95rem; max-width: 46ch; }
-.hemiciclo-fig figcaption a { color: var(--tinta); text-decoration-color: var(--cobalto); }
-.heroi .hemiciclo-fig { max-width: 34rem; justify-self: center; width: 100%; }
 
 .secao { margin-top: var(--respiro); }
 @media (min-width: 48rem) { :root { --respiro: 4rem; } }
@@ -140,6 +128,13 @@ h3 { font-weight: 500; }
 .duas-colunas { display: grid; gap: 2rem; margin-top: var(--respiro); }
 @media (min-width: 56rem) { .duas-colunas { grid-template-columns: 1fr 1fr; gap: 3rem; } }
 .duas-colunas .secao { margin-top: 0; }
+.principios { list-style: none; margin: 1.5rem 0 0; padding: 1.5rem 0 0; display: grid; gap: 1rem; box-shadow: inset 0 1px 0 var(--linha); }
+.principios li { display: grid; gap: 0.25rem; align-content: start; }
+.principios strong { font-weight: 500; font-size: 1.25rem; line-height: 1.75rem; color: var(--tinta); }
+.principios strong::before { content: ""; display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--cobalto); margin-right: 0.5rem; vertical-align: 0.125em; }
+.principios span { color: var(--tinta-suave); max-width: 36ch; }
+@media (min-width: 48rem) { .principios { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; margin-top: 2rem; padding-top: 2rem; } }
+.principios[hidden] { display: none; }
 .confianca { margin: 3rem 0 0; max-width: 70ch; color: var(--tinta-suave); font-size: 0.95rem; }
 
 .tiles { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: 1fr; }
@@ -296,15 +291,8 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 .mini-placar .barra-voto { max-width: none; margin-top: 0; height: 0.5rem; }
 
 .painel .bloco { margin-top: 1.5rem; }
-.painel-topo { display: grid; gap: 1rem; align-items: center; }
-.painel-topo .hemiciclo-fig { max-width: 36rem; justify-self: center; width: 100%; padding-inline: 0.25rem; }
 .painel-placar .nota { margin-top: 0.5rem; font-size: 0.95rem; }
 .painel .registro { margin: 1.5rem 0 0; font-size: 0.95rem; }
-@media (min-width: 60rem) {
-  .painel-topo { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2.5rem; }
-  .painel-topo .hemiciclo-fig { grid-column: 2; grid-row: 1; }
-  .painel-placar { grid-column: 1; grid-row: 1; }
-}
 @media (max-width: 39.99rem) { .campo--so-desktop { display: none; } }
 
 .deputados { list-style: none; margin: 0; padding: 0; display: grid; box-shadow: inset 0 1px 0 var(--linha); }
@@ -367,7 +355,7 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 .linha-dep:hover .linha-dep__nome { color: var(--cobalto); }
 .linha-dep:focus-visible { outline-offset: -3px; }
 
-.cabeca-dep { display: flex; gap: 1.5rem; align-items: center; padding-block: 1.5rem 1.5rem; }
+.cabeca-dep { display: flex; gap: 1.5rem; align-items: flex-start; padding-block: 1.5rem 1.5rem; }
 .cabeca-dep h1 { margin: 0; font-size: clamp(1.9rem, 5.4vw, 3rem); line-height: 1.05; line-height: round(up, 1.05em, 4px); }
 .cabeca-dep__sub { margin: 0.5rem 0 0; font-size: 1.15rem; line-height: 1.75rem; color: var(--tinta-suave); }
 .foto-dep { width: 6rem; height: 8rem; object-fit: cover; border-radius: var(--raio-grande); background: var(--linha); flex: none; box-shadow: var(--sombra); }
@@ -396,6 +384,7 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 .rodape { box-shadow: inset 0 1px 0 var(--linha); margin-top: 3rem; background: color-mix(in srgb, var(--superficie) 60%, var(--papel)); }
 .rodape__miolo { padding-block: 2rem 2.5rem; color: var(--tinta-suave); font-size: 0.95rem; display: grid; gap: 0.5rem; }
 .rodape p { margin: 0; max-width: 72ch; }
+.rodape .rodape__destaque { color: var(--tinta); font-weight: 500; font-size: 1.05rem; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
@@ -403,7 +392,6 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 }
 @media (forced-colors: active) {
   .seg-S, .seg-N, .seg-A, .seg-O, .seg-P { background: CanvasText; forced-color-adjust: none; }
-  .pt-S, .pt-N { fill: CanvasText; } .pt-A, .pt-O { fill: GrayText; } .pt-P { stroke: CanvasText; }
   .voto--S, .voto--N { forced-color-adjust: none; }
   .topo nav a[aria-current="page"] { outline: 2px solid Highlight; }
 }
