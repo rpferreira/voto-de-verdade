@@ -126,6 +126,7 @@ o cidadão pedir: o filtro de confiança vem desligado.
 
 A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Telas prontas:
 
+- **Modo escuro**: o site segue o aparelho; um botão (ícone no topo, ou "Modo escuro" no rodapé no celular) troca na hora e a escolha fica só no navegador.
 - **Início**: título e busca. A busca acha projetos e assuntos. Logo abaixo, os três compromissos do site (neutro e apartidário, sem nota e sem ranking, só o que foi votado) e os assuntos em cartões coloridos, as últimas votações e as votações decididas por pouca diferença (sim e não a menos de 15% uma da outra).
 - **Assunto** (`#/assunto/<assunto>`): lista de projetos votados, com abas "com o voto de cada deputado" e "todos". Cada linha mostra o placar e abre o projeto.
 - **Projeto** (`#/projeto/<id>`): título e resumo (aviso amarelo só quando a IA tem dúvida sobre o assunto ou o resumo; a nota sobre substitutivo é cinza e discreta), o placar e o voto de cada deputado. Tocar num número do placar mostra só aqueles deputados. Filtros por nome, partido, estado e voto. Se o projeto teve mais de uma votação, dá para escolher qual ver. O endereço antigo `#/votacao/<id>` abre a mesma página.
