@@ -180,6 +180,30 @@ class Gerador:
             self.paginas.append(canonico)
 
 
+PRINCIPIOS = [
+    ("M12 4v16|M7 20h10|M5 8h14|M5 8l-3 6a3.5 3.5 0 0 0 6 0z|M19 8l-3 6a3.5 3.5 0 0 0 6 0z",
+     "Neutro e apartidário", "Sem ligação com partidos, candidatos ou com a Câmara dos Deputados."),
+    ("M5 20v-6|M10 20V8|M15 20v-9|M20 20V5|M3 3l18 18",
+     "Sem nota e sem ranking", "Não damos nota a deputado nem dizemos quem votou certo ou errado."),
+    ("M4 4h16v16H4z|M8 12l3 3 5-6",
+     "Só o que foi votado", "O voto de cada deputado, direto dos dados oficiais, com o texto do projeto ao lado."),
+    ("M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z|M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z|M3 3l18 18",
+     "Sem rastreamento", "Não usamos cookies nem ferramentas que rastreiam quem visita o site."),
+]
+
+
+def principios_html():
+    """Os pontos fortes da tela inicial (os mesmos de app.js), já em HTML para quem lê sem JavaScript."""
+    itens = []
+    for caminhos, titulo, texto in PRINCIPIOS:
+        paths = "".join(f'<path d="{d}"/>' for d in caminhos.split("|"))
+        itens.append(
+            '<li><span class="principios__icone"><svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + '</svg></span>'
+            f'<strong>{esc(titulo)}</strong><span class="principios__desc">{esc(texto)}</span></li>')
+    return '<ul class="principios" aria-label="O que diferencia o Voto de Verdade">' + "".join(itens) + "</ul>"
+
+
 def migalhas_ld(itens):
     """BreadcrumbList: itens = [(nome, url ou None)]."""
     return {"@type": "BreadcrumbList", "itemListElement": [
@@ -462,10 +486,8 @@ def main():
         '<div class="miolo"><section class="heroi"><div>'
         '<h1>Veja como a Câmara votou, assunto por assunto</h1>'
         '<p class="heroi__texto">Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.</p></div></section>'
-        '<ul class="principios"><li><strong>Neutro e apartidário</strong><span>Sem ligação com partidos, candidatos ou com a Câmara dos Deputados.</span></li>'
-        '<li><strong>Sem nota e sem ranking</strong><span>Não damos nota a deputado nem dizemos quem votou certo ou errado.</span></li>'
-        '<li><strong>Só o que foi votado</strong><span>O voto de cada deputado, direto dos dados oficiais, com o texto do projeto ao lado.</span></li></ul>'
-        '<section class="secao"><h2>Assuntos</h2><ul>'
+        + principios_html()
+        + '<section class="secao"><h2>Assuntos</h2><ul>'
         + "".join(f'<li><a href="assunto/{a["slug"]}/">{esc(a["nome"])}</a>: {a["n"]} projetos</li>' for a in assuntos)
         + '</ul></section><section class="secao"><h2>Últimas votações</h2><ul>'
         + "".join(f'<li><a href="projeto/{pr["id"]}/">{esc(curto(pr["titulo"], 120))}</a> ({data_br(v["d"])})</li>' for pr, v in lista_rec)

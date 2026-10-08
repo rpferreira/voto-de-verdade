@@ -146,6 +146,11 @@
     "relacoes-internacionais-e-defesa": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z|M3 12h18|M12 3c3 3 3 15 0 18|M12 3c-3 3-3 15 0 18",
     "agropecuaria-e-campo": "M12 21V9|M12 9c0-3-2-5-5-5 0 3 2 5 5 5z|M12 14c0-3 2-5 5-5 0 3-2 5-5 5z",
     "outros": "M5 12h.01|M12 12h.01|M19 12h.01",
+    // Ícones dos pontos fortes na tela inicial
+    "p-neutro": "M12 4v16|M7 20h10|M5 8h14|M5 8l-3 6a3.5 3.5 0 0 0 6 0z|M19 8l-3 6a3.5 3.5 0 0 0 6 0z",
+    "p-sem-nota": "M5 20v-6|M10 20V8|M15 20v-9|M20 20V5|M3 3l18 18",
+    "p-votado": "M4 4h16v16H4z|M8 12l3 3 5-6",
+    "p-sem-rastreio": "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z|M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z|M3 3l18 18",
   };
   const SVGNS = "http://www.w3.org/2000/svg";
   function svg(tag, attrs) {
@@ -293,10 +298,11 @@
     const resultados = h("div", {});
     const destaques = h("div", {});
     const principios = h("ul", { class: "principios", "aria-label": "O que diferencia o Voto de Verdade" },
-      [["Neutro e apartidário", "Sem ligação com partidos, candidatos ou com a Câmara dos Deputados."],
-       ["Sem nota e sem ranking", "Não damos nota a deputado nem dizemos quem votou certo ou errado."],
-       ["Só o que foi votado", "O voto de cada deputado, direto dos dados oficiais, com o texto do projeto ao lado."]]
-        .map(([t, d]) => h("li", {}, h("strong", {}, t), h("span", {}, d))));
+      [["p-neutro", "Neutro e apartidário", "Sem ligação com partidos, candidatos ou com a Câmara dos Deputados."],
+       ["p-sem-nota", "Sem nota e sem ranking", "Não damos nota a deputado nem dizemos quem votou certo ou errado."],
+       ["p-votado", "Só o que foi votado", "O voto de cada deputado, direto dos dados oficiais, com o texto do projeto ao lado."],
+       ["p-sem-rastreio", "Sem rastreamento", "Não usamos cookies nem ferramentas que rastreiam quem visita o site."]]
+        .map(([ic, t, d]) => h("li", {}, h("span", { class: "principios__icone" }, icone(ic)), h("strong", {}, t), h("span", { class: "principios__desc" }, d))));
 
     principal.replaceChildren(h("div", { class: "miolo" },
       h("section", { class: "heroi", "aria-labelledby": "titulo-inicio" },
