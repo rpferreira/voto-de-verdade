@@ -241,7 +241,9 @@ details.ajuda p { margin: 0.5rem 0 0; color: var(--tinta-suave); }
 .cabeca-assunto__icone .icone { width: 2rem; height: 2rem; }
 @media (max-width: 30rem) { .cabeca-assunto--cor { align-items: flex-start; } .cabeca-assunto__icone { width: 3rem; height: 3rem; } }
 
-.abas { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0 1rem; }
+.guia-votacao { margin: 1.5rem 0 0; max-width: 72ch; color: var(--tinta-suave); font-size: 0.9rem; line-height: 1.5rem; }
+.guia-votacao strong { font-weight: 500; color: var(--tinta); }
+.abas { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
 .aba { font: inherit; font-weight: 500; font-size: 0.975rem; min-height: 3rem; padding: 0.5rem 1rem; cursor: pointer; border-radius: 99px; color: var(--tinta); background: var(--superficie); border: 1px solid var(--linha); font-variant-numeric: tabular-nums; transition: background 150ms; }
 .aba:hover:not(:disabled) { border-color: var(--tinta-suave); }
 .aba[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
