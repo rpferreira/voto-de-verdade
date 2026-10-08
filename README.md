@@ -142,7 +142,9 @@ A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Tel
 
 Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. As fotos dos deputados ficam em `site/fotos/` (`python3 site/baixar_fotos.py` baixa só as que faltam). A atualização diária faz tudo isso e publica no GitHub Pages. Mudanças em `site/` publicadas no ramo principal também vão ao ar sozinhas (fluxo **Publicar o site**), sem precisar rodar a atualização diária.
 
-**Testes.** `python3 site/gerar_paginas.py --saida _site` e `python3 testes/fumaca.py _site` abrem o site num navegador de verdade e conferem as telas principais (precisa de `pip install playwright` e `playwright install chromium`). O fluxo **Testar o site** roda isso em todo pull request.
+**Testes.** `python3 site/gerar_paginas.py --saida _site` e `python3 testes/fumaca.py _site` abrem o site num navegador de verdade e conferem as telas principais (precisa de `pip install -r testes/requirements.txt` e `playwright install chromium`). O fluxo **Testar o site** roda isso em todo pull request.
+
+**Segurança.** `python3 testes/seguranca.py` (roda em todo pull request) troca os dados por versões com código malicioso, gera o site e confere que nada executa, que links só valem se forem `https://` e que a política de segurança (CSP) bloqueia script embutido. Detalhes em [`SECURITY.md`](SECURITY.md).
 
 **Espaçamento.** O site usa uma grade de 8px com regras, não só múltiplos de 8: escala de passos (4px a 80px), papéis que dizem a relação entre elementos (`--junto`, `--perto`, `--item`, `--grupo`, `--bloco`, `--respiro`, `--margem`, `--calha`) e padrões de uso (cabeçalho de página, linha de lista, cartão, controle). Os componentes só usam papéis. As regras estão em [`docs/espacamento.md`](docs/espacamento.md) e `python3 testes/espacamento.py _site` barra qualquer valor fora da escala (roda em todo pull request).
 
@@ -167,6 +169,10 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `site/baixar_fotos.py` | Guarda as fotos dos deputados em `site/fotos/` |
 | `testes/fumaca.py` | Teste de fumaça do site num navegador de verdade |
 | `testes/espacamento.py` | Confere as regras de espaçamento (grade de 8px) no CSS e nas telas |
+| `testes/seguranca.py` | Ataca o site com dados maliciosos e confere a política de segurança (CSP), sem rastreio e sem cookies |
+| `testes/requirements.txt` | Versão fixa do programa de teste (o Dependabot avisa quando sai nova) |
+| `SECURITY.md` | Como avisar de uma falha e o que o site garante |
+| `.github/dependabot.yml` | Mantém em dia as versões fixas das ações do GitHub e do programa de teste |
 | `docs/espacamento.md` | As regras de espaçamento: escala, papéis e padrões |
 | `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, dados do site, fotos e publicação |
 | `.github/workflows/publicar-site.yml` | Põe o site no ar (depois da rotina diária e a cada mudança em `site/`) |
