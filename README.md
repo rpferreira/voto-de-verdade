@@ -146,6 +146,8 @@ Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/
 
 **Segurança.** `python3 testes/seguranca.py` (roda em todo pull request) troca os dados por versões com código malicioso, gera o site e confere que nada executa, que links só valem se forem `https://` e que a política de segurança (CSP) bloqueia script embutido. Detalhes em [`SECURITY.md`](SECURITY.md).
 
+**Atualizar as versões fixas.** O Dependabot abre pull requests semanais para as ações do GitHub e para o programa de teste. Os testes do pull request só cobrem o site; as ações usadas pela rotina diária (`checkout`, `upload-artifact`, `deploy-pages`) só são exercitadas de verdade depois do merge. Por isso: mescle um pull request por vez e, depois de mesclar um de `github-actions`, rode **Actions → Atualização diária → Run workflow** com `limite_resumos` = 0 e `reavaliar` = sim (não gasta IA) e confira que as três etapas ficam verdes.
+
 **Espaçamento.** O site usa uma grade de 8px com regras, não só múltiplos de 8: escala de passos (4px a 80px), papéis que dizem a relação entre elementos (`--junto`, `--perto`, `--item`, `--grupo`, `--bloco`, `--respiro`, `--margem`, `--calha`) e padrões de uso (cabeçalho de página, linha de lista, cartão, controle). Os componentes só usam papéis. As regras estão em [`docs/espacamento.md`](docs/espacamento.md) e `python3 testes/espacamento.py _site` barra qualquer valor fora da escala (roda em todo pull request).
 
 Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -m http.server --directory site`, e abra http://localhost:8000.
