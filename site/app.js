@@ -886,6 +886,24 @@
     return document.getElementById("titulo-deputado");
   }
 
+  // ------------------------------------------------------------------ apoie (doação única, por serviço de terceiros)
+  function telaApoie() {
+    principal.replaceChildren(h("div", { class: "miolo texto-longo" },
+      h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Apoie"))),
+      h("h1", { id: "titulo-apoie", tabindex: "-1" }, "Apoie o Voto de Verdade"),
+      h("p", {}, "O Voto de Verdade é gratuito e não tem anúncios. Se ele foi útil para você, pode fazer uma doação única, no valor que quiser. Não é assinatura: não há cobrança recorrente."),
+      h("p", { class: "apoie__acao" },
+        h("a", { class: "botao", href: window.DOACAO, rel: "noopener noreferrer" }, "Fazer uma doação")),
+      h("p", { class: "nota" }, "Você vai para o serviço de pagamento, que cuida de tudo. O Voto de Verdade não vê nem guarda os dados do seu pagamento."),
+      h("h2", {}, "O que a doação não muda"),
+      h("p", {}, "O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos."),
+      h("h2", {}, "Para onde vai o dinheiro"),
+      h("p", {}, "Para manter o site no ar. O principal custo é a inteligência artificial que escreve os resumos dos projetos."),
+      h("p", {}, h("a", { href: "#/" }, "Voltar ao início"))));
+    document.title = "Apoie o Voto de Verdade";
+    return document.getElementById("titulo-apoie");
+  }
+
   function telaNaoEncontrada() {
     principal.replaceChildren(h("div", { class: "miolo", style: "padding-block:3rem" },
       h("h1", { id: "titulo-nao", tabindex: "-1" }, "Não achamos esta página"),
@@ -911,6 +929,7 @@
       else if (partes[0] === "projeto" && partes[1]) titulo = await telaProjeto(partes[1], p);
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
       else if (partes[0] === "sobre") titulo = await telaSobre();
+      else if (partes[0] === "apoie" && window.DOACAO) titulo = telaApoie();
       else if (partes[0] === "deputados") titulo = await telaDeputados(p);
       else if (partes[0] === "deputado" && partes[1]) titulo = await telaDeputado(partes[1], p);
       else titulo = telaNaoEncontrada();
@@ -928,6 +947,155 @@
     }
     clicou = false;
   }
+
+  // ------------------------------------------------------------------ ferramentas para agentes de IA (WebMCP)
+  // Em navegadores com WebMCP, um agente pode consultar os dados sem mexer na tela. Todas só leem.
+  (function ferramentasParaAgentes() {
+    const mc = document.modelContext;
+    if (!mc || typeof mc.registerTool !== "function") return;
+    const AVISO = "Assunto e resumo são feitos por inteligência artificial e podem conter erros. O site não dá nota nem faz ranking de deputados; votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto.";
+    const pagina = (caminho) => new URL(RAIZ + caminho + "/", location.href).href;
+    const lim = (n, padrao) => Math.max(1, Math.min(50, Number.isFinite(n) ? n : padrao));
+    const avisos = (p) => [(p.ca && p.ca !== "alta") ? (p.aa || "Dúvida da inteligência artificial sobre o assunto.") : null,
+                           (p.cr && p.cr !== "alta") ? (p.ar || "Dúvida da inteligência artificial sobre o resumo.") : null].filter(Boolean);
+    const registrar = (def) => {
+      try {
+        const r = mc.registerTool({ ...def, annotations: { readOnlyHint: true, untrustedContentHint: false } });
+        if (r && r.catch) r.catch((e) => console.warn("WebMCP:", e));
+      } catch (e) { console.warn("WebMCP:", e); }
+    };
+
+    registrar({
+      name: "listar_assuntos",
+      description: "Lista os assuntos em que os projetos votados na Câmara dos Deputados estão organizados, com a quantidade de projetos de cada um.",
+      inputSchema: { type: "object", properties: {} },
+      async execute() {
+        const lista = await dados("assuntos");
+        return { assuntos: lista.map((x) => ({ slug: x.slug, nome: x.nome, descricao: x.descricao, projetos: x.n, com_voto_de_cada_deputado: x.n_ind, pagina: pagina("assunto/" + x.slug) })), aviso: AVISO };
+      },
+    });
+
+    registrar({
+      name: "buscar_projetos",
+      description: "Procura projetos votados na Câmara dos Deputados por palavras do título, resumo ou tema. Devolve os mais recentes primeiro.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          consulta: { type: "string", description: "Palavras para procurar, por exemplo: aposentadoria, aluguel, vacina." },
+          assunto: { type: "string", description: "Opcional. Slug do assunto, como saude ou educacao (veja listar_assuntos)." },
+          so_com_voto_de_cada_deputado: { type: "boolean", description: "Opcional. Se verdadeiro, só projetos em que o voto de cada deputado foi registrado." },
+          limite: { type: "number", description: "Quantos projetos devolver, de 1 a 50. Padrão 10." },
+        },
+      },
+      async execute({ consulta = "", assunto = "", so_com_voto_de_cada_deputado = false, limite } = {}) {
+        const todos = await projetosComTexto();
+        const ts = termos(consulta);
+        const achados = todos.filter((p) => (!ts.length || casa(p._t, ts)) && (!assunto || p.a === assunto || p.s === assunto) && (!so_com_voto_de_cada_deputado || p.ind))
+          .sort((x, y) => (y.ultima > x.ultima ? 1 : -1));
+        return {
+          total: achados.length,
+          projetos: achados.slice(0, lim(limite, 10)).map((p) => ({
+            id: p.id, nome: p.nome, titulo: p.titulo, resumo: p.resumo, assunto: p.a, ultima_votacao: p.ultima, aprovada: p.aprovada,
+            tem_voto_de_cada_deputado: p.ind, tipo_de_votacao: p.tipo, avisos: avisos(p), pagina: pagina("projeto/" + p.id), texto_oficial: p.texto || null })),
+          aviso: AVISO,
+        };
+      },
+    });
+
+    registrar({
+      name: "votos_do_projeto",
+      description: "Mostra o placar e como cada deputado votou num projeto (votação nominal). Se o projeto só teve votação simbólica ou secreta, explica que não há voto individual.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          projeto_id: { type: "string", description: "O id do projeto, como vem em buscar_projetos." },
+          votacao_id: { type: "string", description: "Opcional. Id de uma votação específica; sem ele, usa a mais recente com voto de cada deputado." },
+          voto: { type: "string", enum: ["S", "N", "A", "O", "P"], description: "Opcional. Só os deputados com este voto: S sim, N não, A abstenção, O obstrução, P presidia a sessão." },
+        },
+        required: ["projeto_id"],
+      },
+      async execute({ projeto_id, votacao_id, voto } = {}, { signal } = {}) {
+        const [todos, vots, deputados] = await Promise.all([projetosComTexto(), indiceVotacoes(), dados("deputados")]);
+        const p = todos.find((x) => String(x.id) === String(projeto_id));
+        if (!p) return { error: `Projeto ${projeto_id} não encontrado. Use buscar_projetos para achar o id.` };
+        const minhas = (vots.porProjeto[p.id] || []).slice().sort((x, y) => (x.d < y.d ? -1 : 1));
+        const nominais = minhas.filter((v) => v.t === "nominal");
+        const v = votacao_id ? minhas.find((x) => x.id === votacao_id) : nominais[nominais.length - 1];
+        if (!v || v.t !== "nominal") {
+          return { projeto: p.titulo, pagina: pagina("projeto/" + p.id),
+            observacao: "Este projeto não teve votação nominal: na votação simbólica ou secreta o voto de cada deputado não é registrado.",
+            votacoes: minhas.map((x) => ({ id: x.id, data: x.d, tipo: x.t, aprovada: x.ap })) };
+        }
+        const r = await fetch(RAIZ + "dados/votacoes/" + v.id + ".json", { signal });
+        if (!r.ok) return { error: "Não consegui carregar os votos desta votação." };
+        const arq = await r.json();
+        const nomes = Object.fromEntries(deputados.map((d) => [d.id, d]));
+        const NOME = { S: "Sim", N: "Não", A: "Abstenção", O: "Obstrução", P: "Presidia a sessão" };
+        const grupos = {};
+        for (const [did, cod, partido] of arq.v) {
+          if (voto && cod !== voto) continue;
+          (grupos[NOME[cod]] = grupos[NOME[cod]] || []).push(`${(nomes[did] || {}).nome || "Deputado " + did} (${partido || (nomes[did] || {}).partido || "?"}-${(nomes[did] || {}).uf || "?"})`);
+        }
+        for (const k in grupos) grupos[k].sort((x, y) => x.localeCompare(y, "pt-BR"));
+        return { projeto: p.titulo, votacao: { id: v.id, data: v.d, aprovada: v.ap, descricao: v.desc },
+          placar: { sim: v.s[0], nao: v.s[1], abstencao: v.s[2], obstrucao: v.s[3], presidia_a_sessao: v.s[4] },
+          deputados_por_voto: grupos, outras_votacoes: nominais.filter((x) => x.id !== v.id).map((x) => ({ id: x.id, data: x.d })), pagina: pagina("projeto/" + p.id), aviso: AVISO };
+      },
+    });
+
+    registrar({
+      name: "buscar_deputado",
+      description: "Procura deputados federais pelo nome, partido ou estado e devolve o id para usar em votos_do_deputado.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          nome: { type: "string", description: "Parte do nome do deputado." },
+          uf: { type: "string", description: "Opcional. Sigla do estado, como GO ou SP." },
+          partido: { type: "string", description: "Opcional. Sigla do partido." },
+          limite: { type: "number", description: "Quantos devolver, de 1 a 50. Padrão 10." },
+        },
+      },
+      async execute({ nome = "", uf = "", partido = "", limite } = {}) {
+        const lista = await dados("deputados");
+        const ts = termos(nome);
+        const achados = lista.filter((d) => (!ts.length || casa(semAcento(d.nome), ts)) && (!uf || d.uf === uf.toUpperCase()) && (!partido || semAcento(d.partido) === semAcento(partido)));
+        return { total: achados.length, deputados: achados.slice(0, lim(limite, 10)).map((d) => ({ id: d.id, nome: d.nome, partido: d.partido, uf: d.uf, em_exercicio: d.ex, pagina: pagina("deputado/" + d.id) })) };
+      },
+    });
+
+    registrar({
+      name: "votos_do_deputado",
+      description: "Mostra como um deputado federal votou nas votações nominais, da mais recente para a mais antiga, sem nota e sem ranking.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          deputado_id: { type: "number", description: "O id do deputado, como vem em buscar_deputado." },
+          consulta: { type: "string", description: "Opcional. Palavras para filtrar os projetos." },
+          voto: { type: "string", enum: ["S", "N", "A", "O", "P"], description: "Opcional. Só votos deste tipo." },
+          limite: { type: "number", description: "Quantos votos devolver, de 1 a 50. Padrão 20." },
+        },
+        required: ["deputado_id"],
+      },
+      async execute({ deputado_id, consulta = "", voto, limite } = {}, { signal } = {}) {
+        const [lista, vots, todos] = await Promise.all([dados("deputados"), indiceVotacoes(), projetosComTexto()]);
+        const d = lista.find((x) => x.id === Number(deputado_id));
+        if (!d) return { error: `Deputado ${deputado_id} não encontrado. Use buscar_deputado para achar o id.` };
+        const r = await fetch(RAIZ + "dados/deputados/" + d.id + ".json", { signal });
+        if (!r.ok) return { error: "Este deputado não tem voto registrado nas votações nominais do período." };
+        const arq = await r.json();
+        const porId = Object.fromEntries(todos.map((p) => [p.id, p]));
+        const NOME = { S: "Sim", N: "Não", A: "Abstenção", O: "Obstrução", P: "Presidia a sessão" };
+        const ts = termos(consulta);
+        const itens = arq.v.map(([vid, cod]) => ({ v: vots.porId[vid], cod })).filter((x) => x.v && porId[x.v.p])
+          .filter((x) => (!voto || x.cod === voto) && (!ts.length || casa(porId[x.v.p]._t, ts)))
+          .sort((x, y) => (y.v.d > x.v.d ? 1 : -1));
+        return { deputado: { id: d.id, nome: d.nome, partido: d.partido, uf: d.uf, em_exercicio: d.ex, pagina: pagina("deputado/" + d.id) },
+          total_de_votos: itens.length,
+          votos: itens.slice(0, lim(limite, 20)).map((x) => ({ data: x.v.d, voto: NOME[x.cod], projeto_id: x.v.p, projeto: porId[x.v.p].nome, titulo: porId[x.v.p].titulo, pagina: pagina("projeto/" + x.v.p) })),
+          aviso: AVISO };
+      },
+    });
+  })();
 
   // Rodapé com a data dos dados, em qualquer página.
   dados("meta").then((meta) => {
