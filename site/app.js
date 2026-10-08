@@ -150,42 +150,6 @@
   const ORDEM_VOTO = ["S", "N", "A", "O", "P"];
   const fichaVoto = (cod) => h("span", { class: "voto voto--" + cod }, VOTO[cod].nome);
 
-  // Hemiciclo: um ponto por deputado, do lado esquerdo (sim) ao direito (não e outros).
-  // `linhas` são objetos com .cod. Devolve o <svg>; svg.marcar(fn) apaga os pontos em que fn(linha) é falso.
-  function hemiciclo(linhas, rotulo) {
-    const n = linhas.length;
-    const W = 400, cx = 200, r0 = 58, r1 = 190;
-    const filas = Math.max(3, Math.round(Math.sqrt((n * (r1 - r0)) / (Math.PI * ((r0 + r1) / 2)))));
-    const raios = Array.from({ length: filas }, (_, i) => (filas === 1 ? r1 : r0 + (i * (r1 - r0)) / (filas - 1)));
-    const soma = raios.reduce((a, b) => a + b, 0);
-    const porFila = raios.map((r) => Math.max(2, Math.round((n * r) / soma)));
-    let dif = n - porFila.reduce((a, b) => a + b, 0);
-    for (let i = filas - 1; dif !== 0; i = (i - 1 + filas) % filas) { porFila[i] += Math.sign(dif); dif -= Math.sign(dif); }
-    const passo = (r1 - r0) / Math.max(1, filas - 1);
-    const rp = Math.max(1.6, Math.min(passo, (Math.PI * r0) / porFila[0]) * 0.4);
-    const cadeiras = [];
-    raios.forEach((r, i) => {
-      const k = porFila[i];
-      for (let j = 0; j < k; j++) {
-        const a = k === 1 ? Math.PI / 2 : Math.PI - (j * Math.PI) / (k - 1);
-        cadeiras.push({ a, r, x: cx + r * Math.cos(a), y: cx + 6 - r * Math.sin(a) });
-      }
-    });
-    cadeiras.sort((p, q) => q.a - p.a || p.r - q.r);
-    const ordenadas = linhas.slice().sort((p, q) => ORDEM_VOTO.indexOf(p.cod) - ORDEM_VOTO.indexOf(q.cod));
-    const el = svg("svg", { class: "hemiciclo", viewBox: `0 0 ${W} ${cx + 6 + rp + 2}`, role: "img", "aria-label": rotulo });
-    const pontos = cadeiras.map((c, i) => {
-      const p = svg("circle", { cx: c.x.toFixed(1), cy: c.y.toFixed(1), r: rp.toFixed(2), class: "pt-" + (ordenadas[i] ? ordenadas[i].cod : "A") });
-      el.append(p);
-      return p;
-    });
-    el.marcar = (fn) => {
-      el.classList.toggle("filtrado", !!fn);
-      pontos.forEach((p, i) => p.classList.toggle("apagado", !!fn && !fn(ordenadas[i])));
-    };
-    return el;
-  }
-
   // Números do placar; cada um é um botão que mostra só os deputados com aquele voto.
   function placarVotos(total, aoEscolher) {
     const itens = ORDEM_VOTO.filter((c) => total[c]).map((c) => {
@@ -304,19 +268,22 @@
     });
     const estadoTxt = h("p", { class: "estado so-leitor", role: "status", "aria-live": "polite" });
     const resultados = h("div", {});
-    const figura = h("div", {});
     const destaques = h("div", {});
+    const principios = h("ul", { class: "principios", "aria-label": "O que diferencia o Voto de Verdade" },
+      [["Neutro e apartidário", "Sem ligação com partidos, candidatos ou com a Câmara dos Deputados."],
+       ["Sem nota e sem ranking", "Não damos nota a deputado nem dizemos quem votou certo ou errado."],
+       ["Só o que foi votado", "O voto de cada deputado, direto dos dados oficiais, com o texto do projeto ao lado."]]
+        .map(([t, d]) => h("li", {}, h("strong", {}, t), h("span", {}, d))));
 
     principal.replaceChildren(h("div", { class: "miolo" },
       h("section", { class: "heroi", "aria-labelledby": "titulo-inicio" },
-        h("div", {},
-          h("h1", { id: "titulo-inicio", tabindex: "-1" }, "Como a Câmara votou o que importa para você?"),
+        h("h1", { id: "titulo-inicio", tabindex: "-1" }, "Como a Câmara votou o que importa para você?"),
+        h("div", { class: "heroi__lado" },
           h("p", { class: "heroi__texto" }, "Escolha um assunto, veja os projetos votados e o voto de cada deputado federal."),
           h("form", { class: "heroi__busca", role: "search", "aria-label": "Procurar assunto ou projeto", onsubmit: (e) => e.preventDefault() },
             h("label", { for: "busca", class: "so-leitor" }, "Procure por um tema ou palavra"), campoBusca),
-          h("p", { class: "heroi__link" }, "Já sabe quem? ", h("a", { href: "#/deputados" }, "Procure um deputado pelo nome"))),
-        figura),
-      estadoTxt, resultados, destaques,
+          h("p", { class: "heroi__link" }, "Já sabe quem? ", h("a", { href: "#/deputados" }, "Procure um deputado pelo nome")))),
+      principios, estadoTxt, resultados, destaques,
       h("p", { class: "confianca" },
         `Dados oficiais da Câmara dos Deputados, de ${data(meta.de)} a ${data(meta.ate)}. Assunto e resumo são feitos por inteligência artificial e podem errar; avisamos quando há dúvida. `,
         h("a", { href: "#/sobre" }, "Como o site funciona"))));
@@ -335,12 +302,12 @@
         resultados.replaceChildren(h("section", { class: "secao", "aria-labelledby": "t-assuntos" },
           h("h2", { id: "t-assuntos" }, "Assuntos"),
           h("ul", { class: "tiles" }, assuntos.slice().sort(porNome).map((a) => cartaoTile(a, a.n, null, "")))));
-        destaques.hidden = false;
+        destaques.hidden = false; principios.hidden = false;
         anunciar(estadoTxt, "");
         return;
       }
 
-      destaques.hidden = true;
+      destaques.hidden = true; principios.hidden = true;
       anunciar(estadoTxt, "Procurando…");
       let todos, vots;
       try { [todos, vots] = await Promise.all([projetosComTexto(), indiceVotacoes()]); } catch (e) {
@@ -381,7 +348,7 @@
     comEspera(campoBusca, () => atualizar(true));
     await atualizar(true);
 
-    // Últimas votações, votações apertadas e o hemiciclo: chegam depois, sem atrasar o resto.
+    // Últimas votações e votações apertadas: chegam depois, sem atrasar o resto.
     (async () => {
       try {
         const [projetos, vots] = await Promise.all([projetosComTexto(), indiceVotacoes()]);
@@ -400,15 +367,6 @@
                 h("p", { class: "secao__intro" }, "Votações em que sim e não ficaram a menos de 15% de diferença."),
                 lista(apertadas))
             : null));
-        const v = recentes[0];
-        const arq = await dados("votacoes/" + v.id);
-        const linhas = arq.v.map(([, cod]) => ({ cod }));
-        const pr = porId[v.p];
-        figura.replaceChildren(h("figure", { class: "hemiciclo-fig" },
-          hemiciclo(linhas, `Cada ponto é um deputado: ${num(v.s[0])} votaram sim, ${num(v.s[1])} votaram não e ${num(v.s[2] + v.s[3] + v.s[4])} fizeram outra escolha.`),
-          h("figcaption", {}, `Cada ponto é um deputado. Última votação com o voto de cada um, em ${data(v.d)}: `,
-            h("a", { href: "#/projeto/" + pr.id + "?votacao=" + encodeURIComponent(v.id) }, descCurta(pr.titulo, 90)),
-            `${/…$/.test(descCurta(pr.titulo, 90)) ? " " : ". "}${num(v.s[0])} sim e ${num(v.s[1])} não.`)));
       } catch (e) { console.error(e); }
     })();
     return document.getElementById("titulo-inicio");
@@ -421,6 +379,8 @@
     principal.replaceChildren(h("div", { class: "miolo texto-longo" },
       h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Como o site funciona"))),
       h("h1", { id: "titulo-sobre", tabindex: "-1" }, "Como o site funciona"),
+      h("h2", {}, "Neutro e apartidário, sem nota e sem ranking"),
+      h("p", {}, "Não dá nota, não faz ranking e não diz quem votou certo ou errado. Mostra o que cada deputado votou. Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
       h("h2", {}, "De onde vêm os dados"),
       h("p", {}, `Do portal de Dados Abertos da Câmara dos Deputados. O site mostra ${num(meta.votacoes)} votações em plenário, de ${data(meta.de)} a ${data(meta.ate)}, e é atualizado todos os dias. Quando a Câmara não vota (recesso, período de eleições), não há novidades.`),
       h("h2", {}, "Assunto e resumo são feitos por inteligência artificial"),
@@ -429,8 +389,6 @@
       h("p", {}, `${num(meta.simbolicas)} das ${num(meta.votacoes)} votações (${pct}%) foram simbólicas: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Nesses casos não há como saber como cada um votou. Só as ${num(meta.nominais)} votações nominais têm o voto de cada deputado.`),
       h("h2", {}, "O que significa “presidia a sessão”"),
       h("p", {}, "Quem conduz a sessão só vota em situações previstas no regimento (artigo 17). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não."),
-      h("h2", {}, "O que o site não faz"),
-      h("p", {}, "Não dá nota, não faz ranking e não diz quem votou certo ou errado. Mostra o que cada deputado votou. Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
       h("h2", {}, "Quem faz e privacidade"),
       h("p", {}, "O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita."),
       h("p", {}, h("a", { href: "#/" }, "Voltar ao início"))));
@@ -563,8 +521,6 @@
       const id = (x) => `${x}-${n}`;
 
       const placar = placarVotos(total, (cod) => { selV.value = selV.value === cod ? "" : cod; atualizar(true); });
-      const rotuloHemiciclo = `Cada ponto é um deputado: ${ORDEM_VOTO.filter((c) => total[c]).map((c) => `${num(total[c])} ${VOTO[c].nome.toLowerCase()}`).join(", ")}.`;
-      const quadro = hemiciclo(linhas, rotuloHemiciclo);
 
       const campoQ = h("input", { id: id("q"), type: "search", autocomplete: "off", spellcheck: "false", value: estado.q, placeholder: "nome do deputado", enterkeyhint: "search" });
       const selPt = h("select", { id: id("pt") }, h("option", { value: "" }, "Todos"), partidos.map((x) => h("option", { value: x }, x)));
@@ -593,7 +549,6 @@
 
       raiz.replaceChildren(
         h("div", { class: "painel-topo" },
-          h("figure", { class: "hemiciclo-fig" }, quadro),
           h("div", { class: "painel-placar" },
             placar,
             h("p", { class: "nota" }, `${plural(nTotal, "deputado registrou", "deputados registraram")} voto; quem faltou não aparece. Toque em um número para ver só esses deputados.`),
@@ -615,8 +570,6 @@
         const r = filtrar().sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
         const mostrados = r.slice(0, limite);
         placar.marcar(estado.v);
-        const dentro = new Set(r);
-        quadro.marcar(filtrando ? (l) => dentro.has(l) : null);
         lista.replaceChildren(...mostrados.map((l) => h("li", { class: "deputado" },
           h("a", { class: "deputado__nome", href: "#/deputado/" + l.id }, l.nome),
           h("span", { class: "deputado__sub" }, [l.partido, l.uf].filter(Boolean).join(" · ")),
