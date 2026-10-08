@@ -152,7 +152,7 @@ jobs:
           LIMITE_INCERTOS: ${{ vars.LIMITE_INCERTOS }}
         run: |
           python coleta/monitorar.py \
-            --site "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" \
+            --site "https://votodeverdade.com.br" \
             --atualizar "${{ needs.atualizar.result }}" \
             --publicar "${{ needs.publicar.result }}" \
             --execucao-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
