@@ -848,7 +848,7 @@
           const t = porAssunto[sl], ativo = estado.a === sl;
           return h("tr", { class: ativo ? "ativa" : null },
             h("th", { scope: "row" },
-              h("button", { type: "button", class: "link-botao", "aria-pressed": ativo ? "true" : "false", onclick: () => { selA.value = ativo ? "" : sl; atualizar(true); } }, nomeAssunto[sl]),
+              h("button", { type: "button", class: "escolha-assunto", "aria-pressed": ativo ? "true" : "false", onclick: () => { selA.value = ativo ? "" : sl; atualizar(true); } }, nomeAssunto[sl]),
               h("span", { class: "barra-voto barra-voto--fina", "aria-hidden": "true" },
                 h("i", { class: "seg-S", style: `width:${(t.S / t.n) * 100}%` }), h("i", { class: "seg-N", style: `width:${(t.N / t.n) * 100}%` }), h("i", { class: "seg-O", style: `width:${(t.O / t.n) * 100}%` }))),
             h("td", { class: "num" }, t.S), h("td", { class: "num" }, t.N), h("td", { class: "num" }, t.O), h("td", { class: "num" }, t.n));
