@@ -1,5 +1,11 @@
 # Mantém as versões fixas (das ações do GitHub e do programa de teste) em dia:
 # o Dependabot abre um pull request quando sai versão nova, e os testes rodam nele.
+#
+# ATENÇÃO ao mesclar um PR de "github-actions": os testes do pull request só cobrem o site. Quem usa
+# upload-artifact, checkout na rotina diária e deploy-pages é a rotina diária, que só roda de verdade
+# depois do merge. Então, depois de mesclar, rode Actions > Atualização diária > Run workflow com
+# limite_resumos = 0 e reavaliar = sim (não gasta IA) e confira que as três etapas ficam verdes.
+# Mescle um PR por vez.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
