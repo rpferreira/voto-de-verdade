@@ -179,13 +179,20 @@ h3 { font-weight: 500; }
 .duas-colunas { display: grid; gap: var(--calha); margin-top: var(--respiro); }
 @media (min-width: 56rem) { .duas-colunas { grid-template-columns: 1fr 1fr; } }
 .duas-colunas .secao { margin-top: 0; }
-.principios { list-style: none; margin: var(--grupo) 0 0; padding: var(--grupo); display: grid; gap: var(--grupo); background: var(--cobalto-claro); border-radius: 1.5rem; }
-.principios li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); column-gap: var(--item); row-gap: var(--junto); align-content: start; }
-.principios__icone { grid-row: span 2; display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--cobalto); color: var(--sobre-cobalto); }
-.principios__icone .icone { width: 1.75rem; height: 1.75rem; }
-.principios strong { font-weight: 500; font-size: 1.25rem; line-height: 1.75rem; color: var(--tinta); align-self: end; }
-.principios__desc { color: var(--tinta); max-width: 36ch; }
-@media (min-width: 48rem) { .principios { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--bloco) var(--calha); padding: var(--bloco); } }
+.principios { list-style: none; margin: var(--item) 0 0; padding: var(--item); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--item); background: var(--cobalto-claro); border-radius: 1.25rem; }
+.principios li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: var(--perto); row-gap: 0; align-content: start; }
+.principios__icone { grid-row: span 2; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--cobalto); color: var(--sobre-cobalto); }
+.principios__icone .icone { width: 1.5rem; height: 1.5rem; }
+.principios strong { font-weight: 500; font-size: 1rem; line-height: 1.5rem; color: var(--tinta); align-self: end; }
+.principios__desc { color: var(--tinta); font-size: 0.9375rem; line-height: 1.25rem; }
+@media (max-width: 39.99rem) {
+  .principios li { align-items: center; row-gap: 0; }
+  .principios__icone { grid-row: auto; }
+  .principios strong { align-self: center; line-height: 1.25rem; }
+  /* Só o título cabe em duas colunas no celular; a frase continua para quem usa leitor de tela. */
+  .principios__desc { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media (min-width: 64rem) { .principios { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--grupo); padding: var(--item) var(--grupo); } }
 .principios[hidden] { display: none; }
 .confianca { margin: var(--bloco) 0 0; max-width: 70ch; color: var(--tinta-suave); font-size: 0.95rem; }
 

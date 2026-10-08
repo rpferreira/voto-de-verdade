@@ -298,10 +298,10 @@
     const resultados = h("div", {});
     const destaques = h("div", {});
     const principios = h("ul", { class: "principios", "aria-label": "O que diferencia o Voto de Verdade" },
-      [["p-neutro", "Neutro e apartidário", "Sem ligação com partidos, candidatos ou com a Câmara dos Deputados."],
-       ["p-sem-nota", "Sem nota e sem ranking", "Não damos nota a deputado nem dizemos quem votou certo ou errado."],
-       ["p-votado", "Só o que foi votado", "O voto de cada deputado, direto dos dados oficiais, com o texto do projeto ao lado."],
-       ["p-sem-rastreio", "Sem rastreamento", "Não usamos cookies nem ferramentas que rastreiam quem visita o site."]]
+      [["p-neutro", "Neutro e apartidário", "Sem ligação com partidos, candidatos ou a Câmara."],
+       ["p-sem-nota", "Sem nota e sem ranking", "Não dizemos quem votou certo ou errado."],
+       ["p-votado", "Só o que foi votado", "O voto de cada deputado, dos dados oficiais."],
+       ["p-sem-rastreio", "Sem cookies nem rastreio", "Não usamos ferramentas que rastreiam quem visita."]]
         .map(([ic, t, d]) => h("li", {}, h("span", { class: "principios__icone" }, icone(ic)), h("strong", {}, t), h("span", { class: "principios__desc" }, d))));
 
     principal.replaceChildren(h("div", { class: "miolo" },
