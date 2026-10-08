@@ -396,9 +396,6 @@ details.ajuda p { margin: 0.5rem 0 0; color: var(--tinta-suave); }
 .projeto__corpo > div:first-child p, .projeto__corpo > .nota { max-width: 70ch; }
 .painel .bloco { margin-top: 1.25rem; }
 .subtitulo { margin: 0 0 0.5rem; font-size: 1.25rem; }
-.painel--compacto .placar dd { font-size: 1.75rem; }
-.painel--compacto .placar { grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr)); }
-.painel--compacto .deputados { max-height: 28rem; overflow-y: auto; }
 .texto-longo { max-width: 46rem; padding-bottom: 2rem; }
 .texto-longo h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 1rem 0 0.5rem; letter-spacing: -0.02em; }
 .texto-longo h2 { margin: 1.75rem 0 0.4rem; font-size: 1.3rem; }

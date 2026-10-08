@@ -128,7 +128,7 @@ A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Tel
 
 - **Início** (`#/`): busca em destaque e os assuntos em cartões coloridos.
 - **Página do assunto** (`#/assunto/<assunto>`): a lista de projetos votados, com duas abas: só os que têm o voto de cada deputado, ou todos. Cada linha mostra o placar e abre a página do projeto.
-- **Página do projeto** (`#/projeto/<id>`): título e resumo (com aviso quando a IA tem dúvida), o placar, como cada partido votou e o voto de cada deputado, com filtros por nome, partido, estado e voto. Se o projeto teve mais de uma votação, dá para escolher qual ver. Os filtros ficam no endereço, então dá para compartilhar o link. O endereço antigo `#/votacao/<id>` abre a mesma página.
+- **Página do projeto** (`#/projeto/<id>`): título e resumo (com aviso quando a IA tem dúvida), o placar e o voto de cada deputado, com filtros por nome, partido, estado e voto. Se o projeto teve mais de uma votação, dá para escolher qual ver. Os filtros ficam no endereço, então dá para compartilhar o link. O endereço antigo `#/votacao/<id>` abre a mesma página.
 - **Deputados** (`#/deputados`): busca por nome, partido e estado.
 - **Página do deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, com filtros por assunto e voto. Cada voto abre a página do projeto. Sem nota e sem ranking.
 - **Como o site funciona** (`#/sobre`): de onde vêm os dados, o que a IA faz, por que nem toda votação mostra o voto de cada deputado.

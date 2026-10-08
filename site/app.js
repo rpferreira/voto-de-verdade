@@ -384,7 +384,7 @@
   function painelVotos(v, opc) {
     opc = opc || {};
     const n = ++contadorPainel;
-    const raiz = h("div", { class: "painel" + (opc.tabela ? "" : " painel--compacto") }, h("p", { class: "nota" }, "Carregando os votos…"));
+    const raiz = h("div", { class: "painel" }, h("p", { class: "nota" }, "Carregando os votos…"));
     montar().catch((e) => {
       console.error(e);
       raiz.replaceChildren(h("p", { class: "nota" }, "Não foi possível carregar os votos desta votação. Recarregue a página e tente de novo."));
@@ -422,7 +422,6 @@
       selPt.value = estado.pt; selUf.value = estado.uf; selV.value = estado.v;
       const limpar = h("button", { type: "button", class: "botao botao--leve" }, "Limpar filtros");
       const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
-      const tabelaBox = h("div", { class: "tabela-rolavel", tabindex: "0", role: "region", "aria-label": "Como cada partido votou" });
       const lista = h("ul", { class: "deputados" });
       const maisBox = h("div", { class: "mais" });
 
@@ -443,10 +442,8 @@
 
       raiz.replaceChildren(...[
         placar, barraTotal,
-        h("p", { class: "nota" }, `${plural(nTotal, "deputado registrou", "deputados registraram")} voto. Quem faltou ou não votou não aparece na lista.`),
-        opc.tabela ? h("div", { class: "bloco" }, h("h3", { class: "subtitulo" }, "Como cada partido votou"),
-          h("p", { class: "nota" }, "Cada deputado conta no partido em que estava no dia da votação. Escolha um partido para ver os deputados dele."), tabelaBox) : null,
-        h("div", { class: "bloco" }, opc.tabela ? h("h3", { class: "subtitulo" }, "Como cada deputado votou") : null, filtros, estadoTxt, lista, maisBox, ajudaVotos)].filter(Boolean));
+        h("p", { class: "nota" }, `${plural(nTotal, "deputado registrou", "deputados registraram")} voto. Quem faltou ou não votou não aparece na lista. O partido é o que o deputado tinha no dia da votação.`),
+        h("div", { class: "bloco" }, filtros, estadoTxt, lista, maisBox, ajudaVotos)].filter(Boolean));
 
       function filtrar(ignorar) {
         const ts = termos(estado.q);
@@ -455,32 +452,10 @@
           (!estado.uf || l.uf === estado.uf) && (ignorar.includes("v") || !estado.v || l.cod === estado.v));
       }
 
-      function desenharTabela() {
-        if (!opc.tabela) return;
-        const por = {};
-        for (const l of filtrar(["pt", "v"])) { const t = (por[l.partido || "Sem partido"] ||= { S: 0, N: 0, O: 0, n: 0 }); t.n++; if (l.cod === "S" || l.cod === "N") t[l.cod]++; else t.O++; }
-        const nomes = Object.keys(por).sort((a, b) => a.localeCompare(b, "pt-BR"));
-        if (!nomes.length) { tabelaBox.replaceChildren(h("p", { class: "nota" }, "Nenhum deputado com esses filtros.")); return; }
-        tabelaBox.replaceChildren(h("table", { class: "tabela-partidos" },
-          h("caption", { class: "so-leitor" }, "Votos por partido"),
-          h("thead", {}, h("tr", {}, h("th", { scope: "col" }, "Partido"), h("th", { scope: "col", class: "num" }, "Sim"), h("th", { scope: "col", class: "num" }, "Não"),
-            h("th", { scope: "col", class: "num" }, "Outros"), h("th", { scope: "col", class: "num" }, "Total"))),
-          h("tbody", {}, nomes.map((nm) => {
-            const t = por[nm], ativo = estado.pt === nm;
-            return h("tr", { class: ativo ? "ativa" : null },
-              h("th", { scope: "row" },
-                h("button", { type: "button", class: "link-botao", "aria-pressed": ativo ? "true" : "false", onclick: () => { selPt.value = ativo ? "" : nm; atualizar(true); } }, nm),
-                h("span", { class: "barra-voto barra-voto--fina", "aria-hidden": "true" },
-                  h("i", { class: "seg-S", style: `width:${(t.S / t.n) * 100}%` }), h("i", { class: "seg-N", style: `width:${(t.N / t.n) * 100}%` }), h("i", { class: "seg-O", style: `width:${(t.O / t.n) * 100}%` }))),
-              h("td", { class: "num" }, t.S), h("td", { class: "num" }, t.N), h("td", { class: "num" }, t.O), h("td", { class: "num" }, t.n));
-          }))));
-      }
-
       function atualizar(reiniciar) {
         if (reiniciar) limite = 60;
         estado.q = campoQ.value.trim(); estado.pt = selPt.value; estado.uf = selUf.value; estado.v = selV.value;
         if (opc.gravar) opc.gravar(limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, v: estado.v }));
-        desenharTabela();
         const r = filtrar([]).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
         const mostrados = r.slice(0, limite);
         lista.replaceChildren(...mostrados.map((l) => h("li", { class: "deputado" },
@@ -524,7 +499,7 @@
         h("p", { class: "nota" }, `${data(v.d)} · ${v.ap ? "Aprovada" : "Rejeitada"}`),
         h("p", { class: "oficial" }, v.desc),
         v.c !== "alta" && v.av ? h("div", { class: "cartao-aviso" }, h("strong", {}, "Atenção"), h("p", {}, v.av)) : null,
-        painelVotos(v, { tabela: true, p: params, gravar: (q) => { q.set("votacao", v.id); gravarEndereco("projeto/" + pr.id, q); } })].filter(Boolean));
+        painelVotos(v, { p: params, gravar: (q) => { q.set("votacao", v.id); gravarEndereco("projeto/" + pr.id, q); } })].filter(Boolean));
     };
 
     const secaoVotos = h("section", { class: "bloco", "aria-labelledby": "votos-titulo" }, h("h2", { id: "votos-titulo" }, "Como cada deputado votou"));
