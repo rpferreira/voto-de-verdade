@@ -182,13 +182,13 @@ class Gerador:
 
 PRINCIPIOS = [
     ("M12 4v16|M7 20h10|M5 8h14|M5 8l-3 6a3.5 3.5 0 0 0 6 0z|M19 8l-3 6a3.5 3.5 0 0 0 6 0z",
-     "Neutro e apartidário", "Sem ligação com partidos, candidatos ou com a Câmara dos Deputados."),
+     "Neutro e apartidário", "Sem ligação com partidos, candidatos ou a Câmara."),
     ("M5 20v-6|M10 20V8|M15 20v-9|M20 20V5|M3 3l18 18",
-     "Sem nota e sem ranking", "Não damos nota a deputado nem dizemos quem votou certo ou errado."),
+     "Sem nota e sem ranking", "Não dizemos quem votou certo ou errado."),
     ("M4 4h16v16H4z|M8 12l3 3 5-6",
-     "Só o que foi votado", "O voto de cada deputado, direto dos dados oficiais, com o texto do projeto ao lado."),
+     "Só o que foi votado", "O voto de cada deputado, dos dados oficiais."),
     ("M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z|M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z|M3 3l18 18",
-     "Sem rastreamento", "Não usamos cookies nem ferramentas que rastreiam quem visita o site."),
+     "Sem cookies nem rastreio", "Não usamos ferramentas que rastreiam quem visita."),
 ]
 
 
