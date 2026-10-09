@@ -346,6 +346,17 @@ def main():
             grupos_html = '<details><summary>Lista de deputados por voto</summary>' + "".join(partes_h) + "</details>"
             grupos_md = "\n".join(partes_m)
 
+        # Pontos principais e texto oficial: logo depois do resumo, como no aplicativo (some sem JavaScript só se não houver nada)
+        pontos = [x for x in (pr.get("pontos") or []) if x]
+        link_oficial = so_https(pr.get("texto"))
+        blocos_det = []
+        if pontos:
+            blocos_det.append("<div><h3>Pontos principais</h3><ul>" + "".join(f"<li>{esc(x)}</li>" for x in pontos) + "</ul></div>")
+        blocos_det.append(f'<div><h3>Texto oficial ({esc(pr["nome"])})</h3><p class="oficial">{esc(pr.get("ementa") or "Sem ementa.")}</p>'
+                          + (f'<p><a href="{esc(link_oficial)}" target="_blank" rel="noopener noreferrer">Ler o texto completo no site da Câmara</a></p>' if link_oficial else "")
+                          + "</div>")
+        detalhes_html = ('<details class="ajuda ajuda--solta"><summary>Pontos principais e texto oficial</summary>'
+                         '<div class="projeto__corpo">' + "".join(blocos_det) + "</div></details>")
         corpo = (
             '<div class="miolo pagina-projeto">'
             f'<nav class="migalhas" aria-label="Você está em"><ol><li><a href="{raiz}">Assuntos</a></li>'
@@ -354,9 +365,9 @@ def main():
             f'<p class="cabeca-projeto__meta">{esc(pr["nome"])} · última votação em {data_br(pr["ultima"])}</p></header>'
             f'<div class="resumo-projeto"><p>{esc(resumo)}</p></div>'
             + "".join(f'<p class="nota">{esc(a)}</p>' for a in avisos)
+            + detalhes_html
             + f'<section class="bloco"><h2>Como cada deputado votou</h2><p class="nota">{esc(votos)}</p>{grupos_html}</section>'
             f'<p class="nota">Assunto: <a href="{raiz}assunto/{pr["a"]}/">{esc(assunto)}</a>. {esc(fonte_aviso)}</p>'
-            + (f'<p><a href="{esc(so_https(pr.get("texto")))}" rel="noopener noreferrer">Texto completo no site da Câmara</a></p>' if so_https(pr.get("texto")) else "")
             + "</div>")
 
         md = [f"# {pr['titulo']}", "",

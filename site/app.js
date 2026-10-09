@@ -744,11 +744,11 @@
         h("p", { class: "cabeca-projeto__meta" }, `${pr.nome} · última votação em ${data(pr.ultima)}`),
         h("div", { class: "cabeca-projeto__acoes" }, botaoCompartilhar("projeto/" + pr.id, `${descCurta(pr.titulo, 90)} | Voto de Verdade`))),
       h("div", { class: "resumo-projeto" }, resumoSemRepetir(pr), partes.avisos, partes.substitutivo),
-      secaoVotos,
-      outrasSimbolicas.length ? h("p", { class: "nota" }, `Este projeto também teve ${outrasSimbolicas.length === 1 ? "uma votação simbólica" : outrasSimbolicas.length + " votações simbólicas"}, sem o voto de cada deputado.`) : null,
       h("details", { class: "ajuda ajuda--solta" },
         h("summary", {}, "Pontos principais e texto oficial"),
-        h("div", { class: "projeto__corpo" }, partes.pontos, partes.oficial))));
+        h("div", { class: "projeto__corpo" }, partes.pontos, partes.oficial)),
+      secaoVotos,
+      outrasSimbolicas.length ? h("p", { class: "nota" }, `Este projeto também teve ${outrasSimbolicas.length === 1 ? "uma votação simbólica" : outrasSimbolicas.length + " votações simbólicas"}, sem o voto de cada deputado.`) : null));
     if (nominais.length) mostrar(atual);
     {
       const base = `${pr.nome}: ${descCurta(pr.titulo, 60 - String(pr.nome).length - 2)}`;
