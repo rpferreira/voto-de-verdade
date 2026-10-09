@@ -8,12 +8,11 @@
 (function () {
   "use strict";
 
-  // Modo escuro: segue o aparelho até a pessoa escolher; a escolha fica só neste navegador.
+  // Modo escuro: o site abre sempre no claro; a escolha da pessoa fica só neste navegador.
   (function () {
     const botoes = document.querySelectorAll(".tema");
     if (!botoes.length) return;
-    const sistema = window.matchMedia("(prefers-color-scheme: dark)");
-    const escuro = () => (document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : sistema.matches);
+    const escuro = () => document.documentElement.dataset.theme === "dark";
     const mostrar = () => botoes.forEach((b) => b.setAttribute("aria-pressed", String(escuro())));
     botoes.forEach((b) => b.addEventListener("click", () => {
       const novo = escuro() ? "light" : "dark";
@@ -21,7 +20,6 @@
       try { localStorage.setItem("tema", novo); } catch (e) { /* sem armazenamento: vale só até recarregar */ }
       mostrar();
     }));
-    sistema.addEventListener("change", mostrar);
     mostrar();
   })();
 
@@ -1016,7 +1014,7 @@
       h("h2", {}, "O que a doação não muda"),
       h("p", {}, "O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos. Não é doação a uma associação ou ONG: o site é mantido por uma pessoa e a doação não dá direito a abatimento de imposto."),
       h("h2", {}, "Para onde vai o dinheiro"),
-      h("p", {}, "Primeiro, para cobrir os custos do site: a inteligência artificial (que classifica os projetos por assunto, escreve os resumos e faz tudo mais que ela faz no site) e o endereço do site (domínio). O que sobrar ajuda a pagar o trabalho de desenvolvimento e manutenção, que é feito por uma pessoa só. Doar não muda nada no site: ele continua igual e gratuito para todos."),
+      h("p", {}, "Primeiro, para cobrir os custos do site: a inteligência artificial (que classifica os projetos por assunto, escreve os títulos e os resumos em linguagem simples, lista os pontos principais e avisa quando tem dúvida) e o endereço do site (domínio). O que sobrar ajuda a pagar o trabalho de desenvolvimento e manutenção, que é feito por uma pessoa só. Doar não muda nada no site: ele continua igual e gratuito para todos."),
       h("p", {}, h("a", { href: "#/" }, "Voltar ao início"))));
     document.title = "Apoie o Voto de Verdade";
     return document.getElementById("titulo-apoie");
