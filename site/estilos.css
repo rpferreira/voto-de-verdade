@@ -64,6 +64,7 @@
   --calha: var(--e-4);      /* entre colunas (48px a partir de 56rem) */
   /* Papéis de uso único. */
   --recuo-icone: var(--e-7); /* texto da busca, para caber a lupa */
+  --altura-topo: var(--e-7); /* o aviso do selo beta abre logo abaixo do topo */
   --topo-fixo: var(--e-12);  /* margem de rolagem sob o cabeçalho fixo (cabe em duas linhas) */
   --recuo-seta: var(--e-6);  /* texto de listas suspensas, para caber a seta */
   --titulo: 470;
@@ -126,7 +127,11 @@ h3 { font-weight: 500; }
 }
 .topo__miolo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--item); padding-block: var(--perto); }
 .marca { display: inline-flex; align-items: center; gap: var(--perto); color: var(--tinta); text-decoration: none; white-space: nowrap; font-size: 1.2rem; font-weight: 600; line-height: 1.5rem; letter-spacing: -0.02em; }
-.beta { display: inline-block; padding: 0 var(--perto); border-radius: 99px; color: var(--cobalto); background: var(--cobalto-claro); font-size: 0.75rem; font-weight: 600; line-height: 1.25rem; letter-spacing: 0.02em; }
+.marca-grupo { display: inline-flex; align-items: center; gap: var(--perto); }
+.beta { display: inline-block; padding: 0 var(--perto); border: 0; border-radius: 99px; color: var(--cobalto); background: var(--cobalto-claro); font: inherit; font-size: 0.75rem; font-weight: 600; line-height: 1.25rem; letter-spacing: 0.02em; cursor: pointer; }
+.aviso-beta { position: fixed; inset: auto; top: var(--altura-topo); left: var(--margem); margin: 0; width: min(22rem, 100% - 2 * var(--margem)); padding: var(--item); border: 1px solid var(--linha); border-radius: var(--raio); background: var(--superficie); color: var(--tinta); font-size: 0.95rem; line-height: 1.5rem; box-shadow: 0 8px 24px color-mix(in srgb, var(--tinta) 16%, transparent); }
+.aviso-beta p { margin: 0; }
+.aviso-beta p + p { margin-top: var(--perto); }
 .marca svg { width: 2rem; height: auto; color: var(--cobalto); flex: none; }
 .topo__acoes { display: flex; align-items: center; gap: var(--perto); }
 .apoie-topo { display: inline-flex; align-items: center; gap: var(--perto); height: 2.5rem; padding: 0 var(--item); border-radius: 99px; color: var(--cobalto); text-decoration: none; font-weight: 500; font-size: 0.975rem; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cobalto) 45%, var(--linha)); }
@@ -151,12 +156,12 @@ h3 { font-weight: 500; }
 .topo nav a { display: inline-block; padding: var(--perto) var(--item); border-radius: 99px; color: var(--tinta); text-decoration: none; font-weight: 500; font-size: 0.975rem; }
 .topo nav a:hover { background: color-mix(in srgb, var(--tinta) 7%, transparent); }
 .topo nav a[aria-current="page"] { background: var(--tinta); color: var(--papel); }
-@media (max-width: 30rem) { .heroi__busca input[type="search"] { font-size: 1.05rem; padding-right: var(--item); } .topo__acoes { gap: 0; } .topo__miolo { column-gap: var(--perto); } .marca { font-size: 1.05rem; gap: var(--junto); } .marca svg { width: 1.5rem; } .beta { padding: 0 var(--junto); font-size: 0.6875rem; } .topo nav a { padding: var(--perto); font-size: 0.9375rem; } }
+@media (max-width: 30rem) { .heroi__busca input[type="search"] { font-size: 1.05rem; padding-right: var(--item); } .topo__acoes { gap: 0; } .topo__miolo { column-gap: var(--perto); } .marca { font-size: 1.05rem; gap: var(--junto); } .marca-grupo { gap: var(--junto); } .marca svg { width: 1.5rem; } .beta { padding: 0 var(--junto); font-size: 0.6875rem; } .topo nav a { padding: var(--perto); font-size: 0.9375rem; } }
 
 /* ---------- tela inicial ---------- */
 .faixa { background: var(--cobalto-claro); color: var(--tinta); font-size: 0.95rem; line-height: 1.5rem; }
 .faixa .miolo { padding-block: var(--item); }
-.faixa p { margin: 0; max-width: 72ch; }
+.faixa p { margin: 0; max-width: 100ch; }
 .heroi { display: grid; gap: var(--grupo); padding-block: var(--respiro) var(--grupo); position: relative; }
 .heroi h1 { margin: 0; max-width: 20ch; font-size: clamp(2.3rem, 7.2vw, 4.4rem); line-height: 1.02; line-height: round(up, 1.02em, 4px); letter-spacing: -0.035em; }
 .heroi__lado { max-width: 40rem; }

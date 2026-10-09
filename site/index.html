@@ -31,11 +31,17 @@
 
   <header class="topo">
     <div class="topo__miolo">
+      <div class="marca-grupo">
       <a class="marca" href="#/">
         <svg viewBox="0 0 32 18" aria-hidden="true" fill="currentColor"><circle cx="30.10" cy="16.10" r="1.6"/><circle cx="29.03" cy="10.70" r="1.6"/><circle cx="25.97" cy="6.13" r="1.6"/><circle cx="21.40" cy="3.07" r="1.6"/><circle cx="16" cy="2" r="1.6"/><circle cx="10.60" cy="3.07" r="1.6"/><circle cx="6.03" cy="6.13" r="1.6"/><circle cx="2.97" cy="10.70" r="1.6"/><circle cx="1.90" cy="16.10" r="1.6"/><circle cx="24.30" cy="16.10" r="1.6"/><circle cx="21.87" cy="10.23" r="1.6"/><circle cx="16" cy="7.80" r="1.6"/><circle cx="10.13" cy="10.23" r="1.6"/><circle cx="7.70" cy="16.10" r="1.6"/><circle cx="16" cy="16.1" r="1.8"/></svg>
         <span>Voto de Verdade</span>
-        <span class="beta" title="Versão em teste: pode ter erros e mudar sem aviso">beta</span>
       </a>
+      <button class="beta" type="button" popovertarget="aviso-beta" aria-label="Versão beta, em desenvolvimento. Saiba mais">beta</button>
+      <div id="aviso-beta" class="aviso-beta" popover>
+        <p><strong>Versão beta.</strong> O Voto de Verdade está em desenvolvimento: pode ter erros e mudar sem aviso. Em caso de dúvida, confira no texto oficial da Câmara.</p>
+        <p><a href="#/sobre">Ver objetivos e como o site funciona</a></p>
+      </div>
+      </div>
       <div class="topo__acoes">
       <nav aria-label="Principal">
         <ul>

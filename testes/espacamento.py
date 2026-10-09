@@ -31,7 +31,7 @@ PROPS = (
     r"|padding(?:-(?:top|right|bottom|left|block|inline|block-start|block-end|inline-start|inline-end))?"
     r"|gap|row-gap|column-gap|top|right|bottom|left|inset(?:-block|-inline)?|scroll-padding(?:-[a-z]+)?"
 )
-PAPEIS = ("junto", "perto", "item", "grupo", "bloco", "respiro", "margem", "calha", "recuo-icone", "recuo-seta", "topo-fixo")
+PAPEIS = ("junto", "perto", "item", "grupo", "bloco", "respiro", "margem", "calha", "recuo-icone", "recuo-seta", "topo-fixo", "altura-topo")
 PASSO = r"var\(--e-(?:meio|\d+)\)"
 ROLE = rf"var\(--(?:{'|'.join(PAPEIS)})\)"
 VALIDO = re.compile(rf"^(?:0|auto|inherit|initial|unset|normal|{ROLE}|calc\(-1 \* {ROLE}\))$")

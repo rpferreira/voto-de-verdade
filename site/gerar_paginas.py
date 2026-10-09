@@ -571,7 +571,7 @@ def main():
             lista_rec.append((pr, v))
     corpo = (
         '<aside class="faixa" aria-label="Sobre o projeto"><div class="miolo"><p><strong>Em beta, em desenvolvimento.</strong> '
-        'Nossa meta é aproximar a sociedade do Congresso: transparência e visibilidade para você acompanhar, de forma simples e prática, como seus parlamentares agem. '
+        'Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. '
         '<a href="sobre/">Ver objetivos</a></p></div></aside>'
         '<div class="miolo"><section class="heroi"><div>'
         '<h1>Veja como a Câmara votou, assunto por assunto</h1>'
