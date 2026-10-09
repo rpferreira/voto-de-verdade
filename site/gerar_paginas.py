@@ -521,9 +521,9 @@ def main():
         "Ser gratuito, sem anúncios e sem rastrear quem visita, com código aberto.",
     ]
     sobre = [
-        ("Uma ferramenta em beta, em desenvolvimento",
-         "O Voto de Verdade ainda está em desenvolvimento. Pode ter erros, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no texto oficial da Câmara. "
-         "O Voto de Verdade pretende aproximar a sociedade do Congresso, dando transparência e visibilidade à atuação parlamentar, para que o cidadão acompanhe de forma simples e prática como seus parlamentares estão agindo. Para isso, o site busca:", objetivos),
+        ("Versão Beta, em constante desenvolvimento",
+         "O Voto de Verdade é uma versão beta e está em constante desenvolvimento. Pode ter erros, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no texto oficial da Câmara. "
+         "Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. Para isso, o site busca:", objetivos),
         ("Neutro e apartidário, sem nota e sem ranking",
          "O Voto de Verdade não dá nota, não faz ranking e não diz quem votou certo ou errado. Mostra o que cada deputado votou. "
          "Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
@@ -769,8 +769,8 @@ def main():
             vistos.add(pr["id"])
             lista_rec.append((pr, v))
     corpo = (
-        '<aside class="faixa" aria-label="Sobre o projeto"><div class="miolo"><p><strong>Em beta, em desenvolvimento.</strong> '
-        'Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. '
+        '<aside class="faixa" aria-label="Sobre o projeto"><div class="miolo"><p><strong>Versão Beta.</strong> '
+        'Site em constante desenvolvimento. Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. '
         '<a href="sobre/">Ver objetivos</a></p></div></aside>'
         '<div class="miolo"><section class="heroi"><div>'
         f'<p class="heroi__data">Atualizado em <time datetime="{meta["gerado_em"]}">{data_br(meta["gerado_em"])}</time></p>'

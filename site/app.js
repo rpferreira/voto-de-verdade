@@ -344,8 +344,8 @@
 
     principal.replaceChildren(
       h("aside", { class: "faixa", "aria-label": "Sobre o projeto" }, h("div", { class: "miolo" }, h("p", {},
-        h("strong", {}, "Em beta, em desenvolvimento. "),
-        "Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. ",
+        h("strong", {}, "Versão Beta. "),
+        "Site em constante desenvolvimento. Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. ",
         h("a", { href: "#/sobre" }, "Ver objetivos")))),
       h("div", { class: "miolo" },
       h("section", { class: "heroi", "aria-labelledby": "titulo-inicio" },
@@ -849,9 +849,9 @@
     principal.replaceChildren(h("div", { class: "miolo texto-longo" },
       h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Como o site funciona"))),
       h("h1", { id: "titulo-sobre", tabindex: "-1" }, "Como o site funciona"),
-      h("h2", {}, "Uma ferramenta em beta, em desenvolvimento"),
-      h("p", {}, "O Voto de Verdade ainda está em desenvolvimento. Pode ter erros, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no texto oficial da Câmara."),
-      h("p", {}, "O Voto de Verdade pretende aproximar a sociedade do Congresso, dando transparência e visibilidade à atuação parlamentar, para que o cidadão acompanhe de forma simples e prática como seus parlamentares estão agindo. Para isso, o site busca:"),
+      h("h2", {}, "Versão Beta, em constante desenvolvimento"),
+      h("p", {}, "O Voto de Verdade é uma versão beta e está em constante desenvolvimento. Pode ter erros, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no texto oficial da Câmara."),
+      h("p", {}, "Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. Para isso, o site busca:"),
       h("ul", {}, ...OBJETIVOS.map((o) => h("li", {}, o))),
       h("h2", {}, "Neutro e apartidário, sem nota e sem ranking"),
       h("p", {}, "Não dá nota, não faz ranking e não diz quem votou certo ou errado. Mostra o que cada deputado votou. Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
