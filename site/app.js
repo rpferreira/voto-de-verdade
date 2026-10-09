@@ -1016,7 +1016,7 @@
       h("h2", {}, "O que a doação não muda"),
       h("p", {}, "O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos. Não é doação a uma associação ou ONG: o site é mantido por uma pessoa e a doação não dá direito a abatimento de imposto."),
       h("h2", {}, "Para onde vai o dinheiro"),
-      h("p", {}, "Primeiro, para cobrir os custos do site: a inteligência artificial que escreve os resumos dos projetos e o endereço do site (domínio). O que sobrar ajuda a pagar o trabalho de desenvolvimento e manutenção, que é feito por uma pessoa só. Doar não muda nada no site: ele continua igual e gratuito para todos."),
+      h("p", {}, "Primeiro, para cobrir os custos do site: a inteligência artificial (que classifica os projetos por assunto, escreve os resumos e faz tudo mais que ela faz no site) e o endereço do site (domínio). O que sobrar ajuda a pagar o trabalho de desenvolvimento e manutenção, que é feito por uma pessoa só. Doar não muda nada no site: ele continua igual e gratuito para todos."),
       h("p", {}, h("a", { href: "#/" }, "Voltar ao início"))));
     document.title = "Apoie o Voto de Verdade";
     return document.getElementById("titulo-apoie");
