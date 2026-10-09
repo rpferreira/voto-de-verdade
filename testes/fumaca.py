@@ -160,7 +160,10 @@ with sync_playwright() as p:
     pg.goto(base + f"/#/projeto/{com_voto['id']}")
     pg.wait_for_selector(".deputados li", timeout=15000)
     fundo = pg.evaluate("getComputedStyle(document.body).backgroundColor")
-    confere(fundo.startswith("rgb(11, 16, 24)"), "fundo escuro no modo escuro")
+    confere(fundo.startswith("rgb(245, 246, 250)"), "abre no modo claro mesmo com o aparelho no escuro")
+    pg.locator(".tema:visible").first.click()
+    fundo = pg.evaluate("getComputedStyle(document.body).backgroundColor")
+    confere(fundo.startswith("rgb(11, 16, 24)"), "fundo escuro depois de escolher o modo escuro")
     confere(not pg.erros, "modo escuro sem erros no console " + str(pg.erros))
 
     print("Botão de modo escuro")
