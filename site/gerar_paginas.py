@@ -216,6 +216,8 @@ class Gerador:
             ('class="marca" href="#/"', f'class="marca" href="{raiz or "./"}"'),
             ('id="nav-assuntos" href="#/"', f'id="nav-assuntos" href="{raiz or "./"}"'),
             ('id="nav-deputados" href="#/deputados"', f'id="nav-deputados" href="{raiz}deputados/"'),
+            ('id="nav-numeros" href="#/em-numeros"', f'id="nav-numeros" href="{raiz}em-numeros/"'),
+            ('id="menu-numeros" href="#/em-numeros"', f'id="menu-numeros" href="{raiz}em-numeros/"'),
             ('id="menu-assuntos" href="#/"', f'id="menu-assuntos" href="{raiz or "./"}"'),
             ('id="menu-deputados" href="#/deputados"', f'id="menu-deputados" href="{raiz}deputados/"'),
             ('<a href="#/sobre">', f'<a href="{raiz}sobre/">'),
@@ -552,6 +554,56 @@ def main():
              estruturados={"@context": "https://schema.org", "@type": "AboutPage", "name": "Como o site funciona",
                            "url": f"{URL}/sobre/", "inLanguage": "pt-BR"})
 
+    # ---- Em números (números das votações; as barras e colunas aparecem quando o aplicativo abre, aqui ficam as tabelas)
+    if os.path.exists(os.path.join(args.site, "dados", "painel.json")):
+        pn = carregar(args.site, "painel.json")
+        tp = pn["totais"]
+
+        def mes_extenso(m):
+            nomes = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
+            return f"{nomes[int(m[5:7]) - 1]} de {m[:4]}"
+
+        def tabela(legenda, cab, linhas):
+            return ('<details class="ajuda numeros__tabela" open><summary>Tabela</summary><div class="tabela-rolavel"><table class="tabela-painel">'
+                    f'<caption class="so-leitor">{esc(legenda)}</caption><thead><tr>'
+                    + "".join(f'<th scope="col"{" class=\"num\"" if i else ""}>{esc(c)}</th>' for i, c in enumerate(cab))
+                    + "</tr></thead><tbody>"
+                    + "".join("<tr>" + "".join((f'<td class="num">{esc(str(c))}</td>' if i else f'<th scope="row">{esc(str(c))}</th>') for i, c in enumerate(l)) + "</tr>" for l in linhas)
+                    + "</tbody></table></div></details>")
+
+        nomes_tipo = {"nominal": "Nominais", "simbolica": "Simbólicas", "secreta": "Secretas"}
+        t_meses = tabela("Votações por mês", ["Mês", "Nominais", "Simbólicas", "Secretas"],
+                         [[mes_extenso(m["m"]), m["n"], m["s"], m["x"]] for m in pn["meses"]])
+        t_assuntos = tabela("Votações por assunto", ["Assunto", "Nominais", "Simbólicas", "Secretas", "Total"],
+                            [[a["nome"], a["n"], a["s"], a["x"], a["n"] + a["s"] + a["x"]] for a in pn["assuntos"]])
+        t_resultado = tabela("Resultado por tipo de votação", ["Tipo", "Aprovadas", "Rejeitadas", "Total"],
+                             [[nomes_tipo[k], r["aprovadas"], r["rejeitadas"], r["aprovadas"] + r["rejeitadas"]] for k, r in pn["resultado"].items()])
+        lead = (f'{tp["votacoes"]} votações em plenário, de {data_br(pn["de"])} a {data_br(pn["ate"])}: '
+                f'{tp["nominais"]} nominais, {tp["simbolicas"]} simbólicas e {tp["secretas"]} secreta.')
+        nota = (f'Atualizado em {data_br(pn["gerado_em"])}. Esta página só conta e descreve: não dá nota nem compara deputados ou partidos.')
+        corpo = ('<div class="miolo numeros"><nav class="migalhas" aria-label="Você está em"><ol><li><a href="../">Início</a></li><li aria-current="page">Em números</li></ol></nav>'
+                 f'<h1>Em números</h1><p class="numeros__lead">{esc(lead)}</p><p class="numeros__nota">{esc(nota)} <a href="../sobre/">Como o site funciona</a></p>'
+                 '<section class="numeros__bloco"><h2>Votações nominais e simbólicas ao longo do tempo</h2>'
+                 '<p class="numeros__nota">Na votação nominal, o voto de cada deputado fica registrado. Na simbólica, só o resultado. Meses sem votação (recesso, eleições) aparecem vazios.</p>'
+                 + t_meses + '</section>'
+                 '<section class="numeros__bloco"><h2>Votações por assunto</h2>'
+                 '<p class="numeros__nota">Cada votação conta uma vez, no assunto principal do projeto. Os assuntos são escolhidos por inteligência artificial e seguem sempre a mesma ordem, não a do tamanho.</p>'
+                 + t_assuntos + '</section>'
+                 '<section class="numeros__bloco"><h2>Resultado das votações</h2>'
+                 '<p class="numeros__nota">Cada votação termina aprovada ou rejeitada pelo plenário. Aprovar uma votação não quer dizer, sozinho, que o projeto virou lei.</p>'
+                 + t_resultado + '</section></div>')
+        md = ["# Em números", "", lead, "", nota, "", "## Votações nominais e simbólicas ao longo do tempo", ""]
+        md += [f"- {mes_extenso(m['m'])}: {m['n']} nominais, {m['s']} simbólicas" + (f", {m['x']} secreta" if m["x"] else "") for m in pn["meses"]]
+        md += ["", "## Votações por assunto", ""]
+        md += [f"- {a['nome']}: {a['n']} nominais, {a['s']} simbólicas" + (f", {a['x']} secreta" if a["x"] else "") for a in pn["assuntos"]]
+        md += ["", "## Resultado das votações", ""]
+        md += [f"- {nomes_tipo[k]}: {r['aprovadas']} aprovadas, {r['rejeitadas']} rejeitadas" for k, r in pn["resultado"].items()]
+        g.montar("em-numeros", "em-numeros", f"Em números: votações da Câmara ao longo do tempo | {NOME}",
+                 "Votações nominais e simbólicas ao longo do tempo, por assunto e o resultado. Só números, sem nota e sem ranking.",
+                 corpo, markdown="\n".join(md) + "\n",
+                 estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": "Em números",
+                               "url": f"{URL}/em-numeros/", "inLanguage": "pt-BR", "dateModified": pn["gerado_em"]})
+
     # ---- apoie (só quando há um link de doação em site/config.json)
     servico_doacao = (doacao.get("servico") or "").strip() or "serviço de pagamento"
     if so_https(doacao.get("url")):
@@ -606,7 +658,7 @@ def main():
     md_home += [f"- [{a['nome']}]({URL}/assunto/{a['slug']}/): {a['n']} projetos" for a in assuntos]
     md_home += ["", "## Últimas votações com o voto de cada deputado", ""]
     md_home += [f"- [{pr['titulo']}]({URL}/projeto/{pr['id']}/) ({data_br(v['d'])})" for pr, v in lista_rec]
-    md_home += ["", f"- [Deputados]({URL}/deputados/)", f"- [Como o site funciona]({URL}/sobre/)"]
+    md_home += ["", f"- [Deputados]({URL}/deputados/)", f"- [Em números]({URL}/em-numeros/)", f"- [Como o site funciona]({URL}/sobre/)"]
     g.montar("", "", f"{NOME}: como a Câmara dos Deputados votou",
              "Escolha um assunto e veja o que a Câmara dos Deputados votou e como cada deputado federal votou. Sem nota e sem ranking.",
              corpo, raiz="", estruturados=ld, markdown="\n".join(md_home) + "\n")

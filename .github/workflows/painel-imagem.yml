@@ -1,0 +1,76 @@
+name: Foto do painel (Em números)
+
+# Tira uma foto (PNG) da tela "Em números" com os dados de hoje, para você ver como ficou a cada atualização.
+# - É chamado pela Atualização diária, logo depois de os dados do dia serem guardados.
+# - Também roda quando você clicar em "Run workflow" e, enquanto o painel está em desenvolvimento,
+#   a cada envio no ramo "painel".
+# A foto fica de duas formas: anexada à execução (aba Summary, em Artifacts, por 30 dias) e guardada no
+# repositório em painel/ultima-geracao.png (sempre a mais recente). Os números do painel ficam em
+# site/dados/painel.json.
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: [painel]
+    paths:
+      - ".github/workflows/painel-imagem.yml"
+      - "site/painel.py"
+      - "site/app.js"
+      - "site/estilos.css"
+      - "site/dados/painel.json"
+      - "testes/captura_painel.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: painel-imagem-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  foto:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Baixar o repositório já atualizado
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Instalar o Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      # Os números já são feitos junto com os dados do site; refazer aqui garante que a foto bate com os dados.
+      - name: Refazer os números do painel
+        run: python site/painel.py
+
+      - name: Instalar o navegador
+        run: |
+          pip install -r testes/requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Montar o site
+        run: python site/gerar_paginas.py --saida _site
+
+      - name: Tirar a foto da tela Em números
+        run: python testes/captura_painel.py _site painel/ultima-geracao.png
+
+      - name: Anexar a foto à execução (30 dias)
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: foto-do-painel
+          path: painel/ultima-geracao.png
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Avisar no resumo da execução
+        run: |
+          {
+            echo "### Painel Em números"
+            echo "Foto da tela com os dados de $(python -c "import json;print(json.load(open('site/dados/painel.json'))['gerado_em'])"): baixe em **Artifacts → foto-do-painel** (abaixo) ou veja \`painel/ultima-geracao.png\` no repositório."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar a foto e os números no repositório
+        run: bash coleta/guardar_no_repositorio.sh "Foto do painel (Em números)" painel/ultima-geracao.png site/dados/painel.json

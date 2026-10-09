@@ -10,6 +10,7 @@ Só usa a biblioteca padrão do Python. Arquivos gerados:
     projetos.json   um registro enxuto por projeto (busca e página do assunto), sem a ementa e os pontos principais
     projetos/<id>.json   a ementa (texto oficial) e os pontos principais de um projeto (página do projeto)
     meta.json       totais e período dos dados (rodapé e textos de ajuda)
+    painel.json     números da tela Painel (feitos por site/painel.py)
     votacoes.json   uma linha por votação (lista de votações de cada projeto e tela de votação)
     deputados.json  nome, partido e estado de cada deputado
     votacoes/<id>.json   o voto de cada deputado, só das votações nominais (tela de votação)
@@ -26,6 +27,8 @@ from datetime import date
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "coleta"))
 from construir_banco import ASSUNTOS  # noqa: E402  (a lista de assuntos fica em um lugar só)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from painel import montar_painel  # noqa: E402
 
 # O que cada assunto inclui, em linguagem de quem não conhece o Congresso. Mantenha curto.
 DESCRICOES = {
@@ -266,6 +269,7 @@ def main():
     gravar("meta.json", meta)
     gravar("votacoes.json", votacoes)
     gravar("deputados.json", deputados)
+    gravar("painel.json", montar_painel(votacoes, projetos, assuntos, meta["gerado_em"]))
     print(f"   {pasta_proj}/: {len(projetos)} arquivos")
     print(f"   {pasta_votos}/: {n_arquivos} arquivos")
     print(f"   {pasta_dep}/: {len(por_dep)} arquivos")

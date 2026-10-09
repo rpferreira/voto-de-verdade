@@ -120,6 +120,15 @@ jobs:
       id-token: write
     uses: ./.github/workflows/publicar-site.yml
 
+  # Foto (PNG) da tela "Em números" com os dados de hoje: fica anexada a esta execução e em painel/ultima-geracao.png.
+  # Os números do painel (site/dados/painel.json) já são refeitos na etapa "Preparar os dados do site".
+  painel:
+    needs: atualizar
+    if: needs.atualizar.result == 'success'
+    permissions:
+      contents: write
+    uses: ./.github/workflows/painel-imagem.yml
+
   # Confere custo, dados e site no ar. Se achar problema, esta execução fica vermelha (o GitHub avisa por e-mail)
   # e um alerta é aberto na aba Issues; ele fecha sozinho quando tudo volta ao normal.
   # Roda mesmo se a atualização ou a publicação falharam, justamente para avisar disso.

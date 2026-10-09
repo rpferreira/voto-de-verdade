@@ -454,6 +454,148 @@
     return document.getElementById("titulo-inicio");
   }
 
+  // ------------------------------------------------------------------ painel
+  // Só descreve: conta votações. Não ordena pessoas, não dá nota e não compara partidos.
+  const MES = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" });
+  const mesPorExtenso = (m) => MES.format(new Date(m + "-15T12:00:00"));
+  const pct1 = (a, b) => (b ? (100 * a / b).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) : "0") + "%";
+  const rotuloVotacoes = (n) => plural(n, "votação", "votações");
+
+  function tabelaDoPainel(legenda, cabecalho, linhas) {
+    return h("details", { class: "ajuda numeros__tabela" },
+      h("summary", {}, "Ver como tabela"),
+      h("div", { class: "tabela-rolavel" },
+        h("table", { class: "tabela-painel" },
+          h("caption", { class: "so-leitor" }, legenda),
+          h("thead", {}, h("tr", {}, cabecalho.map((c, i) => h("th", { scope: "col", class: i ? "num" : null }, c)))),
+          h("tbody", {}, linhas.map((l) => h("tr", {}, l.map((c, i) => (i ? h("td", { class: "num" }, c) : h("th", { scope: "row" }, c)))))))));
+  }
+
+  const legendaDoPainel = (itens) => h("ul", { class: "pn-legenda", "aria-label": "Legenda" },
+    itens.map(([cor, texto]) => h("li", {}, h("span", { class: "pn-chip pn-chip--" + cor, "aria-hidden": "true" }), texto)));
+
+  function graficoMeses(meses) {
+    const maior = Math.max(1, ...meses.map((m) => m.n + m.s + m.x));
+    const passo = maior <= 30 ? 10 : maior <= 80 ? 20 : 50;
+    const topo = Math.ceil(maior / passo) * passo;
+    const marcas = [];
+    for (let v = topo; v >= 0; v -= passo) marcas.push(v);
+
+    const dica = h("div", { class: "pn-dica", role: "presentation", hidden: true });
+    const colunas = h("div", { class: "pn-colunas" });
+    colunas.style.setProperty("--n", meses.length);
+    colunas.style.setProperty("--topo", topo);
+    const eixoX = h("div", { class: "pn-eixo-x", "aria-hidden": "true" });
+    eixoX.style.setProperty("--n", meses.length);
+    meses.forEach((m, i) => {
+      const col = h("div", { class: "pn-col" });
+      for (const [k, cls] of [["n", "nominal"], ["s", "simbolica"], ["x", "secreta"]]) {
+        if (!m[k]) continue;
+        const seg = h("span", { class: "pn-seg pn-seg--" + cls });
+        seg.style.setProperty("--v", m[k]);
+        col.append(seg);
+      }
+      const mostrar = () => {
+        dica.replaceChildren(
+          h("strong", {}, mesPorExtenso(m.m)),
+          h("span", {}, h("span", { class: "pn-chip pn-chip--nominal", "aria-hidden": "true" }), `Nominais: ${num(m.n)}`),
+          h("span", {}, h("span", { class: "pn-chip pn-chip--simbolica", "aria-hidden": "true" }), `Simbólicas: ${num(m.s)}`),
+          m.x ? h("span", {}, `Secretas: ${num(m.x)}`) : null);
+        dica.hidden = false;
+        const area = colunas.getBoundingClientRect();
+        const c = col.getBoundingClientRect();
+        const largura = dica.offsetWidth;
+        const centro = c.left - area.left + c.width / 2;
+        dica.style.left = Math.max(0, Math.min(area.width - largura, centro - largura / 2)) + "px";
+      };
+      col.addEventListener("pointerenter", mostrar);
+      col.addEventListener("pointerdown", mostrar);
+      colunas.append(col);
+      // O ano aparece no primeiro mês do período e a cada janeiro (ou no primeiro mês de cada ano com votações).
+      const primeiroDoAno = i === 0 || m.m.slice(0, 4) !== meses[i - 1].m.slice(0, 4);
+      eixoX.append(h("span", { class: "pn-rotulo-x" }, primeiroDoAno ? m.m.slice(0, 4) : ""));
+    });
+    colunas.addEventListener("pointerleave", () => { dica.hidden = true; });
+    document.addEventListener("pointerdown", (e) => { if (!colunas.contains(e.target)) dica.hidden = true; });
+
+    return h("div", { class: "pn-grafico", role: "img",
+      "aria-label": `Gráfico de colunas com o número de votações nominais e simbólicas em cada mês, de ${mesPorExtenso(meses[0].m)} a ${mesPorExtenso(meses[meses.length - 1].m)}. Os mesmos números estão na tabela logo abaixo.` },
+      h("div", { class: "pn-eixo-y", "aria-hidden": "true" }, marcas.map((v) => h("span", {}, num(v)))),
+      h("div", { class: "pn-area" },
+        h("div", { class: "pn-grades", "aria-hidden": "true" }, marcas.map(() => h("span", {}))),
+        colunas, dica),
+      h("span", {}), eixoX);
+  }
+
+  function linhaBarras(nome, partes, total, maximo, cls) {
+    const trilho = h("div", { class: "pn-trilho" });
+    const barra = h("div", { class: "pn-barra" });
+    barra.style.setProperty("--t", total);
+    barra.style.setProperty("--max", maximo);
+    for (const [valor, tipo] of partes) {
+      if (!valor) continue;
+      const seg = h("span", { class: "pn-seg pn-seg--" + tipo });
+      seg.style.setProperty("--v", valor);
+      barra.append(seg);
+    }
+    trilho.append(barra);
+    return h("li", { class: "pn-linha" + (cls ? " " + cls : "") }, h("span", { class: "pn-nome" }, nome), trilho);
+  }
+
+  async function telaPainel() {
+    const pn = await dados("painel");
+    const t = pn.totais;
+    const rotulos = { nominal: "Nominais", simbolica: "Simbólicas", secreta: "Secretas" };
+    const maiorAssunto = Math.max(1, ...pn.assuntos.map((a) => a.n + a.s + a.x));
+
+    const blocoMeses = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t1" },
+      h("h2", { id: "pn-t1" }, "Votações nominais e simbólicas ao longo do tempo"),
+      h("p", { class: "numeros__nota" }, "Na votação nominal, o voto de cada deputado fica registrado. Na simbólica, só o resultado. Meses sem votação (recesso, eleições) aparecem vazios."),
+      legendaDoPainel([["nominal", "Nominais"], ["simbolica", "Simbólicas"]]),
+      graficoMeses(pn.meses),
+      t.secretas ? h("p", { class: "numeros__nota" }, `Há também ${plural(t.secretas, "votação secreta", "votações secretas")}, mostrada na tabela.`) : null,
+      tabelaDoPainel("Votações por mês", ["Mês", "Nominais", "Simbólicas", "Secretas"],
+        pn.meses.map((m) => [mesPorExtenso(m.m), num(m.n), num(m.s), num(m.x)])));
+
+    const blocoAssuntos = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t2" },
+      h("h2", { id: "pn-t2" }, "Votações por assunto"),
+      h("p", { class: "numeros__nota" }, "Cada votação conta uma vez, no assunto principal do projeto. Os assuntos são escolhidos por inteligência artificial e seguem sempre a mesma ordem, não a do tamanho."),
+      legendaDoPainel([["nominal", "Nominais"], ["simbolica", "Simbólicas"]]),
+      h("ul", { class: "pn-linhas", "aria-label": "Votações por assunto" }, pn.assuntos.map((a) => {
+        const total = a.n + a.s + a.x;
+        const li = linhaBarras(a.nome, [[a.n, "nominal"], [a.s, "simbolica"], [a.x, "secreta"]], total, maiorAssunto);
+        li.append(h("span", { class: "pn-total" }, num(total), h("span", { class: "so-leitor" }, ` votações: ${num(a.n)} nominais e ${num(a.s)} simbólicas`)));
+        return li;
+      })),
+      tabelaDoPainel("Votações por assunto", ["Assunto", "Nominais", "Simbólicas", "Secretas", "Total"],
+        pn.assuntos.map((a) => [a.nome, num(a.n), num(a.s), num(a.x), num(a.n + a.s + a.x)])));
+
+    const blocoResultado = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t3" },
+      h("h2", { id: "pn-t3" }, "Resultado das votações"),
+      h("p", { class: "numeros__nota" }, "Cada votação termina aprovada ou rejeitada pelo plenário. Aprovar uma votação não quer dizer, sozinho, que o projeto virou lei."),
+      legendaDoPainel([["aprovada", "Aprovadas"], ["rejeitada", "Rejeitadas"]]),
+      h("ul", { class: "pn-linhas pn-linhas--resultado", "aria-label": "Resultado por tipo de votação" },
+        ["nominal", "simbolica", "secreta"].filter((k) => pn.resultado[k] && pn.resultado[k].aprovadas + pn.resultado[k].rejeitadas > 0).map((k) => {
+          const r = pn.resultado[k];
+          const total = r.aprovadas + r.rejeitadas;
+          const li = linhaBarras(rotulos[k], [[r.aprovadas, "aprovada"], [r.rejeitadas, "rejeitada"]], total, total);
+          li.append(h("span", { class: "pn-total" }, `${num(r.aprovadas)} aprovadas (${pct1(r.aprovadas, total)}) · ${num(r.rejeitadas)} rejeitadas (${pct1(r.rejeitadas, total)})`));
+          return li;
+        })),
+      tabelaDoPainel("Resultado por tipo de votação", ["Tipo", "Aprovadas", "Rejeitadas", "Total"],
+        ["nominal", "simbolica", "secreta"].map((k) => { const r = pn.resultado[k] || { aprovadas: 0, rejeitadas: 0 }; return [rotulos[k], num(r.aprovadas), num(r.rejeitadas), num(r.aprovadas + r.rejeitadas)]; })));
+
+    principal.replaceChildren(h("div", { class: "miolo numeros" },
+      h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Em números"))),
+      h("h1", { id: "titulo-painel", tabindex: "-1" }, "Em números"),
+      h("p", { class: "numeros__lead" },
+        `${rotuloVotacoes(t.votacoes)} em plenário, de ${data(pn.de)} a ${data(pn.ate)}: ${num(t.nominais)} nominais, ${num(t.simbolicas)} simbólicas` + (t.secretas ? ` e ${num(t.secretas)} secreta.` : ".")),
+      h("p", { class: "numeros__nota" }, `Atualizado em ${data(pn.gerado_em)}. Esta página só conta e descreve: não dá nota nem compara deputados ou partidos. `, h("a", { href: "#/sobre" }, "Como o site funciona")),
+      blocoMeses, blocoAssuntos, blocoResultado));
+    document.title = "Em números: votações da Câmara ao longo do tempo | Voto de Verdade";
+    return document.getElementById("titulo-painel");
+  }
+
   // ------------------------------------------------------------------ como o site funciona
   const OBJETIVOS = [
     "Mostrar o que cada deputado votou, em linguagem simples, sem nota e sem ranking.",
@@ -1041,7 +1183,8 @@
     if (location.hash === "#conteudo") { principal.focus(); return; }
     const { partes, p } = lerRota();
     const emDeputados = partes[0] === "deputados" || partes[0] === "deputado";
-    for (const [id, ativo] of [["nav-assuntos", !emDeputados], ["nav-deputados", emDeputados], ["menu-assuntos", !emDeputados], ["menu-deputados", emDeputados]]) {
+    const emPainel = partes[0] === "em-numeros";
+    for (const [id, ativo] of [["nav-assuntos", !emDeputados && !emPainel], ["nav-deputados", emDeputados], ["nav-numeros", emPainel], ["menu-assuntos", !emDeputados && !emPainel], ["menu-deputados", emDeputados], ["menu-numeros", emPainel]]) {
       const a = document.getElementById(id);
       if (!a) continue;
       if (ativo) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
@@ -1053,6 +1196,7 @@
       else if (partes[0] === "projeto" && partes[1]) titulo = await telaProjeto(partes[1], p);
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
       else if (partes[0] === "sobre") titulo = await telaSobre();
+      else if (partes[0] === "em-numeros") titulo = await telaPainel();
       else if (partes[0] === "apoie" && soHttps(CONFIG.doacao)) titulo = telaApoie();
       else if (partes[0] === "deputados") titulo = await telaDeputados(p);
       else if (partes[0] === "deputado" && partes[1]) titulo = await telaDeputado(partes[1], p);
