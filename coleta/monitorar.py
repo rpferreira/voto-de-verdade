@@ -9,9 +9,10 @@ O que confere
   2. Dados: foram gerados hoje; a última votação não está velha demais; as contagens (votações, projetos,
      deputados, votos) não diminuíram; todo voto aponta para um deputado e uma votação que existem; todo projeto
      de votação existe; poucos projetos sem resumo; a parte com aviso de incerteza não disparou.
-  3. Custo da IA: gasto da última rodada, gasto do mês e se o saldo de créditos acabou.
+  3. Custo da IA: gasto da última rodada (de resumos e de tradução), gasto do mês e se o saldo de créditos acabou.
   4. Site no ar: página inicial, dados, mapa do site, uma página de projeto e uma de deputado, e se os dados
-     publicados são os de hoje.
+     publicados são os de hoje. Também a versão em inglês (/en/) e os dados traduzidos (dados/en/).
+  5. Tradução para o inglês: quantos projetos e votações ainda estão sem tradução (ficam em português no site em inglês).
 
 Como avisa
   Qualquer "erro" deixa a execução vermelha (o GitHub manda e-mail) e abre um alerta na aba Issues, que volta a
@@ -19,7 +20,8 @@ Como avisa
 
 Limites (podem ser mudados em Settings, Secrets and variables, Actions, Variables):
   LIMITE_CUSTO_RODADA (US$ 5), LIMITE_CUSTO_MES (US$ 30), LIMITE_PENDENTES (50 projetos sem resumo),
-  DIAS_SEM_VOTACAO (45), LIMITE_INCERTOS (25% dos projetos com aviso de incerteza).
+  DIAS_SEM_VOTACAO (45), LIMITE_INCERTOS (25% dos projetos com aviso de incerteza),
+  LIMITE_PENDENTES_EN (50 itens sem tradução para o inglês).
 
 Uso
     python coleta/monitorar.py                        # só os arquivos do repositório
@@ -181,6 +183,25 @@ def checar_dados(rel, raiz, hoje, anterior, args):
     else:
         rel.info(f"Projetos com aviso de incerteza: {pct}%.")
 
+    # tradução para o inglês
+    try:
+        sys.path.insert(0, os.path.join(raiz, "coleta"))
+        import traducoes as T
+        from traduzir_projetos import origem_dos_dados
+        origem, _ = origem_dos_dados(dados)
+        trad = T.carregar(os.path.join(raiz, T.ARQUIVO))
+        faltam_en = sum(1 for tipo, itens in origem.items() for i, item in itens.items() if (trad[tipo].get(i) or {}).get("h") != T.impressao(item))
+        total_en = sum(len(v) for v in origem.values())
+        limite_en = int(numero("LIMITE_PENDENTES_EN", 50))
+        if faltam_en > limite_en:
+            rel.aviso(f"{faltam_en} de {total_en} itens (projetos e votações) estão sem tradução para o inglês (o limite de aviso é {limite_en}). O site em inglês mostra esses em português.")
+        else:
+            rel.info(f"Itens sem tradução para o inglês: {faltam_en} de {total_en}.")
+        en_pendentes = faltam_en
+    except Exception as e:  # a tradução não pode derrubar o resto da conferência
+        rel.aviso(f"Não consegui conferir a tradução para o inglês ({type(e).__name__}: {e}).")
+        en_pendentes = None
+
     # última coleta
     cache = carregar(os.path.join(raiz, "dados", "cache_v5.json")) or {}
     execucoes = cache.get("execucoes") or []
@@ -190,7 +211,7 @@ def checar_dados(rel, raiz, hoje, anterior, args):
             rel.erro("A última coleta registrou problemas: " + "; ".join(ult["problemas"]) + ".")
         for a in ult.get("avisos") or []:
             rel.aviso(f"Coleta: {a}.")
-    return {"contagens": contagens, "pendentes": pendentes, "pct_incertos": pct, "gerado_em": meta.get("gerado_em")}
+    return {"contagens": contagens, "pendentes": pendentes, "pendentes_en": en_pendentes, "pct_incertos": pct, "gerado_em": meta.get("gerado_em")}
 
 
 # ------------------------------------------------------------------ 3. custo
@@ -202,19 +223,25 @@ def checar_custo(rel, raiz, hoje):
         return 0.0
     mes = hoje.strftime("%Y-%m")
     gasto_mes = round(sum(h.get("usd", 0) for h in historico if str(h.get("data", "")).startswith(mes)), 2)
-    ultimo = historico[-1]
     limite_rodada, limite_mes = numero("LIMITE_CUSTO_RODADA", 5), numero("LIMITE_CUSTO_MES", 30)
-    if ultimo.get("sem_saldo"):
-        rel.erro("Os créditos da API de IA acabaram. Os projetos novos ficam sem resumo até recarregar o saldo.")
-    if ultimo.get("usd", 0) > limite_rodada:
-        rel.erro(f"A última rodada gastou US$ {ultimo['usd']:.2f}, acima do limite de US$ {limite_rodada:g}.")
+    nomes = {"resumos": "resumos", "traducao": "tradução para o inglês"}
+    ultimas = {}  # a última rodada de cada tarefa (resumos, tradução)
+    for h in historico:
+        ultimas[h.get("tarefa") or "resumos"] = h
+    for tarefa, ultimo in ultimas.items():
+        nome = nomes.get(tarefa, tarefa)
+        if ultimo.get("sem_saldo"):
+            rel.erro("Os créditos da API de IA acabaram. Os projetos novos ficam sem resumo (e sem tradução) até recarregar o saldo.")
+        if ultimo.get("usd", 0) > limite_rodada:
+            rel.erro(f"A última rodada de {nome} gastou US$ {ultimo['usd']:.2f}, acima do limite de US$ {limite_rodada:g}.")
+        if ultimo.get("erros"):
+            rel.aviso(f"{ultimo['erros']} itens deram erro na última rodada de {nome}.")
+        rel.info(f"Custo da IA ({nome}): US$ {ultimo.get('usd', 0):.2f} na última rodada.")
     if gasto_mes > limite_mes:
         rel.erro(f"O gasto do mês com IA chegou a US$ {gasto_mes:.2f}, acima do limite de US$ {limite_mes:g}.")
     elif gasto_mes > 0.7 * limite_mes:
         rel.aviso(f"O gasto do mês com IA está em US$ {gasto_mes:.2f}, mais de 70% do limite de US$ {limite_mes:g}.")
-    if ultimo.get("erros"):
-        rel.aviso(f"{ultimo['erros']} projetos deram erro na última rodada de resumos.")
-    rel.info(f"Custo da IA: US$ {ultimo.get('usd', 0):.2f} na última rodada, US$ {gasto_mes:.2f} no mês (limites: US$ {limite_rodada:g} e US$ {limite_mes:g}).")
+    rel.info(f"Custo da IA: US$ {gasto_mes:.2f} no mês (limite: US$ {limite_mes:g}).")
     return gasto_mes
 
 
@@ -286,6 +313,22 @@ def checar_site(rel, base, hoje, esperado, args):
         rel.erro(f"O catálogo para agentes (.well-known/agent-skills/index.json) não abre (código {st}).")
     else:
         rel.info("Catálogo para agentes de IA (.well-known) no ar.")
+
+    # versão em inglês: página inicial e dados traduzidos
+    st, txt = buscar(base + "/en/")
+    if st != 200 or 'lang="en"' not in txt:
+        rel.erro(f"A página inicial em inglês ({base}/en/) não abriu direito (código {st}).")
+    else:
+        rel.info("Página inicial em inglês no ar (/en/).")
+    st, txt = buscar(base + "/dados/en/projetos.json")
+    try:
+        n_en = len(json.loads(txt)) if st == 200 else 0
+    except ValueError:
+        n_en = 0
+    if n_en < 100:
+        rel.erro(f"Os dados traduzidos (dados/en/projetos.json) não abrem ou estão quase vazios ({n_en} projetos, código {st}).")
+    else:
+        rel.info(f"Dados em inglês no ar ({n_en} projetos traduzidos).")
 
     # uma página de projeto e uma de deputado, achadas nos próprios dados no ar
     st, txt = buscar(base + "/dados/votacoes.json")

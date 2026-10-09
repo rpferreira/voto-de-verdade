@@ -39,6 +39,11 @@ jobs:
       - name: Testar
         run: python testes/fumaca.py _site
 
+      # Versão em inglês: dicionário completo, dados traduzidos em dia, páginas (hreflang, sitemap), telas sem texto
+      # faltando nem português solto e o seletor PT | EN (no celular, dentro do menu).
+      - name: Testar a versão em inglês
+        run: python testes/idiomas.py _site
+
       - name: Conferir as regras de espaçamento (grade de 8px)
         run: python testes/espacamento.py _site
 

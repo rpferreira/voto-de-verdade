@@ -242,7 +242,7 @@ def json_do_texto(resp):
     return None
 
 
-def chamar(modelo, sistema, usuario, ferramenta, chave, tentativas=6):
+def chamar(modelo, sistema, usuario, ferramenta, chave, tentativas=6, max_tokens=1500):
     """Chama a API e devolve (dados da ferramenta, tokens de entrada, tokens de saída)."""
     ultimo = ""
     i = 0
@@ -251,7 +251,7 @@ def chamar(modelo, sistema, usuario, ferramenta, chave, tentativas=6):
         if modelo not in SEM_STRICT:
             ferr["strict"] = True
         corpo = json.dumps({
-            "model": modelo, "max_tokens": 1500, "system": sistema,
+            "model": modelo, "max_tokens": max_tokens, "system": sistema,
             "messages": [{"role": "user", "content": usuario + f"\n\nResponda usando a ferramenta {ferramenta['name']}."}],
             "tools": [ferr], "tool_choice": {"type": "auto"},
         }).encode("utf-8")
@@ -500,8 +500,9 @@ class Contas:
         return total
 
 
-def registrar_custo(caminho, gasto, contas, estado, sem_saldo):
-    """Guarda quanto cada execução gastou (e se acabou o saldo), para o monitoramento acompanhar."""
+def registrar_custo(caminho, gasto, contas, estado, sem_saldo, tarefa=None):
+    """Guarda quanto cada execução gastou (e se acabou o saldo), para o monitoramento acompanhar.
+    tarefa: nome do trabalho que gastou (por exemplo "traducao"); sem nome, é a rodada de resumos."""
     try:
         with open(caminho, encoding="utf-8") as f:
             historico = json.load(f)
@@ -514,6 +515,7 @@ def registrar_custo(caminho, gasto, contas, estado, sem_saldo):
         "feitos": estado["feitos"],
         "erros": len(estado["erros"]),
         "sem_saldo": sem_saldo,
+        **({"tarefa": tarefa} if tarefa else {}),
     })
     with open(caminho, "w", encoding="utf-8") as f:
         json.dump(historico[-400:], f, ensure_ascii=False, indent=1)

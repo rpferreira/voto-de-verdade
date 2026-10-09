@@ -99,8 +99,24 @@ def envenenar(site):
         for k in ("modelo", "conferencia"):
             d["ia"][k] = (d["ia"].get(k) or "") + HTML + SCRIPT
 
+    def en_texto(d):
+        """Os dados em inglês (site/dados/en/) também não são de confiança: mesmo veneno em cada campo traduzido."""
+        for x in (d.values() if isinstance(d, dict) else d):
+            if isinstance(x, dict):
+                for k, v in list(x.items()):
+                    if isinstance(v, str):
+                        x[k] = v + HTML + SCRIPT
+                    elif isinstance(v, list) and v and isinstance(v[0], str):
+                        x[k] = v + [HTML + SCRIPT]
+
     mexer("projetos.json", projetos)
     mexer("painel.json", painel)
+    if os.path.isdir(os.path.join(site, "dados", "en")):
+        for nome in ("projetos.json", "votacoes.json", "assuntos.json"):
+            mexer(os.path.join("en", nome), en_texto)
+        mexer(os.path.join("en", "painel.json"), lambda d: d.update(assuntos={k: v + HTML + SCRIPT for k, v in d["assuntos"].items()}))
+        for arq in os.listdir(os.path.join(site, "dados", "en", "projetos")):
+            mexer(os.path.join("en", "projetos", arq), lambda d: d.update(pontos=list(d.get("pontos") or []) + [HTML + SCRIPT, "javascript:window.__pwn=5"]))
     # ementa e pontos principais ficam num arquivo por projeto: envenena esses também
     for x in json.load(open(os.path.join(site, "dados", "projetos.json"), encoding="utf-8"))[:40]:
         caminho = os.path.join(site, "dados", "projetos", f"{x['id']}.json")
@@ -142,6 +158,9 @@ def ataque(p, base, projetos, deputados, assuntos):
         f"/#/projeto/{pid[0]}?v={img}&pt=%3Cscript%3Ewindow.__pwn=9%3C/script%3E&votacao=%22%3E{img}",
         f"/#/assunto/saude?a={img}&q={img}", f"/projeto/{img}/",
     ]
+    if os.path.isdir(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "site", "dados", "en")):
+        urls += [f"/en{u}" for u in urls if not u.startswith("/#/projeto/%22") and "__pwn=9" not in u][:60]  # a versão em inglês, com os mesmos ataques
+        urls += [f"/en/projeto/{pid[0]}/", f"/en/#/projeto/{pid[0]}?votacao={img}", "/en/", "/en/#/em-numeros", "/en/#/inteligencia-artificial"]
     b = p.chromium.launch()
     ruins = 0
     for u in urls:
@@ -172,6 +191,10 @@ def ataque(p, base, projetos, deputados, assuntos):
         pg.wait_for_timeout(400)
         titulo = pg.evaluate("() => (document.querySelector('h1') || {}).textContent || ''")
         confere(not erros and titulo.startswith("Não achamos"), f"endereço malformado {u} vira «não encontrado», sem erro")
+        pg.goto(base + "/en" + u)
+        pg.wait_for_timeout(400)
+        titulo = pg.evaluate("() => (document.querySelector('h1') || {}).textContent || ''")
+        confere(not erros and titulo.startswith("We could not find"), f"endereço malformado /en{u} vira «não encontrado», sem erro")
         pg.close()
     b.close()
 
@@ -184,7 +207,8 @@ def normal(p, base):
     pg.on("request", lambda r: hosts.add(r.url.split("/")[2]))
     pg.on("console", lambda m: violacoes.append(m.text) if "Content Security Policy" in m.text or "Refused to" in m.text else None)
     pg.on("pageerror", lambda e: erros.append(str(e)))
-    for u in ["/", "/#/assunto/saude", "/#/deputados", "/#/sobre", "/projeto/2611313/", "/deputado/204549/", "/#/%"]:
+    for u in ["/", "/#/assunto/saude", "/#/deputados", "/#/sobre", "/projeto/2611313/", "/deputado/204549/", "/#/%",
+              "/en/", "/en/#/assunto/saude", "/en/#/deputados", "/en/#/sobre", "/en/projeto/2611313/", "/en/deputado/204549/", "/en/#/%"]:
         pg.goto(base + u)
         pg.wait_for_timeout(500)
     pg.click("button.tema")
@@ -192,7 +216,7 @@ def normal(p, base):
     confere(not violacoes, f"nenhuma violação da política de segurança {violacoes[:1]}")
     confere(not erros, f"nenhum erro de JavaScript {erros[:1]}")
     confere(ctx.cookies() == [], "nenhum cookie")
-    for u in ["/", "/projeto/2611313/", "/deputado/204549/", "/404.html"]:
+    for u in ["/", "/projeto/2611313/", "/deputado/204549/", "/404.html", "/en/", "/en/projeto/2611313/", "/en/deputado/204549/"]:
         pg.goto(base + u)
         inline = pg.evaluate("() => [...document.scripts].filter(s => !s.src && (!s.type || /javascript|module/.test(s.type))).length")
         csp = pg.evaluate("() => (document.querySelector('meta[http-equiv=Content-Security-Policy]') || {}).content || ''")

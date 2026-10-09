@@ -18,6 +18,9 @@ on:
       espalhar:
         description: "Para testes: pegar projetos espalhados por toda a lista, e não só os mais recentes (sim ou nao)"
         default: "nao"
+      limite_traducoes:
+        description: "Quantos projetos e votações traduzir para o inglês nesta execução (use 5 para um teste barato)"
+        default: "400"
 
 permissions:
   contents: write
@@ -88,6 +91,27 @@ jobs:
         id: site
         if: steps.coleta.outcome == 'success'
         run: python site/exportar_dados.py
+
+      # Tradução para o inglês, só dos projetos e votações novos (ou cujo texto em português mudou). Sem a chave
+      # ANTHROPIC_API_KEY, a etapa é pulada. Uma falha aqui não impede a atualização: o que ficar sem tradução
+      # aparece em português no site em inglês, e o monitoramento avisa quando são muitos.
+      - name: Traduzir para o inglês os projetos novos com IA
+        id: traducao
+        if: steps.site.outcome == 'success'
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMITE_TRADUCOES: ${{ github.event.inputs.limite_traducoes || '400' }}
+        run: python coleta/traduzir_projetos.py --limite "$LIMITE_TRADUCOES" --tempo-max 40
+
+      - name: Guardar as traduções, mesmo se a etapa anterior falhou
+        if: always() && steps.site.outcome == 'success'
+        run: bash coleta/guardar_no_repositorio.sh "Traduções para o inglês (IA)" dados/traducoes_en.json dados/custo.json
+
+      # O texto em inglês que o site lê (site/dados/en), refeito com as traduções de agora.
+      - name: Preparar os dados em inglês
+        if: steps.site.outcome == 'success'
+        run: python site/exportar_en.py
 
       - name: Guardar os dados do site no repositório
         if: steps.site.outcome == 'success'
