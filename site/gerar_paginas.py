@@ -198,8 +198,13 @@ class Gerador:
             botao = (f'<a class="apoie-topo" href="{raiz}apoie/" aria-label="Apoie o Voto de Verdade com uma doação única"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" '
                      'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'
                      '<span class="apoie-topo__txt">Apoie</span></a>')
+        item_menu = ""
         if self.doacao:
-            pagina = pagina.replace('<header class="topo">', '<header class="topo" data-apoio>', 1)
+            item_menu = (f'<li><a class="menu-apoie" href="{raiz}apoie/"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" '
+                         'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'
+                         'Apoie com uma doação</a></li>')
+        ini, fim = pagina.index("<!--INICIO-APOIO-MENU-->"), pagina.index("<!--FIM-APOIO-MENU-->")
+        pagina = pagina[:ini] + item_menu + pagina[fim + len("<!--FIM-APOIO-MENU-->"):]
         ini, fim = pagina.index("<!--INICIO-APOIO-TOPO-->"), pagina.index("<!--FIM-APOIO-TOPO-->")
         pagina = pagina[:ini] + botao + pagina[fim + len("<!--FIM-APOIO-TOPO-->"):]
         ini, fim = pagina.index("<!--INICIO-APOIO-->"), pagina.index("<!--FIM-APOIO-->")
@@ -212,6 +217,8 @@ class Gerador:
             ('class="marca" href="#/"', f'class="marca" href="{raiz or "./"}"'),
             ('id="nav-assuntos" href="#/"', f'id="nav-assuntos" href="{raiz or "./"}"'),
             ('id="nav-deputados" href="#/deputados"', f'id="nav-deputados" href="{raiz}deputados/"'),
+            ('id="menu-assuntos" href="#/"', f'id="menu-assuntos" href="{raiz or "./"}"'),
+            ('id="menu-deputados" href="#/deputados"', f'id="menu-deputados" href="{raiz}deputados/"'),
             ('<a href="#/sobre">', f'<a href="{raiz}sobre/">'),
             ('<script type="application/json" id="config">{"raiz":""}</script>',
              '<script type="application/json" id="config">'

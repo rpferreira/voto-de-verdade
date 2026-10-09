@@ -1043,8 +1043,9 @@
     if (location.hash === "#conteudo") { principal.focus(); return; }
     const { partes, p } = lerRota();
     const emDeputados = partes[0] === "deputados" || partes[0] === "deputado";
-    for (const [id, ativo] of [["nav-assuntos", !emDeputados], ["nav-deputados", emDeputados]]) {
+    for (const [id, ativo] of [["nav-assuntos", !emDeputados], ["nav-deputados", emDeputados], ["menu-assuntos", !emDeputados], ["menu-deputados", emDeputados]]) {
       const a = document.getElementById(id);
+      if (!a) continue;
       if (ativo) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     }
     let titulo;
@@ -1247,9 +1248,8 @@
     if (e.target.closest && e.target.closest('a[href^="#/"]')) { posicoes[location.hash] = window.scrollY; clicou = true; }
   }, true);
   window.addEventListener("scroll", () => { clearTimeout(temporizador); temporizador = setTimeout(() => { posicoes[location.hash] = window.scrollY; }, 120); }, { passive: true });
-  // O aviso do selo "beta" é um popover nativo; ele fecha sozinho ao tocar fora, mas não ao seguir o link de dentro dele.
-  const avisoBeta = document.getElementById("aviso-beta");
-  if (avisoBeta) avisoBeta.addEventListener("click", (e) => { if (e.target.closest("a")) avisoBeta.hidePopover(); });
+  // O aviso do selo "beta" e o menu do celular são popovers nativos: fecham sozinhos ao tocar fora, mas não ao seguir um link de dentro.
+  document.querySelectorAll("[popover]").forEach((pop) => pop.addEventListener("click", (e) => { if (e.target.closest("a")) pop.hidePopover(); }));
   window.addEventListener("hashchange", () => rotear(true));
   rotear(false);
 })();
