@@ -589,7 +589,7 @@ def main():
 
         # Uma tabela por página própria: id -> (título, cabeçalho, linhas). Os mesmos ids e números do aplicativo.
         # Cada tabela é filha de uma tela: Em números (padrão) ou Transparência da IA.
-        pai_da_tabela = {"confianca": "inteligencia-artificial", "processo": "inteligencia-artificial", "avisos": "inteligencia-artificial"}
+        pai_da_tabela = {"confianca": "inteligencia-artificial"}
         nome_do_pai = {"em-numeros": "Em números", "inteligencia-artificial": "Transparência da IA"}
         tabelas = {
             "por-mes": ("Votações por mês", ["Mês", "Nominais", "Simbólicas", "Secretas"],
@@ -639,13 +639,6 @@ def main():
 
             def pl_(n, um, varios):
                 return f"{n_br(n)} {um if n == 1 else varios}"
-            avisos_tabela = [("Projetos com aviso de que o assunto pode estar errado", ia["aviso_assunto"]),
-                             ("Projetos com aviso de que o resumo pode conter erros", ia["aviso_resumo"])]
-            if ia["so_ementa"]:
-                avisos_tabela.append(("Projetos sem resumo da inteligência artificial (a tela mostra só a ementa)", ia["so_ementa"]))
-            avisos_tabela.append(("Projetos cuja votação foi sobre substitutivo ou emenda (o texto votado pode ser diferente da ementa)", ia["texto_pode_diferir"]))
-            if ia["votacao_aviso"]:
-                avisos_tabela.append(("Votações com aviso de que a classificação foi feita automaticamente e pode estar errada", ia["votacao_aviso"]))
             avisos = [f'{pl_(ia["aviso_assunto"], "projeto", "projetos")} com aviso de que o assunto pode estar errado.',
                       f'{pl_(ia["aviso_resumo"], "projeto", "projetos")} com aviso de que o resumo pode conter erros.']
             if ia["so_ementa"]:
@@ -653,11 +646,6 @@ def main():
             avisos.append(f'{pl_(ia["texto_pode_diferir"], "projeto", "projetos")} cuja votação foi sobre um substitutivo ou emenda: o texto votado pode ser diferente da ementa.')
             if ia["votacao_aviso"]:
                 avisos.append(f'{pl_(ia["votacao_aviso"], "votação", "votações")} com aviso de que a classificação foi feita automaticamente e pode estar errada.')
-            etapas = [("Escolha do assunto e resumo", ia.get("modelo")), ("Segunda leitura do assunto", ia.get("conferencia")),
-                      ("Checagem por palavras", None), ("Conferência do resumo", ia.get("conferencia"))]
-            tabelas["processo"] = ("Como o assunto e o resumo são feitos", ["Passo", "Etapa", "Modelo", "O que acontece"],
-                                   [[i, e, nome_modelo.get(m, m) if m else "checagem por palavras", p_.replace(m1, "").replace(m2, "")] for i, ((e, m), p_) in enumerate(zip(etapas, passos), 1)])
-            tabelas["avisos"] = ("Avisos que o site mostra", ["Aviso", "Quantidade"], [[d_, n_br(n_)] for d_, n_ in avisos_tabela])
             limites = ["A inteligência artificial pode errar, mesmo quando diz ter certeza.",
                        "O texto oficial de cada projeto fica sempre ao lado do resumo. Em caso de dúvida, vale o texto oficial.",
                        "Por enquanto o site não tem um canal para pedir correções."]
@@ -718,12 +706,12 @@ def main():
             corpo_ia = ('<div class="miolo numeros"><nav class="migalhas" aria-label="Você está em"><ol><li><a href="../">Início</a></li><li aria-current="page">Transparência da IA</li></ol></nav>'
                         f'<h1>Transparência da IA</h1><p class="numeros__lead">{esc(lead_ia)}</p><p class="numeros__nota">{esc(nota_ia)} <a href="../sobre/">Como o site funciona</a></p>'
                         + bloco("O que a inteligência artificial faz", ul(fatos), nota_p(nao_faz))
-                        + bloco("Como é feito", '<ol class="numeros__passos">' + "".join(f"<li>{esc(p)}</li>" for p in passos) + "</ol>", nota_p(ate_ia) if ate_ia else "", ver_tabela("processo", "dos passos"))
+                        + bloco("Como é feito", '<ol class="numeros__passos">' + "".join(f"<li>{esc(p)}</li>" for p in passos) + "</ol>", nota_p(ate_ia) if ate_ia else "")
                         + bloco("Confiança de cada texto",
                                 nota_p("Cada assunto e cada resumo recebe uma confiança calculada por máquina, não por pessoas. Alta quer dizer que as conferências automáticas concordaram, não que o texto está certo."),
                                 nota_p("Assunto. " + conf(ia["assunto"])), nota_p("Resumo. " + conf(ia["resumo"], ia["so_ementa"])),
                                 ver_tabela("confianca", "da confiança"))
-                        + bloco("Avisos que o site mostra", ul(avisos), ver_tabela("avisos", "dos avisos"))
+                        + bloco("Avisos que o site mostra", ul(avisos))
                         + bloco("Limites e correções", ul(limites))
                         + "</div>")
             md_ia = ["# Transparência da IA", "", lead_ia, "", nota_ia, "", "## O que a inteligência artificial faz", ""] + [f"- {f}" for f in fatos] + ["", nao_faz,
@@ -741,9 +729,7 @@ def main():
             pai = pai_da_tabela.get(id_, "em-numeros")
             linhas_html = "".join("<tr>" + "".join((f'<td class="num">{esc(str(c))}</td>' if k else f'<th scope="row">{esc(str(c))}</th>') for k, c in enumerate(l)) + "</tr>" for l in linhas)
             cab_html = "".join(f'<th scope="col"{" class=\"num\"" if k else ""}>{esc(c)}</th>' for k, c in enumerate(cab))
-            nota_t = (f"Quantos projetos e votações mostram cada aviso, entre os {ia['projetos']} projetos do site. Atualizado em {data_br(pn['gerado_em'])}." if id_ == "avisos"
-                      else f"Os passos do trabalho da inteligência artificial. Atualizado em {data_br(pn['gerado_em'])}." if id_ == "processo"
-                      else f"Os mesmos números do gráfico, dos {ia['projetos']} projetos do site. Atualizado em {data_br(pn['gerado_em'])}." if pai == "inteligencia-artificial"
+            nota_t = (f"Os mesmos números do gráfico, dos {ia['projetos']} projetos do site. Atualizado em {data_br(pn['gerado_em'])}." if pai == "inteligencia-artificial"
                       else f"Os mesmos números do gráfico, de {data_br(pn['de'])} a {data_br(pn['ate'])}. Atualizado em {data_br(pn['gerado_em'])}.")
             corpo_t = ('<div class="miolo numeros"><nav class="migalhas" aria-label="Você está em"><ol><li><a href="../../">Início</a></li>'
                        f'<li><a href="../">{esc(nome_do_pai[pai])}</a></li><li aria-current="page">{esc(titulo_t)}</li></ol></nav><h1>{esc(titulo_t)}</h1>'
@@ -868,7 +854,7 @@ def main():
              "- Deputado (`deputados.json`): `id`, `nome`, `uf`, `partido`, `ex` (em exercício).",
              "- Painel (`painel.json`): `totais`, `meses`, `assuntos`, `resultado`, `participacao` e `placar` do período inteiro; `por_ano` repete esses campos para cada ano de `anos`; "
              "`ia` tem a transparência da inteligência artificial (modelos, confiança do assunto e do resumo, avisos).",
-             "- Cada bloco da tela Em números, da Transparência da IA, das listas de projetos, deputados e votos tem botões para baixar o que está na tela em CSV e em JSON, já com o filtro aplicado.", "",
+             "- Cada bloco da tela Em números, o gráfico de confiança da Transparência da IA, as listas de projetos, deputados e votos têm botões para baixar o que está na tela em CSV e em JSON, já com o filtro aplicado.", "",
              "## Regras de uso", "",
              "- Cite o Voto de Verdade e a Câmara dos Deputados como fontes.",
              "- O site é neutro e apartidário: não crie nota, ranking ou juízo de “certo e errado” sobre deputados a partir destes dados. "

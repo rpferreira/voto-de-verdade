@@ -561,30 +561,11 @@
       colunas: [["faixa", "Faixa"], ["como_e_medida", "Como é medida"], ["votacoes", "Votações"], ["percentual", "Parte das nominais", fmtPct]],
       registros: (v) => FAIXAS_PLACAR.map(([k, nome, det]) => ({ faixa: nome, como_e_medida: det, votacoes: v.placar.margem[k], percentual: pctNum(v.placar.margem[k], v.placar.nominais) })),
     },
-    "funcoes": {
-      pai: "ia", semPagina: true, titulo: "O que a inteligência artificial faz",
-      colunas: [["funcao", "O que faz"]], registros: () => FUNCOES_IA.map((t) => ({ funcao: t })),
-    },
-    "processo": {
-      pai: "ia", titulo: "Como o assunto e o resumo são feitos",
-      colunas: [["passo", "Passo"], ["etapa", "Etapa"], ["modelo", "Modelo"], ["descricao", "O que acontece"]],
-      registros: (v) => PASSOS_IA(v.ia).map(([etapa, modelo, texto], i) => ({ passo: i + 1, etapa, modelo: nomeModelo(modelo) || "checagem por palavras", descricao: texto })),
-    },
     "confianca": {
       pai: "ia", titulo: "Confiança da inteligência artificial",
       colunas: [["confianca", "Confiança"], ["assunto", "Assunto"], ["resumo", "Resumo"]],
       registros: (v) => NIVEIS_IA.map(([k, nome]) => ({ confianca: nome, assunto: v.ia.assunto[k], resumo: v.ia.resumo[k] })),
       nota: (pn) => `Os mesmos números do gráfico, dos ${num(pn.ia.projetos)} projetos do site. Atualizado em ${data(pn.gerado_em)}.`,
-    },
-    "avisos": {
-      pai: "ia", titulo: "Avisos que o site mostra",
-      colunas: [["aviso", "Aviso"], ["quantidade", "Quantidade"]],
-      registros: (v) => AVISOS_IA(v.ia).map(([chave, descricao, n]) => ({ aviso: descricao, quantidade: n })),
-      nota: (pn) => `Quantos projetos e votações mostram cada aviso, entre os ${num(pn.ia.projetos)} projetos do site. Atualizado em ${data(pn.gerado_em)}.`,
-    },
-    "limites": {
-      pai: "ia", semPagina: true, titulo: "Limites e correções",
-      colunas: [["limite", "Limite"]], registros: () => LIMITES_IA.map((t) => ({ limite: t })),
     },
   };
   // De qual tela cada tabela faz parte: o endereço e o «Voltar para» seguem daí.
@@ -838,21 +819,18 @@
       h("p", { class: "numeros__nota" }, `Atualizado em ${data(pn.gerado_em)}. Aqui está o que ela faz, como o trabalho é conferido e onde pode errar. `, h("a", { href: "#/sobre" }, "Como o site funciona")),
       bloco("ia-t1", "O que a inteligência artificial faz",
         lista(FUNCOES_IA),
-        h("p", { class: "numeros__nota" }, "Ela não registra nem muda votos: o voto de cada deputado, a data e o resultado vêm direto dos Dados Abertos da Câmara. Também não dá nota, não faz ranking e não compara deputados ou partidos."),
-        acoes("funcoes", "do que a inteligência artificial faz")),
+        h("p", { class: "numeros__nota" }, "Ela não registra nem muda votos: o voto de cada deputado, a data e o resultado vêm direto dos Dados Abertos da Câmara. Também não dá nota, não faz ranking e não compara deputados ou partidos.")),
       ia.projetos ? bloco("ia-t2", "Como é feito",
         h("ol", { class: "numeros__passos" }, ...passos.map((t) => h("li", {}, t))),
-        ia.ate ? h("p", { class: "numeros__nota" }, `Último texto gerado em ${data(ia.ate)}. O site só refaz o resumo de projetos novos ou cujo texto oficial mudou.`) : null,
-        acoes("processo", "dos passos")) : null,
+        ia.ate ? h("p", { class: "numeros__nota" }, `Último texto gerado em ${data(ia.ate)}. O site só refaz o resumo de projetos novos ou cujo texto oficial mudou.`) : null) : null,
       ia.projetos ? bloco("ia-t3", "Confiança de cada texto",
         h("p", { class: "numeros__nota" }, "Cada assunto e cada resumo recebe uma confiança calculada por máquina, não por pessoas. Alta quer dizer que as conferências automáticas concordaram, não que o texto está certo."),
         legendaDoPainel(NIVEIS_IA.map(([k, nome]) => [k, nome])),
         h("ul", { class: "pn-linhas pn-linhas--resultado", "aria-label": "Confiança do assunto e do resumo" }, linhaConfianca("Assunto", ia.assunto), linhaConfianca("Resumo", ia.resumo, ia.so_ementa)),
         acoes("confianca", "da confiança")) : null,
       ia.projetos ? bloco("ia-t4", "Avisos que o site mostra",
-        lista(AVISOS_IA(ia).map(([, , n, [um, varios], resto]) => `${plural(n, um, varios)} ${resto}`)),
-        acoes("avisos", "dos avisos")) : null,
-      bloco("ia-t5", "Limites e correções", lista(LIMITES_IA), acoes("limites", "dos limites"))));
+        lista(AVISOS_IA(ia).map(([, , n, [um, varios], resto]) => `${plural(n, um, varios)} ${resto}`))) : null,
+      bloco("ia-t5", "Limites e correções", lista(LIMITES_IA))));
     document.title = "Transparência da IA: como a inteligência artificial é usada | Voto de Verdade";
     return document.getElementById("titulo-ia");
   }
