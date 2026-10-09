@@ -158,6 +158,7 @@
     "p-votado": "M4 4h16v16H4z|M8 12l3 3 5-6",
     "v-busca": "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z|M21 21l-5-5",
     "v-filtro": "M3 5h18l-7 8v6l-4-2v-4z",
+    "v-baixar": "M12 4v11|M7 11l5 5 5-5|M5 20h14",
     "v-urna": "M3 13h18v7H3z|M8 13l1-9h6l1 9|M9 17h6",
     "v-mapa": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z|M15.5 8.5l-2 5-5 2 2-5z",
     "v-erro": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z|M12 7v6|M12 16h.01",
@@ -480,8 +481,10 @@
       if (formato === "csv") baixarArquivo(base + ".csv", paraCsv(d.colunas, d.registros), "text/csv;charset=utf-8");
       else baixarArquivo(base + ".json", JSON.stringify({ titulo: d.titulo, fonte: FONTE_DADOS, licenca: "CC BY 4.0: cite o Voto de Verdade", gerado_em: d.gerado_em, filtros: d.filtros || {}, dados: d.registros }, null, 2) + "\n", "application/json");
     };
-    const botao = (formato, rotulo) => h("button", { type: "button", class: "link-botao", onclick: () => exportar(formato) }, rotulo, sobre ? h("span", { class: "so-leitor" }, " " + sobre) : null);
-    return h("span", { class: "exportar", role: "group", "aria-label": "Baixar estes números" }, botao("csv", "Baixar CSV"), botao("json", "Baixar JSON"));
+    const botao = (formato, rotulo) => h("button", { type: "button", class: "exportar__botao", onclick: () => exportar(formato) },
+      h("span", { class: "so-leitor" }, "Baixar "), rotulo, sobre ? h("span", { class: "so-leitor" }, " " + sobre) : null);
+    return h("span", { class: "exportar", role: "group", "aria-label": "Baixar estes números" },
+      h("span", { class: "exportar__rotulo", "aria-hidden": "true" }, icone("v-baixar"), "Baixar"), botao("csv", "CSV"), botao("json", "JSON"));
   }
 
   // ------------------------------------------------------------------ painel

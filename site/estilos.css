@@ -498,10 +498,14 @@ a.botao, a.botao:hover { text-decoration: none; }
 .numeros__bloco h2 { margin: 0; font-size: 1.25rem; line-height: 1.75rem; }
 .numeros__tabela { max-width: none; }
 .numeros__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--perto) var(--grupo); max-width: none; margin: 0; font-size: 0.95rem; line-height: 1.5rem; }
-.exportar { display: inline-flex; flex-wrap: wrap; gap: var(--perto) var(--item); }
-/* Botão com cara de link: baixa um arquivo em vez de abrir uma página */
-.link-botao { appearance: none; border: 0; background: none; padding: 0; font: inherit; color: var(--cobalto); text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; cursor: pointer; }
-.link-botao:hover { text-decoration-thickness: 2px; }
+/* Baixar CSV ou JSON: um controle só, em pílula, com o ícone e as duas escolhas lado a lado */
+.exportar { display: inline-flex; align-items: stretch; border-radius: 999px; outline: 1px solid var(--linha); outline-offset: -1px; background: var(--superficie); overflow: hidden; font-size: 0.875rem; line-height: 1.5rem; }
+.exportar__rotulo { display: inline-flex; align-items: center; gap: var(--perto); padding: var(--perto) var(--item); color: var(--tinta-suave); }
+.exportar__rotulo .icone { width: 1rem; height: 1rem; }
+.exportar__botao { appearance: none; border: 0; border-left: 1px solid var(--linha); background: none; padding: var(--perto) var(--item); font: inherit; font-weight: 600; color: var(--cobalto); cursor: pointer; }
+.exportar__botao:hover { background: var(--cobalto-claro); }
+.exportar__botao:focus-visible { outline-offset: -3px; border-radius: 999px; }
+.exportar__botao:active { background: color-mix(in srgb, var(--cobalto) 18%, var(--superficie)); }
 .lista-acoes { margin: var(--junto) 0 var(--item); font-size: 0.95rem; line-height: 1.5rem; }
 .numeros__filtro { max-width: 16rem; margin: var(--item) 0; }
 .numeros__bloco h3 { margin: var(--junto) 0 0; font-size: 1.05rem; line-height: 1.5rem; }
