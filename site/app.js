@@ -267,7 +267,7 @@
     if (pr.ar) avisos.push(h("p", {}, pr.ar));
     return {
       resumo: pr.resumo
-        ? h("div", {}, h("span", { class: "rotulo-ia" }, "Resumo feito por inteligência artificial"), h("p", {}, pr.resumo))
+        ? h("div", {}, h("span", { class: "rotulo-ia" }, "Resumo feito por inteligência artificial. ", h("a", { href: "#/inteligencia-artificial" }, "Como é usada")), h("p", {}, pr.resumo))
         : h("p", {}, "Ainda não há resumo deste projeto. Leia o texto oficial abaixo."),
       avisos: avisos.length ? h("div", { class: "cartao-aviso" }, h("strong", {}, "Atenção"), avisos) : null,
       substitutivo: pr.subst
@@ -287,7 +287,7 @@
     const base = cortado ? titulo.slice(0, -1).trimEnd() : titulo;
     let resto = pr.resumo.startsWith(base) ? pr.resumo.slice(base.length).trim() : pr.resumo;
     if (cortado && resto && pr.resumo.startsWith(base)) resto = "… " + resto;
-    return h("div", {}, h("span", { class: "rotulo-ia" }, "Título e resumo feitos por inteligência artificial"), resto ? h("p", {}, resto) : null);
+    return h("div", {}, h("span", { class: "rotulo-ia" }, "Título e resumo feitos por inteligência artificial. ", h("a", { href: "#/inteligencia-artificial" }, "Como é usada")), resto ? h("p", {}, resto) : null);
   }
 
   // ------------------------------------------------------------------ tela inicial
@@ -356,11 +356,11 @@
           h("p", { class: "heroi__texto" }, "Escolha um tema e leia o que foi votado, com o voto de cada deputado federal."),
           h("form", { class: "heroi__busca", role: "search", "aria-label": "Procurar assunto ou projeto", onsubmit: (e) => e.preventDefault() },
             h("label", { for: "busca", class: "so-leitor" }, "Procure por um tema ou palavra"), campoBusca),
-          h("p", { class: "heroi__link" }, "Já sabe quem? ", h("a", { href: "#/deputados" }, "Procure um deputado pelo nome")))),
+          h("p", { class: "heroi__link" }, "Já sabe quem? ", h("a", { href: "#/deputados" }, "Procure um deputado pelo nome"), ". Ou veja ", h("a", { href: "#/em-numeros" }, "os números das votações"), "."))),
       principios, estadoTxt, resultados, destaques,
       h("p", { class: "confianca" },
         `Dados oficiais da Câmara dos Deputados, de ${data(meta.de)} a ${data(meta.ate)}. Assunto e resumo são feitos por inteligência artificial e podem errar; avisamos quando há dúvida. `,
-        h("a", { href: "#/sobre" }, "Como o site funciona"))));
+        h("a", { href: "#/sobre" }, "Como o site funciona"), " · ", h("a", { href: "#/inteligencia-artificial" }, "Transparência da IA"))));
     document.title = "Voto de Verdade: como a Câmara dos Deputados votou";
 
     let versao = 0;
@@ -454,6 +454,387 @@
     return document.getElementById("titulo-inicio");
   }
 
+  // ------------------------------------------------------------------ exportar (CSV e JSON)
+  // Cada bloco com números oferece os mesmos dados da tabela em CSV (abre em planilha) e em JSON.
+  const FONTE_DADOS = "Voto de Verdade (votodeverdade.com.br), a partir dos Dados Abertos da Câmara dos Deputados";
+  const csvCelula = (v) => {
+    let t = v === null || v === undefined ? "" : String(v);
+    if (typeof v === "string" && /^[=+\-@\t\r]/.test(t)) t = "'" + t; // planilhas tratariam o texto como fórmula
+    return /[",;\r\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+  };
+  const paraCsv = (colunas, registros) => "\uFEFF" + [colunas.map((c) => csvCelula(c[1])).join(",")]
+    .concat(registros.map((r) => colunas.map((c) => csvCelula(r[c[0]])).join(","))).join("\r\n") + "\r\n";
+  function baixarArquivo(nome, texto, tipo) {
+    const url = URL.createObjectURL(new Blob([texto], { type: tipo }));
+    const a = h("a", { href: url, download: nome });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+  // pegar() devolve { titulo, colunas: [[chave, rótulo]...], registros, filtros, gerado_em } no momento do clique (vale o filtro que está na tela).
+  function botoesExportar(arquivo, pegar, sobre) {
+    const exportar = (formato) => {
+      const d = pegar();
+      const base = `voto-de-verdade-${arquivo}` + (d.filtros && d.filtros.ano ? "-" + d.filtros.ano : "");
+      if (formato === "csv") baixarArquivo(base + ".csv", paraCsv(d.colunas, d.registros), "text/csv;charset=utf-8");
+      else baixarArquivo(base + ".json", JSON.stringify({ titulo: d.titulo, fonte: FONTE_DADOS, licenca: "CC BY 4.0: cite o Voto de Verdade", gerado_em: d.gerado_em, filtros: d.filtros || {}, dados: d.registros }, null, 2) + "\n", "application/json");
+    };
+    const botao = (formato, rotulo) => h("button", { type: "button", class: "exportar__botao", onclick: () => exportar(formato) },
+      h("span", { class: "so-leitor" }, "Baixar "), rotulo, sobre ? h("span", { class: "so-leitor" }, " " + sobre) : null);
+    return h("span", { class: "exportar", role: "group", "aria-label": "Baixar estes números" },
+      h("span", { class: "exportar__rotulo", "aria-hidden": "true" }, "Baixar"), botao("csv", "CSV"), botao("json", "JSON"));
+  }
+
+  // ------------------------------------------------------------------ painel
+  // Só descreve: conta votações. Não ordena pessoas, não dá nota e não compara partidos.
+  const MES = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" });
+  const mesPorExtenso = (m) => MES.format(new Date(m + "-15T12:00:00"));
+  const MES_CURTO = new Intl.DateTimeFormat("pt-BR", { month: "short" });
+  const pct1 = (a, b) => (b ? (100 * a / b).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) : "0") + "%";
+  const rotuloVotacoes = (n) => plural(n, "votação", "votações");
+
+  const ROTULOS_TIPO = { nominal: "Nominais", simbolica: "Simbólicas", secreta: "Secretas" };
+  const NOME_MODELO = { "claude-sonnet-5-5": "Claude Sonnet 5.5", "claude-haiku-4-5-20251001": "Claude Haiku 4.5" };
+  const nomeModelo = (id) => NOME_MODELO[id] || id || "";
+  const VOTOS_PLACAR = [["S", "sim", "Sim"], ["N", "nao", "Não"], ["A", "abstencao", "Abstenção"], ["O", "obstrucao", "Obstrução"]];
+  // Diferença entre sim e não, dividida pelo total de sim e não (o mesmo corte de 15% da home, em «Decididas por pouco»).
+  const FAIXAS_PLACAR = [
+    ["sem_contra", "Sem voto contrário", "só houve votos de um lado"],
+    ["ampla", "Ampla", "diferença de 50% ou mais"],
+    ["maioria", "Maioria", "diferença de 15% a 50%"],
+    ["apertada", "Apertada", "diferença de menos de 15%"],
+  ];
+  const NIVEIS_IA = [["alta", "Alta"], ["media", "Média"], ["baixa", "Baixa"]];
+  const somaDe = (obj, chaves) => chaves.reduce((a, k) => a + (obj[k] || 0), 0);
+  const pctNum = (a, b) => (b ? Math.round((1000 * a) / b) / 10 : 0);
+  const fmtPct = (v) => v.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%";
+  // Os números do período inteiro ou de um ano: o que a tela mostra e o que as tabelas e os arquivos baixados trazem.
+  const visao = (pn, ano) => (ano && pn.por_ano && pn.por_ano[ano] ? Object.assign({}, pn, pn.por_ano[ano]) : pn);
+
+  const AVISOS_IA = (ia) => [
+    ["assunto_pode_estar_errado", "Projetos com aviso de que o assunto pode estar errado", ia.aviso_assunto, ["projeto", "projetos"], "com aviso de que o assunto pode estar errado."],
+    ["resumo_pode_ter_erros", "Projetos com aviso de que o resumo pode conter erros", ia.aviso_resumo, ["projeto", "projetos"], "com aviso de que o resumo pode conter erros."],
+    ia.so_ementa ? ["sem_resumo", "Projetos sem resumo da inteligência artificial (a tela mostra só a ementa)", ia.so_ementa, ["projeto", "projetos"], "sem resumo da inteligência artificial, porque ela não conseguiu resumir ou a conferência não achou apoio no texto. A tela mostra só a ementa."] : null,
+    ["texto_pode_diferir", "Projetos cuja votação foi sobre substitutivo ou emenda (o texto votado pode ser diferente da ementa)", ia.texto_pode_diferir, ["projeto", "projetos"], "cuja votação foi sobre um substitutivo ou emenda: o texto votado pode ser diferente da ementa."],
+    ia.votacao_aviso ? ["classificacao_automatica", "Votações com aviso de que a classificação foi feita automaticamente e pode estar errada", ia.votacao_aviso, ["votação", "votações"], "com aviso de que a classificação foi feita automaticamente e pode estar errada."] : null,
+  ].filter(Boolean);
+  const FUNCOES_IA = ["Escolhe o assunto de cada projeto.", "Escreve o título e o resumo em linguagem simples e lista os pontos principais.", "Diz quanto tem de certeza e avisa quando tem dúvida."];
+  const LIMITES_IA = ["A inteligência artificial pode errar, mesmo quando diz ter certeza.", "O texto oficial de cada projeto fica sempre ao lado do resumo. Em caso de dúvida, vale o texto oficial.", "Por enquanto o site não tem um canal para pedir correções."];
+  const PASSOS_IA = (ia) => [
+    ["Escolha do assunto e resumo", ia.modelo, "Um modelo lê o texto oficial do projeto, escolhe o assunto, escreve o resumo e diz quanto tem de certeza."],
+    ["Segunda leitura do assunto", ia.conferencia, "Um segundo modelo escolhe o assunto sem ver a resposta do primeiro. Se os dois discordam, a confiança no assunto cai."],
+    ["Checagem por palavras", "", "Uma checagem por palavras da ementa confere se o assunto faz sentido."],
+    ["Conferência do resumo", ia.conferencia, "O segundo modelo confere o resumo contra o texto original. Se achar partes sem apoio no texto, o projeto mostra um aviso. Se o resumo não se sustenta, ele é descartado e a tela mostra só a ementa."],
+  ];
+
+  // Cada bloco tem a sua tabela numa página própria (#/em-numeros/<id> ou #/inteligencia-artificial/<id>).
+  // colunas: [chave, rótulo, formatador opcional (valor, registro)]; registros(visao) traz os valores puros (os que vão para o CSV e o JSON).
+  const TABELAS_NUMEROS = {
+    "por-mes": {
+      titulo: "Votações por mês",
+      colunas: [["mes", "Mês", mesPorExtenso], ["nominais", "Nominais"], ["simbolicas", "Simbólicas"], ["secretas", "Secretas"]],
+      registros: (v) => v.meses.map((m) => ({ mes: m.m, nominais: m.n, simbolicas: m.s, secretas: m.x })),
+    },
+    "por-assunto": {
+      titulo: "Votações por assunto",
+      colunas: [["assunto", "Assunto"], ["nominais", "Nominais"], ["simbolicas", "Simbólicas"], ["secretas", "Secretas"], ["total", "Total"]],
+      registros: (v) => v.assuntos.map((a) => ({ assunto: a.nome, nominais: a.n, simbolicas: a.s, secretas: a.x, total: a.n + a.s + a.x })),
+    },
+    "resultado": {
+      titulo: "Resultado por tipo de votação",
+      colunas: [["tipo", "Tipo", (t) => ROTULOS_TIPO[t] || t], ["aprovadas", "Aprovadas"], ["rejeitadas", "Rejeitadas"], ["total", "Total"]],
+      registros: (v) => ["nominal", "simbolica", "secreta"].map((k) => { const r = v.resultado[k] || { aprovadas: 0, rejeitadas: 0 }; return { tipo: k, aprovadas: r.aprovadas, rejeitadas: r.rejeitadas, total: r.aprovadas + r.rejeitadas }; }),
+    },
+    "participacao": {
+      titulo: "Deputados que votaram, por mês",
+      colunas: [["mes", "Mês", mesPorExtenso], ["votacoes_nominais", "Votações nominais"], ["deputados_que_votaram_media", "Deputados que votaram (média)", (x) => (x === null ? "sem votação nominal" : num(x))]],
+      registros: (v) => v.participacao.meses.map((m) => ({ mes: m.m, votacoes_nominais: m.n, deputados_que_votaram_media: m.n ? m.v : null })),
+    },
+    "placar-votos": {
+      titulo: "Votos nas votações nominais",
+      colunas: [["voto", "Voto"], ["total", "Total"], ["percentual", "Parte do total", fmtPct]],
+      registros: (v) => { const soma = somaDe(v.placar.votos, VOTOS_PLACAR.map((x) => x[0])); return VOTOS_PLACAR.map(([c, , nome]) => ({ voto: nome, total: v.placar.votos[c], percentual: pctNum(v.placar.votos[c], soma) })); },
+    },
+    "placar-margem": {
+      titulo: "Votações nominais por tamanho da diferença",
+      colunas: [["faixa", "Faixa"], ["como_e_medida", "Como é medida"], ["votacoes", "Votações"], ["percentual", "Parte das nominais", fmtPct]],
+      registros: (v) => FAIXAS_PLACAR.map(([k, nome, det]) => ({ faixa: nome, como_e_medida: det, votacoes: v.placar.margem[k], percentual: pctNum(v.placar.margem[k], v.placar.nominais) })),
+    },
+    "confianca": {
+      pai: "ia", titulo: "Confiança da inteligência artificial",
+      colunas: [["confianca", "Confiança"], ["assunto", "Assunto"], ["resumo", "Resumo"]],
+      registros: (v) => NIVEIS_IA.map(([k, nome]) => ({ confianca: nome, assunto: v.ia.assunto[k], resumo: v.ia.resumo[k] })),
+      nota: (pn) => `Os mesmos números do gráfico, dos ${num(pn.ia.projetos)} projetos do site. Atualizado em ${data(pn.gerado_em)}.`,
+    },
+  };
+  // De qual tela cada tabela faz parte: o endereço e o «Voltar para» seguem daí.
+  const PAIS_TABELA = { numeros: { nome: "Em números", rota: "#/em-numeros" }, ia: { nome: "Transparência da IA", rota: "#/inteligencia-artificial" } };
+  const paiDaTabela = (id) => PAIS_TABELA[(TABELAS_NUMEROS[id] || {}).pai || "numeros"];
+  const consultaAno = (ano) => (ano ? "?ano=" + ano : "");
+
+  // Link «Ver como tabela» e os botões de baixar CSV e JSON do bloco. v é a visão (o ano escolhido), pn o painel inteiro.
+  function acoesDoBloco(id, sobre, pn, v, ano) {
+    const def = TABELAS_NUMEROS[id];
+    const doIa = def.pai === "ia";
+    const link = def.semPagina ? null : h("a", { href: paiDaTabela(id).rota + "/" + id + (doIa ? "" : consultaAno(ano)) }, "Ver como tabela", sobre ? h("span", { class: "so-leitor" }, " " + sobre) : null);
+    const exportar = botoesExportar(id, () => ({
+      titulo: def.titulo, colunas: def.colunas, registros: def.registros(v), gerado_em: pn.gerado_em, filtros: ano && !doIa ? { ano: Number(ano) } : {},
+    }), sobre);
+    return h("p", { class: "numeros__acoes" }, link, exportar);
+  }
+
+  async function telaTabelaNumeros(id, pai, p) {
+    const def = Object.prototype.hasOwnProperty.call(TABELAS_NUMEROS, id) ? TABELAS_NUMEROS[id] : null;
+    if (!def || def.semPagina || (def.pai || "numeros") !== pai) return telaNaoEncontrada();
+    const mae = PAIS_TABELA[pai];
+    const pn = await dados("painel");
+    const ano = pai === "numeros" && p && pn.anos && pn.anos.includes(p.get("ano")) ? p.get("ano") : "";
+    const v = visao(pn, ano);
+    const nota = def.nota ? def.nota(pn) : `Os mesmos números do gráfico, ${ano ? "de " + ano + ", " : ""}de ${data(v.de)} a ${data(v.ate)}. Atualizado em ${data(pn.gerado_em)}.`;
+    const fmt = (c, r) => (c[2] ? c[2](r[c[0]], r) : typeof r[c[0]] === "number" ? num(r[c[0]]) : r[c[0]]);
+    principal.replaceChildren(h("div", { class: "miolo numeros" },
+      h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {},
+        h("li", {}, h("a", { href: "#/" }, "Início")), h("li", {}, h("a", { href: mae.rota + consultaAno(ano) }, mae.nome)), h("li", { "aria-current": "page" }, def.titulo))),
+      h("h1", { id: "titulo-painel", tabindex: "-1" }, def.titulo),
+      h("p", { class: "numeros__nota" }, nota),
+      h("div", { class: "numeros__bloco" },
+        h("div", { class: "tabela-rolavel" },
+          h("table", { class: "tabela-painel" },
+            h("caption", { class: "so-leitor" }, def.titulo),
+            h("thead", {}, h("tr", {}, def.colunas.map((c, k) => h("th", { scope: "col", class: k && typeof def.registros(v)[0][c[0]] === "number" ? "num" : null }, c[1])))),
+            h("tbody", {}, def.registros(v).map((r) => h("tr", {}, def.colunas.map((c, k) => (k ? h("td", { class: typeof r[c[0]] === "number" || r[c[0]] === null && k ? "num" : null }, fmt(c, r)) : h("th", { scope: "row" }, fmt(c, r))))))))),
+        h("p", { class: "numeros__acoes" }, h("a", { href: mae.rota + consultaAno(ano) }, "Voltar para " + mae.nome), botoesExportar(id, () => ({ titulo: def.titulo, colunas: def.colunas, registros: def.registros(v), gerado_em: pn.gerado_em, filtros: ano ? { ano: Number(ano) } : {} }))))));
+    document.title = `${def.titulo}: tabela | Voto de Verdade`;
+    return document.getElementById("titulo-painel");
+  }
+
+  const legendaDoPainel = (itens) => h("ul", { class: "pn-legenda", "aria-label": "Legenda" },
+    itens.map(([cor, texto]) => h("li", {}, h("span", { class: "pn-chip pn-chip--" + cor, "aria-hidden": "true" }), texto)));
+
+  const dicaVotacoes = (m) => [
+    h("span", {}, h("span", { class: "pn-chip pn-chip--nominal", "aria-hidden": "true" }), `Nominais: ${num(m.n)}`),
+    h("span", {}, h("span", { class: "pn-chip pn-chip--simbolica", "aria-hidden": "true" }), `Simbólicas: ${num(m.s)}`),
+    m.x ? h("span", {}, `Secretas: ${num(m.x)}`) : null,
+  ];
+
+  // opc: series ([[campo, textura]...]), topo e passo do eixo (opcionais), aria (o que o gráfico mostra) e dica (linhas do balão de cada mês).
+  function graficoMeses(meses, opc) {
+    const o = Object.assign({ series: [["n", "nominal"], ["s", "simbolica"], ["x", "secreta"]], dica: dicaVotacoes, aria: "o número de votações nominais e simbólicas em cada mês" }, opc || {});
+    const maior = Math.max(1, ...meses.map((m) => o.series.reduce((a, [k]) => a + m[k], 0)));
+    const passo = o.passo || (maior <= 30 ? 10 : maior <= 80 ? 20 : 50);
+    const topo = o.topo || Math.ceil(maior / passo) * passo;
+    const marcas = [];
+    for (let v = topo; v >= 0; v -= passo) marcas.push(v);
+
+    const dica = h("div", { class: "pn-dica", role: "presentation", hidden: true });
+    const colunas = h("div", { class: "pn-colunas" });
+    colunas.style.setProperty("--n", meses.length);
+    colunas.style.setProperty("--topo", topo);
+    const eixoX = h("div", { class: "pn-eixo-x", "aria-hidden": "true" });
+    eixoX.style.setProperty("--n", meses.length);
+    meses.forEach((m, i) => {
+      const col = h("div", { class: "pn-col" });
+      for (const [k, cls] of o.series) {
+        if (!m[k]) continue;
+        const seg = h("span", { class: "pn-seg pn-seg--" + cls });
+        seg.style.setProperty("--v", m[k]);
+        col.append(seg);
+      }
+      const mostrar = () => {
+        dica.replaceChildren(h("strong", {}, mesPorExtenso(m.m)), ...o.dica(m));
+        dica.hidden = false;
+        const area = colunas.getBoundingClientRect();
+        const c = col.getBoundingClientRect();
+        const largura = dica.offsetWidth;
+        const centro = c.left - area.left + c.width / 2;
+        dica.style.left = Math.max(0, Math.min(area.width - largura, centro - largura / 2)) + "px";
+      };
+      col.addEventListener("pointerenter", mostrar);
+      col.addEventListener("pointerdown", mostrar);
+      colunas.append(col);
+      // O ano aparece no primeiro mês do período e a cada janeiro (ou no primeiro mês de cada ano com votações).
+      const primeiroDoAno = i === 0 || m.m.slice(0, 4) !== meses[i - 1].m.slice(0, 4);
+      // Com até 12 meses (um ano só), cada coluna leva o nome do mês; com mais, só o ano no primeiro mês de cada ano.
+      if (meses.length <= 12) {
+        const nome = MES_CURTO.format(new Date(m.m + "-15T12:00:00")).replace(".", "");
+        eixoX.append(h("span", { class: "pn-rotulo-x pn-rotulo-x--mes" }, h("span", { class: "pn-mes-longo" }, nome), h("span", { class: "pn-mes-curto", "aria-hidden": "true" }, nome.charAt(0).toUpperCase())));
+      } else eixoX.append(h("span", { class: "pn-rotulo-x" }, primeiroDoAno ? m.m.slice(0, 4) : ""));
+    });
+    colunas.addEventListener("pointerleave", () => { dica.hidden = true; });
+    document.addEventListener("pointerdown", (e) => { if (!colunas.contains(e.target)) dica.hidden = true; });
+
+    return h("div", { class: "pn-grafico", role: "img",
+      "aria-label": `Gráfico de colunas com ${o.aria}, de ${mesPorExtenso(meses[0].m)} a ${mesPorExtenso(meses[meses.length - 1].m)}. Os mesmos números estão numa tabela, no link abaixo do gráfico.` },
+      h("div", { class: "pn-eixo-y", "aria-hidden": "true" }, marcas.map((v) => h("span", {}, num(v)))),
+      h("div", { class: "pn-area" },
+        h("div", { class: "pn-grades", "aria-hidden": "true" }, marcas.map(() => h("span", {}))),
+        colunas, dica),
+      h("span", {}), eixoX);
+  }
+
+  function linhaBarras(nome, partes, total, maximo, cls) {
+    const trilho = h("div", { class: "pn-trilho" });
+    const barra = h("div", { class: "pn-barra" });
+    barra.style.setProperty("--t", total);
+    barra.style.setProperty("--max", maximo);
+    for (const [valor, tipo] of partes) {
+      if (!valor) continue;
+      const seg = h("span", { class: "pn-seg pn-seg--" + tipo });
+      seg.style.setProperty("--v", valor);
+      barra.append(seg);
+    }
+    trilho.append(barra);
+    return h("li", { class: "pn-linha" + (cls ? " " + cls : "") }, h("span", { class: "pn-nome" }, nome), trilho);
+  }
+
+  async function telaPainel(p) {
+    const pn = await dados("painel");
+    let ano = pn.anos && pn.anos.includes(p && p.get("ano")) ? p.get("ano") : "";
+    const rotulos = ROTULOS_TIPO;
+
+    const seletorAno = h("select", { id: "ano-n", "aria-controls": "numeros-area" },
+      h("option", { value: "" }, "Todos os anos"), ...(pn.anos || []).map((a) => h("option", { value: a }, a)));
+    seletorAno.value = ano;
+    const area = h("div", { class: "numeros__area", id: "numeros-area" });
+
+    function desenhar() {
+      const v = visao(pn, ano);
+      const t = v.totais;
+      const pa = v.participacao, pl = v.placar;
+      const maiorAssunto = Math.max(1, ...v.assuntos.map((a) => a.n + a.s + a.x));
+
+      const blocoMeses = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t1" },
+        h("h2", { id: "pn-t1" }, "Votações nominais e simbólicas ao longo do tempo"),
+        h("p", { class: "numeros__nota" }, "Na votação nominal, o voto de cada deputado fica registrado. Na simbólica, só o resultado. Meses sem votação (recesso, eleições) aparecem vazios."),
+        legendaDoPainel([["nominal", "Nominais"], ["simbolica", "Simbólicas"]]),
+        graficoMeses(v.meses),
+        t.secretas ? h("p", { class: "numeros__nota" }, `Há também ${plural(t.secretas, "votação secreta", "votações secretas")}, mostrada na tabela.`) : null,
+        acoesDoBloco("por-mes", "das votações por mês", pn, v, ano));
+
+      const blocoAssuntos = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t2" },
+        h("h2", { id: "pn-t2" }, "Votações por assunto"),
+        h("p", { class: "numeros__nota" }, "Cada votação conta uma vez, no assunto principal do projeto. Os assuntos são escolhidos por inteligência artificial e seguem sempre a mesma ordem, não a do tamanho."),
+        legendaDoPainel([["nominal", "Nominais"], ["simbolica", "Simbólicas"]]),
+        h("ul", { class: "pn-linhas", "aria-label": "Votações por assunto" }, v.assuntos.map((a) => {
+          const total = a.n + a.s + a.x;
+          const li = linhaBarras(a.nome, [[a.n, "nominal"], [a.s, "simbolica"], [a.x, "secreta"]], total, maiorAssunto);
+          li.append(h("span", { class: "pn-total" }, num(total), h("span", { class: "so-leitor" }, ` votações: ${num(a.n)} nominais e ${num(a.s)} simbólicas`)));
+          return li;
+        })),
+        acoesDoBloco("por-assunto", "das votações por assunto", pn, v, ano));
+
+      const blocoResultado = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t3" },
+        h("h2", { id: "pn-t3" }, "Resultado das votações"),
+        h("p", { class: "numeros__nota" }, "Cada votação termina aprovada ou rejeitada pelo plenário. Aprovar uma votação não quer dizer, sozinho, que o projeto virou lei."),
+        h("p", { class: "numeros__nota" }, `Nas votações simbólicas (${pct1(t.simbolicas, t.votacoes)} do total), os partidos chegam a um acordo antes e o resultado é apenas anunciado. Por isso a grande maioria das votações aparece como aprovada.`),
+        legendaDoPainel([["aprovada", "Aprovadas"], ["rejeitada", "Rejeitadas"]]),
+        h("ul", { class: "pn-linhas pn-linhas--resultado", "aria-label": "Resultado por tipo de votação" },
+          ["nominal", "simbolica", "secreta"].filter((k) => v.resultado[k] && v.resultado[k].aprovadas + v.resultado[k].rejeitadas > 0).map((k) => {
+            const r = v.resultado[k];
+            const total = r.aprovadas + r.rejeitadas;
+            const li = linhaBarras(rotulos[k], [[r.aprovadas, "aprovada"], [r.rejeitadas, "rejeitada"]], total, total);
+            li.append(h("span", { class: "pn-total" }, `${num(r.aprovadas)} aprovadas (${pct1(r.aprovadas, total)}) · ${num(r.rejeitadas)} rejeitadas (${pct1(r.rejeitadas, total)})`));
+            return li;
+          })),
+        acoesDoBloco("resultado", "do resultado das votações", pn, v, ano));
+
+      const blocoParticipacao = pa && pa.votacoes ? h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t4" },
+        h("h2", { id: "pn-t4" }, "Quantos deputados votaram"),
+        h("p", { class: "numeros__nota" }, `Só nas votações nominais, que registram o voto de cada deputado. A Câmara tem ${num(pa.cadeiras)} deputados e, em média, ${num(pa.media)} registraram voto em cada votação nominal (de ${num(pa.minimo)} a ${num(pa.maximo)}). O site não sabe o motivo de quem não aparece (falta, licença ou outro). Aqui entra só o total de cada votação, nunca quem faltou.`),
+        legendaDoPainel([["nominal", "Deputados que votaram (média do mês)"]]),
+        graficoMeses(pa.meses, {
+          series: [["v", "nominal"]], topo: 600, passo: 100, aria: "a média de deputados que votaram nas votações nominais de cada mês",
+          dica: (m) => (m.n ? [
+            h("span", {}, `Votações nominais: ${num(m.n)}`),
+            h("span", {}, h("span", { class: "pn-chip pn-chip--nominal", "aria-hidden": "true" }), `Votaram, em média: ${num(m.v)}`)] : [h("span", {}, "Sem votação nominal")]),
+        }),
+        acoesDoBloco("participacao", "da participação por mês", pn, v, ano)) : null;
+
+      const somaVotos = pl && pl.votos ? somaDe(pl.votos, VOTOS_PLACAR.map((x) => x[0])) : 0;
+      const maiorFaixa = pl && pl.margem ? Math.max(1, ...FAIXAS_PLACAR.map(([k]) => pl.margem[k])) : 1;
+      const linhaPlacar = () => {
+        const li = linhaBarras("Todas as votações nominais", VOTOS_PLACAR.map(([c, cls]) => [pl.votos[c], cls]), somaVotos, somaVotos);
+        li.append(h("span", { class: "pn-total" }, VOTOS_PLACAR.map(([c, , nome]) => `${nome}: ${num(pl.votos[c])} (${pct1(pl.votos[c], somaVotos)})`).join(" · ")));
+        return li;
+      };
+      const blocoPlacar = pl && pl.nominais ? h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t5" },
+        h("h2", { id: "pn-t5" }, "Placar das votações nominais"),
+        h("p", { class: "numeros__nota" }, "Somando todas as votações nominais, quantos votos foram sim, não, abstenção ou obstrução. Votar sim ou não não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
+        legendaDoPainel(VOTOS_PLACAR.map(([, cls, nome]) => [cls, nome])),
+        h("ul", { class: "pn-linhas pn-linhas--resultado", "aria-label": "Votos nas votações nominais" }, linhaPlacar()),
+        acoesDoBloco("placar-votos", "dos votos", pn, v, ano),
+        h("h3", {}, "Votações decididas por pouco ou por muito"),
+        h("p", { class: "numeros__nota" }, `A diferença é a distância entre sim e não, dividida pelo total de sim e não. Cada uma das ${num(pl.nominais)} votações nominais cai em uma faixa.`),
+        h("ul", { class: "pn-linhas", "aria-label": "Votações nominais por diferença entre sim e não" }, FAIXAS_PLACAR.map(([k, nome, det]) => {
+          const li = linhaBarras(h("span", {}, nome, h("span", { class: "pn-detalhe" }, det)), [[pl.margem[k], "faixa"]], pl.margem[k], maiorFaixa);
+          li.append(h("span", { class: "pn-total" }, num(pl.margem[k]), h("span", { class: "so-leitor" }, ` votações (${pct1(pl.margem[k], pl.nominais)})`)));
+          return li;
+        })),
+        acoesDoBloco("placar-margem", "da diferença entre sim e não", pn, v, ano)) : null;
+
+      area.replaceChildren(
+        h("p", { class: "numeros__lead" },
+          `${rotuloVotacoes(t.votacoes)} em plenário, de ${data(v.de)} a ${data(v.ate)}: ${num(t.nominais)} nominais, ${num(t.simbolicas)} simbólicas` + (t.secretas ? ` e ${num(t.secretas)} secreta.` : ".")),
+        h("p", { class: "numeros__nota" }, `Atualizado em ${data(pn.gerado_em)}. Esta página só conta e descreve: não dá nota nem compara deputados ou partidos. `, h("a", { href: "#/sobre" }, "Como o site funciona")),
+        blocoMeses, blocoAssuntos, blocoResultado, blocoParticipacao, blocoPlacar);
+      gravarEndereco("em-numeros", limparParams({ ano }));
+    }
+
+    seletorAno.addEventListener("change", () => { ano = seletorAno.value; desenhar(); });
+    principal.replaceChildren(h("div", { class: "miolo numeros" },
+      h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Em números"))),
+      h("h1", { id: "titulo-painel", tabindex: "-1" }, "Em números"),
+      pn.anos && pn.anos.length > 1 ? h("div", { class: "campo numeros__filtro" }, h("label", { for: "ano-n" }, "Ano"), seletorAno) : null,
+      area));
+    desenhar();
+    document.title = "Em números: votações da Câmara ao longo do tempo | Voto de Verdade";
+    return document.getElementById("titulo-painel");
+  }
+
+  // ------------------------------------------------------------------ transparência da IA
+  // Mostra como a inteligência artificial é usada no site e o que as conferências automáticas encontraram.
+  async function telaIA() {
+    const pn = await dados("painel");
+    const ia = pn.ia || {};
+    const m1 = ia.modelo ? ` (${nomeModelo(ia.modelo)})` : "";
+    const m2 = ia.conferencia ? ` (${nomeModelo(ia.conferencia)})` : "";
+    const linhaConfianca = (nome, c, sem) => {
+      const total = somaDe(c, NIVEIS_IA.map((x) => x[0]));
+      const li = linhaBarras(nome, NIVEIS_IA.map(([k]) => [c[k], k]), total, total);
+      li.append(h("span", { class: "pn-total" }, NIVEIS_IA.map(([k, rotulo]) => `${rotulo}: ${num(c[k])} (${pct1(c[k], total)})`).concat(sem ? [`Sem resumo: ${num(sem)}`] : []).join(" · ")));
+      return li;
+    };
+    const bloco = (id, titulo, ...filhos) => h("section", { class: "numeros__bloco", "aria-labelledby": id }, h("h2", { id }, titulo), ...filhos);
+    const lista = (itens) => h("ul", { class: "numeros__fatos" }, ...itens.filter(Boolean).map((t) => h("li", {}, t)));
+    const acoes = (id, sobre) => acoesDoBloco(id, sobre, pn, pn, "");
+    const passos = ia.projetos ? PASSOS_IA(ia).map(([, modelo, texto]) => texto.replace("Um modelo", `Um modelo${m1}`).replace("Um segundo modelo", `Um segundo modelo${m2}`).replace("O segundo modelo", `O segundo modelo${m2}`)) : [];
+
+    principal.replaceChildren(h("div", { class: "miolo numeros" },
+      h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Transparência da IA"))),
+      h("h1", { id: "titulo-ia", tabindex: "-1" }, "Transparência da IA"),
+      h("p", { class: "numeros__lead" }, ia.projetos
+        ? `O assunto e o resumo dos ${num(ia.projetos)} projetos do site são feitos por inteligência artificial, e ninguém revisa esses textos antes de irem ao ar.`
+        : "O assunto e o resumo dos projetos do site são feitos por inteligência artificial, e ninguém revisa esses textos antes de irem ao ar."),
+      h("p", { class: "numeros__nota" }, `Atualizado em ${data(pn.gerado_em)}. Aqui está o que ela faz, como o trabalho é conferido e onde pode errar. `, h("a", { href: "#/sobre" }, "Como o site funciona")),
+      bloco("ia-t1", "O que a inteligência artificial faz",
+        lista(FUNCOES_IA),
+        h("p", { class: "numeros__nota" }, "Ela não registra nem muda votos: o voto de cada deputado, a data e o resultado vêm direto dos Dados Abertos da Câmara. Também não dá nota, não faz ranking e não compara deputados ou partidos.")),
+      ia.projetos ? bloco("ia-t2", "Como é feito",
+        h("ol", { class: "numeros__passos" }, ...passos.map((t) => h("li", {}, t))),
+        ia.ate ? h("p", { class: "numeros__nota" }, `Último texto gerado em ${data(ia.ate)}. O site só refaz o resumo de projetos novos ou cujo texto oficial mudou.`) : null) : null,
+      ia.projetos ? bloco("ia-t3", "Confiança de cada texto",
+        h("p", { class: "numeros__nota" }, "Cada assunto e cada resumo recebe uma confiança calculada por máquina, não por pessoas. Alta quer dizer que as conferências automáticas concordaram, não que o texto está certo."),
+        legendaDoPainel(NIVEIS_IA.map(([k, nome]) => [k, nome])),
+        h("ul", { class: "pn-linhas pn-linhas--resultado", "aria-label": "Confiança do assunto e do resumo" }, linhaConfianca("Assunto", ia.assunto), linhaConfianca("Resumo", ia.resumo, ia.so_ementa)),
+        acoes("confianca", "da confiança")) : null,
+      ia.projetos ? bloco("ia-t4", "Avisos que o site mostra",
+        lista(AVISOS_IA(ia).map(([, , n, [um, varios], resto]) => `${plural(n, um, varios)} ${resto}`))) : null,
+      bloco("ia-t5", "Limites e correções", lista(LIMITES_IA))));
+    document.title = "Transparência da IA: como a inteligência artificial é usada | Voto de Verdade";
+    return document.getElementById("titulo-ia");
+  }
+
   // ------------------------------------------------------------------ como o site funciona
   const OBJETIVOS = [
     "Mostrar o que cada deputado votou, em linguagem simples, sem nota e sem ranking.",
@@ -481,9 +862,12 @@
       h("h2", {}, "Quais votações o site mostra"),
       h("p", {}, "Um projeto costuma passar por várias votações no plenário. Aqui entram só as que decidem sobre o projeto em si, isto é, aprovar ou rejeitar. Ficam de fora as votações de urgência (que só decidem se o projeto anda mais rápido), de requerimentos, de emendas ou destaques isolados (que votam a mudança de um trecho) e de procedimento. Por isso um projeto que foi votado muitas vezes pode aparecer com uma só votação."),
       h("p", {}, "Às vezes a Câmara vota um substitutivo, um texto novo que troca o original. Essa votação aparece, com um aviso: o resumo foi feito a partir da ementa do projeto original, e o texto votado pode ser diferente."),
+      h("h2", {}, "Números e dados para baixar"),
+      h("p", {}, "A tela ", h("a", { href: "#/em-numeros" }, "Em números"), " mostra as votações ao longo do tempo, por assunto e por resultado, quantos deputados votaram e o placar das votações nominais, com filtro por ano. Cada bloco de números e as listas de projetos, deputados e votos têm botões para baixar o que está na tela em CSV (que abre em planilha) ou em JSON, já com o filtro aplicado. Ao usar os dados, cite o Voto de Verdade e a Câmara dos Deputados."),
       h("h2", {}, "Assunto e resumo são feitos por inteligência artificial"),
       h("p", {}, "Uma inteligência artificial lê o texto oficial de cada projeto, escolhe o assunto e escreve um resumo em linguagem simples. Ela pode errar. Quando a classificação ou o resumo têm dúvida, o projeto mostra um aviso. O texto oficial fica sempre ao lado."),
       h("p", {}, "Ninguém revisa os resumos antes de irem ao ar, e por enquanto o site não tem um canal para pedir correções. Se algo parecer estranho, confira no texto oficial."),
+      h("p", {}, h("a", { href: "#/inteligencia-artificial" }, "Veja como a inteligência artificial é usada, com os números")),
       h("h2", {}, "Por que nem todo projeto mostra o voto de cada deputado"),
       h("p", {}, `${num(meta.simbolicas)} das ${num(meta.votacoes)} votações (${pct}%) foram simbólicas: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Nesses casos não há como saber como cada um votou. Só as ${num(meta.nominais)} votações nominais têm o voto de cada deputado.`),
       h("h2", {}, "O que significa “presidia a sessão”"),
@@ -499,23 +883,38 @@
 
   // ------------------------------------------------------------------ página do assunto
   async function telaAssunto(slug, p) {
-    const [assuntos, projetos, votacoes] = await Promise.all([dados("assuntos"), projetosComTexto(), indiceVotacoes()]);
+    const [assuntos, projetos, votacoes, metaDados] = await Promise.all([dados("assuntos"), projetosComTexto(), indiceVotacoes(), dados("meta")]);
     const a = assuntos.find((x) => x.slug === slug);
     if (!a) return telaNaoEncontrada("assunto");
     const base = projetos.filter((x) => x.a === slug || x.s === slug);
     const nInd = base.filter((x) => x.ind).length;
+    const anosAssunto = [...new Set(base.map((x) => (x.ultima || "").slice(0, 4)))].filter(Boolean).sort().reverse();
 
     const estado = {
       q: p.get("q") || "", todos: p.get("todos") === "1" || !nInd,
       ord: p.get("ord") === "antiga" ? "antiga" : "recente",
       res: ["aprovado", "rejeitado"].includes(p.get("res")) ? p.get("res") : "", cert: p.get("cert") === "1",
+      ano: anosAssunto.includes(p.get("ano")) ? p.get("ano") : "",
     };
     let limite = Math.min(600, Math.max(POR_PAGINA, parseInt(p.get("n"), 10) || 0));
 
+    const maisFiltros = h("details", { class: "ajuda mais-filtros" });
     const campoBusca = h("input", { id: "busca-a", type: "search", autocomplete: "off", spellcheck: "false", value: estado.q, placeholder: "uma palavra do projeto", enterkeyhint: "search" });
     const seletorOrd = h("select", { id: "ord-a" }, h("option", { value: "recente" }, "Mais recentes primeiro"), h("option", { value: "antiga" }, "Mais antigos primeiro"));
     const seletorRes = h("select", { id: "res-a" }, h("option", { value: "" }, "Todos"), h("option", { value: "aprovado" }, "Só aprovados"), h("option", { value: "rejeitado" }, "Só rejeitados"));
     seletorOrd.value = estado.ord; seletorRes.value = estado.res;
+    const seletorAno = h("select", { id: "ano-a" }, h("option", { value: "" }, "Todos os anos"), ...anosAssunto.map((x) => h("option", { value: x }, x)));
+    seletorAno.value = estado.ano;
+    let listaAtual = [];
+    const exportarLista = botoesExportar("projetos-" + slug, () => ({
+      titulo: `Projetos de ${a.nome}`, gerado_em: metaDados.gerado_em,
+      filtros: { assunto: slug, busca: estado.q || undefined, ano: estado.ano ? Number(estado.ano) : undefined, resultado: estado.res || undefined, so_com_voto_de_cada_deputado: estado.todos ? undefined : true, esconder_com_aviso: estado.cert || undefined },
+      colunas: [["id", "Código"], ["projeto", "Projeto"], ["titulo", "Título"], ["assunto", "Assunto"], ["data_da_ultima_votacao", "Data da última votação"], ["resultado", "Resultado"],
+        ["tipo_de_votacao", "Tipo de votação"], ["voto_de_cada_deputado_registrado", "Voto de cada deputado registrado"], ["confianca_do_assunto", "Confiança do assunto"],
+        ["confianca_do_resumo", "Confiança do resumo"], ["resumo", "Resumo feito por inteligência artificial"], ["texto_oficial", "Texto oficial"]],
+      registros: listaAtual.map((x) => ({ id: x.id, projeto: x.nome, titulo: x.titulo, assunto: a.nome, data_da_ultima_votacao: x.ultima, resultado: x.aprovada ? "aprovada" : "rejeitada",
+        tipo_de_votacao: x.tipo, voto_de_cada_deputado_registrado: !!x.ind, confianca_do_assunto: x.ca, confianca_do_resumo: x.cr || null, resumo: x.resumo || null, texto_oficial: x.texto || null })),
+    }), "dos projetos desta lista");
     const caixaCert = h("input", { type: "checkbox", id: "cert-a" }); caixaCert.checked = estado.cert;
     const abaInd = h("button", { type: "button", class: "aba", id: "aba-ind" });
     const abaTodos = h("button", { type: "button", class: "aba", id: "aba-todos" });
@@ -524,6 +923,14 @@
     const maisBox = h("div", { class: "mais" });
     const vazio = h("div", { class: "vazio" });
 
+    maisFiltros.append(
+      h("summary", {}, "Mais filtros"),
+      h("div", { class: "filtros__linha filtros__linha--3" },
+        h("div", { class: "campo" }, h("label", { for: "res-a" }, "Resultado da votação"), seletorRes),
+        h("div", { class: "campo" }, h("label", { for: "ano-a" }, "Ano da última votação"), seletorAno),
+        h("div", { class: "campo" }, h("label", { for: "ord-a" }, "Ordem"), seletorOrd)),
+      h("label", { class: "marcar", for: "cert-a" }, caixaCert, h("span", {}, "Esconder projetos com aviso de possível erro")));
+    maisFiltros.open = !!(estado.ano || estado.res || estado.cert);
     principal.replaceChildren(h("div", { class: "miolo" },
       h("nav", { class: "migalhas", "aria-label": "Você está em" },
         h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Assuntos")), h("li", { "aria-current": "page" }, a.nome))),
@@ -537,26 +944,22 @@
       h("div", { class: "abas", role: "group", "aria-label": "Quais projetos mostrar" }, abaInd, abaTodos),
       h("form", { class: "filtros filtros--compacto", role: "search", "aria-label": `Procurar em ${a.nome}`, onsubmit: (e) => e.preventDefault() },
         h("div", { class: "campo" }, h("label", { for: "busca-a" }, "Procurar neste assunto"), campoBusca),
-        h("details", { class: "ajuda mais-filtros" },
-          h("summary", {}, "Mais filtros"),
-          h("div", { class: "filtros__linha" },
-            h("div", { class: "campo" }, h("label", { for: "res-a" }, "Resultado da votação"), seletorRes),
-            h("div", { class: "campo" }, h("label", { for: "ord-a" }, "Ordem"), seletorOrd)),
-          h("label", { class: "marcar", for: "cert-a" }, caixaCert, h("span", {}, "Esconder projetos com aviso de possível erro")))),
-      estadoTxt, lista, vazio, maisBox,
+        maisFiltros,
+      ),
+      estadoTxt, h("div", { class: "lista-acoes" }, exportarLista), lista, vazio, maisBox,
       h("div", { class: "mais" }, botaoCompartilhar("assunto/" + slug, `${a.nome}: Voto de Verdade`))));
     document.title = `${a.nome}: Voto de Verdade`;
 
     function atualizar(reiniciar) {
       if (reiniciar) limite = POR_PAGINA;
-      estado.q = campoBusca.value.trim(); estado.ord = seletorOrd.value; estado.res = seletorRes.value; estado.cert = caixaCert.checked;
+      estado.q = campoBusca.value.trim(); estado.ord = seletorOrd.value; estado.res = seletorRes.value; estado.cert = caixaCert.checked; estado.ano = seletorAno.value;
       gravarEndereco("assunto/" + slug, limparParams({
-        q: estado.q, todos: estado.todos && nInd ? "1" : "", ord: estado.ord === "recente" ? "" : estado.ord, res: estado.res, cert: estado.cert ? "1" : "",
+        q: estado.q, todos: estado.todos && nInd ? "1" : "", ord: estado.ord === "recente" ? "" : estado.ord, res: estado.res, cert: estado.cert ? "1" : "", ano: estado.ano,
         n: limite > POR_PAGINA ? String(limite) : "" }));
 
       const ts = termos(estado.q);
       const comFiltros = base.filter((x) =>
-        (!ts.length || casa(x._t, ts)) && (!estado.res || (estado.res === "aprovado") === x.aprovada) &&
+        (!ts.length || casa(x._t, ts)) && (!estado.res || (estado.res === "aprovado") === x.aprovada) && (!estado.ano || (x.ultima || "").slice(0, 4) === estado.ano) &&
         (!estado.cert || ((x.ca === "alta") && (!x.cr || x.cr === "alta"))));
       const nIndF = comFiltros.filter((x) => x.ind).length;
       abaInd.textContent = `Com voto de cada deputado (${num(nIndF)})`;
@@ -566,6 +969,7 @@
 
       const r = (estado.todos ? comFiltros : comFiltros.filter((x) => x.ind)).slice();
       r.sort((x, y) => (estado.ord === "recente" ? (y.ultima > x.ultima ? 1 : -1) : (x.ultima > y.ultima ? 1 : -1)) || y.id - x.id);
+      listaAtual = r;
       const mostrados = r.slice(0, limite);
       lista.replaceChildren(...mostrados.map((x) => linhaProjeto(x, votacoes)));
       anunciar(estadoTxt, r.length ? plural(r.length, "projeto", "projetos") : "");
@@ -575,8 +979,8 @@
         if (!estado.todos && comFiltros.length) {
           acoes.push({ rotulo: `Ver os ${num(comFiltros.length)} projetos, inclusive os sem voto de cada deputado`, onclick: () => { estado.todos = true; atualizar(true); } });
         }
-        if (estado.q || estado.res || estado.cert) {
-          acoes.push({ rotulo: "Limpar a busca e os filtros", onclick: () => { campoBusca.value = ""; estado.q = ""; estado.res = ""; estado.cert = false; seletorRes.value = ""; caixaCert.checked = false; atualizar(true); } });
+        if (estado.q || estado.res || estado.cert || estado.ano) {
+          acoes.push({ rotulo: "Limpar a busca e os filtros", onclick: () => { campoBusca.value = ""; estado.q = ""; estado.res = ""; estado.cert = false; estado.ano = ""; seletorRes.value = ""; seletorAno.value = ""; caixaCert.checked = false; atualizar(true); } });
         }
         vazio.append(estadoVazio({
           icone: "v-filtro", titulo: "Nenhum projeto com esses filtros",
@@ -591,7 +995,7 @@
     }
 
     comEspera(campoBusca, () => atualizar(true));
-    for (const el of [seletorOrd, seletorRes, caixaCert]) el.addEventListener("change", () => atualizar(true));
+    for (const el of [seletorOrd, seletorRes, seletorAno, caixaCert]) el.addEventListener("change", () => atualizar(true));
     abaInd.addEventListener("click", () => { estado.todos = false; atualizar(true); });
     abaTodos.addEventListener("click", () => { estado.todos = true; atualizar(true); });
     atualizar(false);
@@ -630,6 +1034,14 @@
       const id = (x) => `${x}-${n}`;
 
       const placar = placarVotos(total, (cod) => { selV.value = selV.value === cod ? "" : cod; atualizar(true); });
+      const meta = await dados("meta");
+      let linhasAtuais = linhas;
+      const exportarVotosDeps = botoesExportar("votos-" + v.id, () => ({
+        titulo: opc.titulo || `Votos de cada deputado na votação ${v.id}`, gerado_em: meta.gerado_em,
+        filtros: { votacao: v.id, busca: estado.q || undefined, partido: estado.pt || undefined, uf: estado.uf || undefined, voto: estado.v ? VOTO[estado.v].nome : undefined },
+        colunas: [["deputado_id", "Código do deputado"], ["deputado", "Deputado"], ["partido", "Partido na data"], ["uf", "UF"], ["voto", "Voto"]],
+        registros: linhasAtuais.map((l) => ({ deputado_id: l.id, deputado: l.nome, partido: l.partido || null, uf: l.uf || null, voto: VOTO[l.cod].nome })),
+      }), "dos votos desta lista");
 
       const campoQ = h("input", { id: id("q"), type: "search", autocomplete: "off", spellcheck: "false", value: estado.q, placeholder: "nome do deputado", enterkeyhint: "search" });
       const selPt = h("select", { id: id("pt") }, h("option", { value: "" }, "Todos"), partidos.map((x) => h("option", { value: x }, x)));
@@ -664,7 +1076,7 @@
             h("p", { class: "nota" }, `${plural(nTotal, "deputado registrou", "deputados registraram")} voto; quem faltou não aparece. Toque em um número para ver só esses deputados.`),
             total.P ? h("p", { class: "nota" }, "“Presidia a sessão”: quem conduz a sessão só vota em casos especiais. Nesses casos o registro aparece assim, e não como sim ou não.") : null)),
         opc.descricao || null,
-        h("div", { class: "bloco" }, filtros, estadoTxt, lista, vazioLista, maisBox, ajudaVotos));
+        h("div", { class: "bloco" }, filtros, estadoTxt, h("div", { class: "lista-acoes" }, exportarVotosDeps), lista, vazioLista, maisBox, ajudaVotos));
 
       function filtrar() {
         const ts = termos(estado.q);
@@ -678,6 +1090,7 @@
         if (opc.gravar) opc.gravar(limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, v: estado.v }));
         const filtrando = !!(estado.q || estado.pt || estado.uf || estado.v);
         const r = filtrar().sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+        linhasAtuais = r;
         const mostrados = r.slice(0, limite);
         placar.marcar(estado.v);
         lista.replaceChildren(...mostrados.map((l) => h("li", { class: "deputado" },
@@ -726,7 +1139,7 @@
       caixa.replaceChildren(...[
         h("p", { class: "nota" }, `${data(v.d)} · Resultado: ${v.ap ? "aprovada" : "rejeitada"}`),
         v.c !== "alta" && v.av ? h("div", { class: "cartao-aviso" }, h("strong", {}, "Atenção"), h("p", {}, v.av)) : null,
-        painelVotos(v, { descricao: h("p", { class: "nota registro" }, "Registro oficial da votação: " + v.desc), p: params, gravar: (q) => { q.set("votacao", v.id); gravarEndereco("projeto/" + pr.id, q); } })].filter(Boolean));
+        painelVotos(v, { titulo: `Votos de cada deputado em ${pr.nome} (votação de ${data(v.d)})`, descricao: h("p", { class: "nota registro" }, "Registro oficial da votação: " + v.desc), p: params, gravar: (q) => { q.set("votacao", v.id); gravarEndereco("projeto/" + pr.id, q); } })].filter(Boolean));
     };
 
     const secaoVotos = h("section", { class: "bloco", "aria-labelledby": "votos-titulo" }, h("h2", { id: "votos-titulo" }, "Como cada deputado votou"));
@@ -791,7 +1204,7 @@
   });
 
   async function telaDeputados(p) {
-    const deputados = await dados("deputados");
+    const [deputados, metaDeps] = await Promise.all([dados("deputados"), dados("meta")]);
     for (const d of deputados) d._t = semAcento(d.nome);
     const partidos = [...new Set(deputados.map((d) => d.partido))].filter(Boolean).sort((a, b) => a.localeCompare(b, "pt-BR"));
     const ufs = [...new Set(deputados.map((d) => d.uf))].filter(Boolean).sort();
@@ -804,6 +1217,13 @@
     const chips = ufs.map((u) => h("li", {}, h("button", { type: "button", class: "chip-uf", "aria-pressed": "false", "data-uf": u, onclick: () => { estado.uf = estado.uf === u ? "" : u; atualizar(true); } }, u)));
     const caixaEx = h("input", { type: "checkbox", id: "dep-ex" }); caixaEx.checked = estado.ex;
     const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
+    let depsAtuais = deputados;
+    const exportarDeps = botoesExportar("deputados", () => ({
+      titulo: "Deputados federais", gerado_em: metaDeps.gerado_em,
+      filtros: { busca: estado.q || undefined, partido: estado.pt || undefined, uf: estado.uf || undefined, so_em_exercicio: estado.ex || undefined },
+      colunas: [["id", "Código na Câmara"], ["nome", "Nome"], ["partido", "Partido"], ["uf", "UF"], ["em_exercicio", "Em exercício agora"]],
+      registros: depsAtuais.map((d) => ({ id: d.id, nome: d.nome, partido: d.partido || null, uf: d.uf || null, em_exercicio: !!d.ex })),
+    }), "dos deputados desta lista");
     const lista = h("ul", { class: "lista-dep" });
     const vazio = h("div", {});
     const maisBox = h("div", { class: "mais" });
@@ -819,7 +1239,7 @@
           h("div", { class: "campo" }, h("label", { for: "dep-pt" }, "Partido"), selPt)),
         h("label", { class: "marcar", for: "dep-ex" }, caixaEx, h("span", {}, "Só quem está em exercício agora",
           h("small", {}, "Deixe desligado para ver também quem já deixou o cargo ou foi suplente no período.")))),
-      estadoTxt, lista, vazio, maisBox));
+      estadoTxt, h("div", { class: "lista-acoes" }, exportarDeps), lista, vazio, maisBox));
     document.title = "Deputados: Voto de Verdade";
 
     function atualizar(reiniciar) {
@@ -829,6 +1249,7 @@
       for (const b of principal.querySelectorAll(".chip-uf")) b.setAttribute("aria-pressed", String(b.dataset.uf === estado.uf));
       const ts = termos(estado.q);
       const r = deputados.filter((d) => (!ts.length || casa(d._t, ts)) && (!estado.pt || d.partido === estado.pt) && (!estado.uf || d.uf === estado.uf) && (!estado.ex || d.ex));
+      depsAtuais = r;
       const mostrados = r.slice(0, limite);
       lista.replaceChildren(...mostrados.map((d) => h("li", {}, h("a", { class: "linha-dep", href: "#/deputado/" + d.id },
         h("span", { class: "linha-dep__nome" }, d.nome),
@@ -876,8 +1297,10 @@
     }
     const slugs = Object.keys(porAssunto).sort((a, b) => (nomeAssunto[a] === "Outros") - (nomeAssunto[b] === "Outros") || nomeAssunto[a].localeCompare(nomeAssunto[b], "pt-BR"));
 
+    const anosDep = [...new Set(votos.map((x) => x.v.d.slice(0, 4)))].sort().reverse();
     const estado = {
       q: p.get("q") || "", a: porAssunto[p.get("a")] ? p.get("a") : "", v: VOTO[p.get("v")] ? p.get("v") : "", ord: p.get("ord") === "antiga" ? "antiga" : "recente",
+      ano: anosDep.includes(p.get("ano")) ? p.get("ano") : "",
     };
     let limite = 30;
 
@@ -885,7 +1308,15 @@
     const selA = h("select", { id: "dep-a" }, h("option", { value: "" }, "Todos os assuntos"), slugs.map((x) => h("option", { value: x }, nomeAssunto[x])));
     const selV = h("select", { id: "dep-v" }, h("option", { value: "" }, "Todos os votos"), ORDEM_VOTO.filter((c) => total[c]).map((c) => h("option", { value: c }, VOTO[c].nome)));
     const selOrd = h("select", { id: "dep-ord" }, h("option", { value: "recente" }, "Mais recentes primeiro"), h("option", { value: "antiga" }, "Mais antigas primeiro"));
-    selA.value = estado.a; selV.value = estado.v; selOrd.value = estado.ord;
+    const selAnoDep = h("select", { id: "dep-ano" }, h("option", { value: "" }, "Todos os anos"), ...anosDep.map((x) => h("option", { value: x }, x)));
+    selA.value = estado.a; selV.value = estado.v; selOrd.value = estado.ord; selAnoDep.value = estado.ano;
+    let votosAtuais = [];
+    const exportarVotos = botoesExportar("votos-" + dep.id, () => ({
+      titulo: `Votos de ${dep.nome} nas votações nominais`, gerado_em: meta.gerado_em,
+      filtros: { deputado: dep.nome, busca: estado.q || undefined, assunto: estado.a ? nomeAssunto[estado.a] : undefined, voto: estado.v ? VOTO[estado.v].nome : undefined, ano: estado.ano ? Number(estado.ano) : undefined },
+      colunas: [["data", "Data"], ["votacao", "Código da votação"], ["projeto", "Projeto"], ["titulo", "Título"], ["assunto", "Assunto"], ["voto", "Voto"], ["resultado_da_votacao", "Resultado da votação"]],
+      registros: votosAtuais.map(({ v, pr, cod }) => ({ data: v.d, votacao: v.id, projeto: pr.nome, titulo: pr.titulo, assunto: nomeAssunto[pr.a] || null, voto: VOTO[cod].nome, resultado_da_votacao: v.ap ? "aprovada" : "rejeitada" })),
+    }), "dos votos desta lista");
     const limpar = h("button", { type: "button", class: "botao botao--leve botao--pequeno", id: "limpar-d" }, "Limpar filtros");
     const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
     const tabelaBox = h("div", { class: "tabela-rolavel", tabindex: "0", role: "region", "aria-label": "Votos por assunto" });
@@ -899,6 +1330,12 @@
     const temVotos = votos.length > 0;
     const placar = placarVotos(total, (cod) => { selV.value = selV.value === cod ? "" : cod; atualizar(true); });
 
+    const maisOpcoes = h("details", { class: "ajuda mais-filtros" },
+      h("summary", {}, "Mais opções"),
+      h("div", { class: "filtros__linha" },
+        h("div", { class: "campo campo--curto" }, h("label", { for: "dep-ano" }, "Ano"), selAnoDep),
+        h("div", { class: "campo campo--curto" }, h("label", { for: "dep-ord" }, "Ordem"), selOrd)));
+    maisOpcoes.open = !!estado.ano;
     const conteudo = h("div", { class: "miolo" },
       h("nav", { class: "migalhas", "aria-label": "Você está em" },
         h("ol", {}, h("li", {}, h("a", { href: "#/deputados" }, "Deputados")), h("li", { "aria-current": "page" }, dep.nome))),
@@ -929,11 +1366,9 @@
               h("div", { class: "campo" }, h("label", { for: "busca-v" }, "Procurar nos projetos"), campoQ),
               h("div", { class: "campo" }, h("label", { for: "dep-a" }, "Assunto"), selA),
               h("div", { class: "campo" }, h("label", { for: "dep-v" }, "Voto"), selV)),
-            h("details", { class: "ajuda mais-filtros" },
-              h("summary", {}, "Mais opções"),
-              h("div", { class: "campo campo--curto" }, h("label", { for: "dep-ord" }, "Ordem"), selOrd)),
+            maisOpcoes,
             h("div", { class: "filtros__rodape" }, limpar)),
-          estadoTxt, lista, vazioLista, maisBox,
+          estadoTxt, h("div", { class: "lista-acoes" }, exportarVotos), lista, vazioLista, maisBox,
           h("details", { class: "ajuda ajuda--solta" },
             h("summary", {}, "Ver os votos por assunto"),
             h("p", { class: "nota" }, "Conta pelo assunto principal de cada projeto. Escolha um assunto para ver só os votos nele."),
@@ -966,12 +1401,13 @@
 
     function atualizar(reiniciar) {
       if (reiniciar) limite = 30;
-      estado.q = campoQ.value.trim(); estado.a = selA.value; estado.v = selV.value; estado.ord = selOrd.value;
-      gravarEndereco("deputado/" + id, limparParams({ q: estado.q, a: estado.a, v: estado.v, ord: estado.ord === "recente" ? "" : estado.ord }));
+      estado.q = campoQ.value.trim(); estado.a = selA.value; estado.v = selV.value; estado.ord = selOrd.value; estado.ano = selAnoDep.value;
+      gravarEndereco("deputado/" + id, limparParams({ q: estado.q, a: estado.a, v: estado.v, ano: estado.ano, ord: estado.ord === "recente" ? "" : estado.ord }));
       desenharTabela();
       placar.marcar(estado.v);
       const ts = termos(estado.q);
-      const r = votos.filter((x) => (!ts.length || casa(x._t, ts)) && (!estado.a || x.pr.a === estado.a) && (!estado.v || x.cod === estado.v));
+      const r = votos.filter((x) => (!ts.length || casa(x._t, ts)) && (!estado.a || x.pr.a === estado.a) && (!estado.v || x.cod === estado.v) && (!estado.ano || x.v.d.startsWith(estado.ano)));
+      votosAtuais = r;
       r.sort((x, y) => (estado.ord === "recente" ? (y.v.d > x.v.d ? 1 : y.v.d < x.v.d ? -1 : 0) : (x.v.d > y.v.d ? 1 : x.v.d < y.v.d ? -1 : 0)) || (x.v.id < y.v.id ? -1 : 1));
       const mostrados = r.slice(0, limite);
       lista.replaceChildren(...mostrados.map(({ v, pr, cod }) => h("li", {},
@@ -985,7 +1421,7 @@
         icone: "v-filtro", titulo: "Nenhuma votação com esses filtros",
         texto: `${dep.nome} não tem voto registrado com essa combinação de palavra, assunto e voto. Tire algum filtro ou use outra palavra.`,
         acoes: [{ rotulo: "Limpar filtros", onclick: () => limpar.click() }] })]));
-      limpar.hidden = !(estado.q || estado.a || estado.v);
+      limpar.hidden = !(estado.q || estado.a || estado.v || estado.ano);
       maisBox.replaceChildren();
       if (r.length > mostrados.length) {
         maisBox.append(h("button", { type: "button", class: "botao botao--leve", onclick: () => { limite += 30; atualizar(false); } },
@@ -994,8 +1430,8 @@
     }
     if (temVotos) {
       comEspera(campoQ, () => atualizar(true));
-      for (const el of [selA, selV, selOrd]) el.addEventListener("change", () => atualizar(true));
-      limpar.addEventListener("click", () => { campoQ.value = ""; selA.value = ""; selV.value = ""; atualizar(true); campoQ.focus(); });
+      for (const el of [selA, selV, selOrd, selAnoDep]) el.addEventListener("change", () => atualizar(true));
+      limpar.addEventListener("click", () => { campoQ.value = ""; selA.value = ""; selV.value = ""; selAnoDep.value = ""; atualizar(true); campoQ.focus(); });
       atualizar(true);
     }
     return document.getElementById("titulo-deputado");
@@ -1041,7 +1477,10 @@
     if (location.hash === "#conteudo") { principal.focus(); return; }
     const { partes, p } = lerRota();
     const emDeputados = partes[0] === "deputados" || partes[0] === "deputado";
-    for (const [id, ativo] of [["nav-assuntos", !emDeputados], ["nav-deputados", emDeputados], ["menu-assuntos", !emDeputados], ["menu-deputados", emDeputados]]) {
+    const emPainel = partes[0] === "em-numeros";
+    const emIa = partes[0] === "inteligencia-artificial";
+    const emAssuntos = !emDeputados && !emPainel && !emIa;
+    for (const [id, ativo] of [["nav-assuntos", emAssuntos], ["nav-deputados", emDeputados], ["nav-numeros", emPainel], ["nav-ia", emIa], ["menu-assuntos", emAssuntos], ["menu-deputados", emDeputados], ["menu-numeros", emPainel], ["menu-ia", emIa]]) {
       const a = document.getElementById(id);
       if (!a) continue;
       if (ativo) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
@@ -1053,6 +1492,8 @@
       else if (partes[0] === "projeto" && partes[1]) titulo = await telaProjeto(partes[1], p);
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
       else if (partes[0] === "sobre") titulo = await telaSobre();
+      else if (partes[0] === "em-numeros") titulo = partes[1] ? await telaTabelaNumeros(partes[1], "numeros", p) : await telaPainel(p);
+      else if (partes[0] === "inteligencia-artificial") titulo = partes[1] ? await telaTabelaNumeros(partes[1], "ia", p) : await telaIA();
       else if (partes[0] === "apoie" && soHttps(CONFIG.doacao)) titulo = telaApoie();
       else if (partes[0] === "deputados") titulo = await telaDeputados(p);
       else if (partes[0] === "deputado" && partes[1]) titulo = await telaDeputado(partes[1], p);

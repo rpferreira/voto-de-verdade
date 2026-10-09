@@ -93,7 +93,14 @@ def envenenar(site):
         for x in d[:40]:
             x["desc"] = (x.get("desc") or "") + HTML + SCRIPT
 
+    def painel(d):
+        for x in d["assuntos"]:
+            x["nome"] += HTML + SCRIPT
+        for k in ("modelo", "conferencia"):
+            d["ia"][k] = (d["ia"].get(k) or "") + HTML + SCRIPT
+
     mexer("projetos.json", projetos)
+    mexer("painel.json", painel)
     # ementa e pontos principais ficam num arquivo por projeto: envenena esses também
     for x in json.load(open(os.path.join(site, "dados", "projetos.json"), encoding="utf-8"))[:40]:
         caminho = os.path.join(site, "dados", "projetos", f"{x['id']}.json")
@@ -127,7 +134,7 @@ def ataque(p, base, projetos, deputados, assuntos):
         urls += [f"/deputado/{i}/", f"/#/deputado/{i}"]
     for a in assuntos[:4]:
         urls += [f"/assunto/{a['slug']}/", f"/#/assunto/{a['slug']}"]
-    urls += ["/", "/#/", "/deputados/", "/#/deputados", "/sobre/"]
+    urls += ["/", "/#/", "/deputados/", "/#/deputados", "/sobre/", "/em-numeros/", "/#/em-numeros", "/em-numeros/por-assunto/", "/#/em-numeros/por-assunto", "/inteligencia-artificial/", "/#/inteligencia-artificial", "/inteligencia-artificial/confianca/", "/#/inteligencia-artificial/confianca"]
     img = "%3Cimg%20src=x%20onerror=window.__pwn=9%3E"
     urls += [
         f"/#/assunto/%22%3E{img}", f"/#/projeto/%22%3E{img}", "/#/deputado/<img src=x onerror=window.__pwn=9>",
