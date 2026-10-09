@@ -574,6 +574,7 @@ def main():
         'Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. '
         '<a href="sobre/">Ver objetivos</a></p></div></aside>'
         '<div class="miolo"><section class="heroi"><div>'
+        f'<p class="heroi__data">Atualizado em <time datetime="{meta["gerado_em"]}">{data_br(meta["gerado_em"])}</time></p>'
         '<h1>Veja como a Câmara votou, assunto por assunto</h1>'
         '<p class="heroi__texto">Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.</p></div></section>'
         + principios_html()
