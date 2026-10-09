@@ -298,7 +298,7 @@ def main():
     print(f"Traduzidos: {estado['feitos']}. Com problema (ficam para a próxima vez): {len(estado['erros'])}. Gasto estimado: US$ {gasto:.2f}.")
     for tipo, id_, msg in estado["erros"][:10]:
         print(f"   {tipo} {id_}: {msg}")
-    registrar_custo(args.custo, gasto, contas, {"feitos": estado["feitos"], "erros": estado["erros"]}, False)
+    registrar_custo(args.custo, gasto, contas, {"feitos": estado["feitos"], "erros": estado["erros"]}, False, tarefa="traducao")
     if estado["fatal"]:
         if "saldo de créditos" in estado["fatal"]:
             print(f"AVISO: {estado['fatal']}\n       O que falta fica em português no site em inglês até haver saldo.")

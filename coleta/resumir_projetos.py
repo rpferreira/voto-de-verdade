@@ -500,8 +500,9 @@ class Contas:
         return total
 
 
-def registrar_custo(caminho, gasto, contas, estado, sem_saldo):
-    """Guarda quanto cada execução gastou (e se acabou o saldo), para o monitoramento acompanhar."""
+def registrar_custo(caminho, gasto, contas, estado, sem_saldo, tarefa=None):
+    """Guarda quanto cada execução gastou (e se acabou o saldo), para o monitoramento acompanhar.
+    tarefa: nome do trabalho que gastou (por exemplo "traducao"); sem nome, é a rodada de resumos."""
     try:
         with open(caminho, encoding="utf-8") as f:
             historico = json.load(f)
@@ -514,6 +515,7 @@ def registrar_custo(caminho, gasto, contas, estado, sem_saldo):
         "feitos": estado["feitos"],
         "erros": len(estado["erros"]),
         "sem_saldo": sem_saldo,
+        **({"tarefa": tarefa} if tarefa else {}),
     })
     with open(caminho, "w", encoding="utf-8") as f:
         json.dump(historico[-400:], f, ensure_ascii=False, indent=1)
