@@ -151,7 +151,7 @@ A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Tel
 
 Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. As fotos dos deputados ficam em `site/fotos/` (`python3 site/baixar_fotos.py` baixa só as que faltam). A atualização diária faz tudo isso e publica no GitHub Pages. Mudanças em `site/` publicadas no ramo principal também vão ao ar sozinhas (fluxo **Publicar o site**), sem precisar rodar a atualização diária.
 
-**Em números.** A tela só conta e descreve (nada ordena pessoas, não dá nota e não compara partidos). Os números são refeitos a cada atualização diária, e o fluxo **Foto do painel (Em números)** tira um PNG da tela, anexa à execução (Artifacts, 30 dias) e guarda a mais recente em `painel/ultima-geracao.png`.
+**Em números.** A tela só conta e descreve (nada ordena pessoas, não dá nota e não compara partidos): votações ao longo do tempo, por assunto e resultado; quantos deputados votaram, o placar das nominais e como a inteligência artificial é usada (modelos, confiança e avisos). Cada gráfico tem a tabela numa página própria (`/em-numeros/<tabela>/`). Os números são refeitos a cada atualização diária, e o fluxo **Foto do painel (Em números)** tira um PNG da tela, anexa à execução (Artifacts, 30 dias) e guarda a mais recente em `painel/ultima-geracao.png`.
 
 **Testes.** `python3 site/gerar_paginas.py --saida _site` e `python3 testes/fumaca.py _site` abrem o site num navegador de verdade e conferem as telas principais (precisa de `pip install -r testes/requirements.txt` e `playwright install chromium`). O fluxo **Testar o site** roda isso em todo pull request.
 
@@ -178,7 +178,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `dados/monitor.json` | Histórico das conferências do monitoramento (escrito pela rotina) |
 | `site/` | O site (`index.html`, `estilos.css`, `app.js`, fontes, `og.png`) |
 | `site/exportar_dados.py` | Passa o banco para os JSON que o site lê (`site/dados/`) |
-| `site/painel.py` | Faz `site/dados/painel.json`, os números da tela **Em números** (simbólicas × nominais ao longo do tempo, por assunto e resultado). Roda junto com o `exportar_dados.py` |
+| `site/painel.py` | Faz `site/dados/painel.json`, os números da tela **Em números** (simbólicas × nominais ao longo do tempo, por assunto e resultado, participação, placar e transparência da IA). Roda junto com o `exportar_dados.py` |
 | `testes/captura_painel.py` | Tira a foto (PNG) da tela Em números; a atualização diária guarda a mais recente em `painel/ultima-geracao.png` |
 | `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404 |
 | `site/baixar_fotos.py` | Guarda as fotos dos deputados em `site/fotos/` |

@@ -554,55 +554,164 @@ def main():
              estruturados={"@context": "https://schema.org", "@type": "AboutPage", "name": "Como o site funciona",
                            "url": f"{URL}/sobre/", "inLanguage": "pt-BR"})
 
-    # ---- Em números (números das votações; as barras e colunas aparecem quando o aplicativo abre, aqui ficam as tabelas)
+    # ---- Em números (as colunas e barras aparecem quando o aplicativo abre; aqui ficam os textos e, em páginas próprias, as tabelas)
     if os.path.exists(os.path.join(args.site, "dados", "painel.json")):
         pn = carregar(args.site, "painel.json")
         tp = pn["totais"]
+        pa, pl, ia = pn.get("participacao") or {}, pn.get("placar") or {}, pn.get("ia") or {}
 
         def mes_extenso(m):
             nomes = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
             return f"{nomes[int(m[5:7]) - 1]} de {m[:4]}"
 
-        def tabela(legenda, cab, linhas):
-            return ('<details class="ajuda numeros__tabela" open><summary>Tabela</summary><div class="tabela-rolavel"><table class="tabela-painel">'
-                    f'<caption class="so-leitor">{esc(legenda)}</caption><thead><tr>'
-                    + "".join(f'<th scope="col"{" class=\"num\"" if i else ""}>{esc(c)}</th>' for i, c in enumerate(cab))
-                    + "</tr></thead><tbody>"
-                    + "".join("<tr>" + "".join((f'<td class="num">{esc(str(c))}</td>' if i else f'<th scope="row">{esc(str(c))}</th>') for i, c in enumerate(l)) + "</tr>" for l in linhas)
-                    + "</tbody></table></div></details>")
+        def n_br(n):
+            return f"{n:,}".replace(",", ".")
+
+        def pct(a, b):
+            return (f"{100 * a / b:.1f}".replace(".", ",").removesuffix(",0") if b else "0") + "%"
 
         nomes_tipo = {"nominal": "Nominais", "simbolica": "Simbólicas", "secreta": "Secretas"}
-        t_meses = tabela("Votações por mês", ["Mês", "Nominais", "Simbólicas", "Secretas"],
-                         [[mes_extenso(m["m"]), m["n"], m["s"], m["x"]] for m in pn["meses"]])
-        t_assuntos = tabela("Votações por assunto", ["Assunto", "Nominais", "Simbólicas", "Secretas", "Total"],
-                            [[a["nome"], a["n"], a["s"], a["x"], a["n"] + a["s"] + a["x"]] for a in pn["assuntos"]])
-        t_resultado = tabela("Resultado por tipo de votação", ["Tipo", "Aprovadas", "Rejeitadas", "Total"],
-                             [[nomes_tipo[k], r["aprovadas"], r["rejeitadas"], r["aprovadas"] + r["rejeitadas"]] for k, r in pn["resultado"].items()])
+        votos_placar = [("S", "Sim"), ("N", "Não"), ("A", "Abstenção"), ("O", "Obstrução")]
+        faixas = [("sem_contra", "Sem voto contrário", "só houve votos de um lado"), ("ampla", "Ampla", "diferença de 50% ou mais"),
+                  ("maioria", "Maioria", "diferença de 15% a 50%"), ("apertada", "Apertada", "diferença de menos de 15%")]
+        niveis = [("alta", "Alta"), ("media", "Média"), ("baixa", "Baixa")]
+        nome_modelo = {"claude-sonnet-5-5": "Claude Sonnet 5.5", "claude-haiku-4-5-20251001": "Claude Haiku 4.5"}
+
+        # Uma tabela por página própria: id -> (título, cabeçalho, linhas). Os mesmos ids e números do aplicativo.
+        tabelas = {
+            "por-mes": ("Votações por mês", ["Mês", "Nominais", "Simbólicas", "Secretas"],
+                        [[mes_extenso(m["m"]), n_br(m["n"]), n_br(m["s"]), n_br(m["x"])] for m in pn["meses"]]),
+            "por-assunto": ("Votações por assunto", ["Assunto", "Nominais", "Simbólicas", "Secretas", "Total"],
+                            [[a["nome"], n_br(a["n"]), n_br(a["s"]), n_br(a["x"]), n_br(a["n"] + a["s"] + a["x"])] for a in pn["assuntos"]]),
+            "resultado": ("Resultado por tipo de votação", ["Tipo", "Aprovadas", "Rejeitadas", "Total"],
+                          [[nomes_tipo[k], n_br(r["aprovadas"]), n_br(r["rejeitadas"]), n_br(r["aprovadas"] + r["rejeitadas"])] for k, r in pn["resultado"].items()]),
+        }
+        if pa.get("votacoes"):
+            tabelas["participacao"] = ("Deputados que votaram, por mês", ["Mês", "Votações nominais", "Deputados que votaram (média)"],
+                                       [[mes_extenso(m["m"]), n_br(m["n"]), n_br(m["v"]) if m["n"] else "sem votação nominal"] for m in pa["meses"]])
+        if pl.get("nominais"):
+            soma_votos = sum(pl["votos"][c] for c, _ in votos_placar)
+            tabelas["placar-votos"] = ("Votos nas votações nominais", ["Voto", "Total", "Parte do total"],
+                                       [[nome, n_br(pl["votos"][c]), pct(pl["votos"][c], soma_votos)] for c, nome in votos_placar])
+            tabelas["placar-margem"] = ("Votações nominais por tamanho da diferença", ["Diferença entre sim e não", "Votações", "Parte das nominais"],
+                                        [[f"{nome} ({det})", n_br(pl["margem"][k]), pct(pl["margem"][k], pl["nominais"])] for k, nome, det in faixas])
+        if ia.get("projetos"):
+            tabelas["ia-confianca"] = ("Confiança da inteligência artificial", ["Confiança", "Assunto", "Resumo"],
+                                       [[nome, n_br(ia["assunto"][k]), n_br(ia["resumo"][k])] for k, nome in niveis])
+
+        def ver_tabela(id_, sobre):
+            return f'<p class="numeros__tabela"><a href="{id_}/">Ver como tabela<span class="so-leitor"> {esc(sobre)}</span></a></p>'
+
+        pct_simbolicas = pct(tp["simbolicas"], tp["votacoes"])
         lead = (f'{tp["votacoes"]} votações em plenário, de {data_br(pn["de"])} a {data_br(pn["ate"])}: '
                 f'{tp["nominais"]} nominais, {tp["simbolicas"]} simbólicas e {tp["secretas"]} secreta.')
         nota = (f'Atualizado em {data_br(pn["gerado_em"])}. Esta página só conta e descreve: não dá nota nem compara deputados ou partidos.')
+        txt_part = txt_placar = txt_ia = None
+        if pa.get("votacoes"):
+            txt_part = (f'Só nas votações nominais, que registram o voto de cada deputado. A Câmara tem {pa["cadeiras"]} deputados e, em média, {n_br(pa["media"])} registraram voto em cada votação nominal '
+                        f'(de {n_br(pa["minimo"])} a {n_br(pa["maximo"])}). O site não sabe o motivo de quem não aparece (falta, licença ou outro). Aqui entra só o total de cada votação, nunca quem faltou.')
+        if pl.get("nominais"):
+            txt_placar = ("Somando todas as votações nominais, quantos votos foram sim, não, abstenção ou obstrução. Votar sim ou não não diz, sozinho, se o deputado apoia o assunto do projeto: "
+                          "muitas votações são sobre emendas, substitutivos ou pontos separados do texto.")
+        txt_margem = (f'A diferença é a distância entre sim e não, dividida pelo total de sim e não. Cada uma das {pl.get("nominais", 0)} votações nominais cai em uma faixa.')
+        if ia.get("projetos"):
+            m1 = f' ({nome_modelo.get(ia["modelo"], ia["modelo"])})' if ia.get("modelo") else ""
+            m2 = f' ({nome_modelo.get(ia["conferencia"], ia["conferencia"])})' if ia.get("conferencia") else ""
+            txt_ia = (f'O assunto e o resumo dos {ia["projetos"]} projetos do site são feitos por inteligência artificial, e ninguém revisa esses textos antes de irem ao ar. '
+                      'Aqui está como o trabalho é feito e o que as conferências automáticas encontraram.')
+            passos = [f"Um modelo{m1} lê o texto oficial do projeto, escolhe o assunto, escreve o resumo e diz quanto tem de certeza.",
+                      f"Um segundo modelo{m2} escolhe o assunto sem ver a resposta do primeiro. Se os dois discordam, a confiança no assunto cai.",
+                      "Uma checagem por palavras da ementa confere se o assunto faz sentido.",
+                      "O segundo modelo confere o resumo contra o texto original. Se achar partes sem apoio no texto, o projeto mostra um aviso. Se o resumo não se sustenta, ele é descartado e a tela mostra só a ementa."]
+
+            def pl_(n, um, varios):
+                return f"{n_br(n)} {um if n == 1 else varios}"
+            avisos = [f'{pl_(ia["aviso_assunto"], "projeto", "projetos")} com aviso de que o assunto pode estar errado.',
+                      f'{pl_(ia["aviso_resumo"], "projeto", "projetos")} com aviso de que o resumo pode conter erros.']
+            if ia["so_ementa"]:
+                avisos.append(f'{pl_(ia["so_ementa"], "projeto", "projetos")} sem resumo da inteligência artificial, porque ela não conseguiu resumir ou a conferência não achou apoio no texto. A tela mostra só a ementa.')
+            avisos.append(f'{pl_(ia["texto_pode_diferir"], "projeto", "projetos")} cuja votação foi sobre um substitutivo ou emenda: o texto votado pode ser diferente da ementa.')
+            if ia["votacao_aviso"]:
+                avisos.append(f'{pl_(ia["votacao_aviso"], "votação", "votações")} com aviso de que a classificação foi feita automaticamente e pode estar errada.')
+            limites = ["A inteligência artificial pode errar, mesmo quando diz ter certeza.",
+                       "O texto oficial de cada projeto fica sempre ao lado do resumo. Em caso de dúvida, vale o texto oficial.",
+                       "Por enquanto o site não tem um canal para pedir correções."]
+            conf = lambda c, sem=0: " · ".join([f"{nome}: {n_br(c[k])} ({pct(c[k], sum(c.values()))})" for k, nome in niveis] + ([f"Sem resumo: {n_br(sem)}"] if sem else []))
+            ate_ia = (f'Último texto gerado em {data_br(ia["ate"])}. O site só refaz o resumo de projetos novos ou cujo texto oficial mudou.' if ia.get("ate") else "")
+
+        def bloco(titulo, *partes):
+            return f'<section class="numeros__bloco"><h2>{esc(titulo)}</h2>' + "".join(partes) + "</section>"
+
+        def nota_p(t):
+            return f'<p class="numeros__nota">{esc(t)}</p>'
+
         corpo = ('<div class="miolo numeros"><nav class="migalhas" aria-label="Você está em"><ol><li><a href="../">Início</a></li><li aria-current="page">Em números</li></ol></nav>'
                  f'<h1>Em números</h1><p class="numeros__lead">{esc(lead)}</p><p class="numeros__nota">{esc(nota)} <a href="../sobre/">Como o site funciona</a></p>'
-                 '<section class="numeros__bloco"><h2>Votações nominais e simbólicas ao longo do tempo</h2>'
-                 '<p class="numeros__nota">Na votação nominal, o voto de cada deputado fica registrado. Na simbólica, só o resultado. Meses sem votação (recesso, eleições) aparecem vazios.</p>'
-                 + t_meses + '</section>'
-                 '<section class="numeros__bloco"><h2>Votações por assunto</h2>'
-                 '<p class="numeros__nota">Cada votação conta uma vez, no assunto principal do projeto. Os assuntos são escolhidos por inteligência artificial e seguem sempre a mesma ordem, não a do tamanho.</p>'
-                 + t_assuntos + '</section>'
-                 '<section class="numeros__bloco"><h2>Resultado das votações</h2>'
-                 '<p class="numeros__nota">Cada votação termina aprovada ou rejeitada pelo plenário. Aprovar uma votação não quer dizer, sozinho, que o projeto virou lei.</p>'
-                 + t_resultado + '</section></div>')
+                 + bloco("Votações nominais e simbólicas ao longo do tempo",
+                         nota_p("Na votação nominal, o voto de cada deputado fica registrado. Na simbólica, só o resultado. Meses sem votação (recesso, eleições) aparecem vazios."),
+                         ver_tabela("por-mes", "das votações por mês"))
+                 + bloco("Votações por assunto",
+                         nota_p("Cada votação conta uma vez, no assunto principal do projeto. Os assuntos são escolhidos por inteligência artificial e seguem sempre a mesma ordem, não a do tamanho."),
+                         ver_tabela("por-assunto", "das votações por assunto"))
+                 + bloco("Resultado das votações",
+                         nota_p("Cada votação termina aprovada ou rejeitada pelo plenário. Aprovar uma votação não quer dizer, sozinho, que o projeto virou lei."),
+                         nota_p(f"Nas votações simbólicas ({pct_simbolicas} do total), os partidos chegam a um acordo antes e o resultado é apenas anunciado. Por isso a grande maioria das votações aparece como aprovada."),
+                         ver_tabela("resultado", "do resultado das votações"))
+                 + (bloco("Quantos deputados votaram", nota_p(txt_part), ver_tabela("participacao", "da participação por mês")) if txt_part else "")
+                 + (bloco("Placar das votações nominais", nota_p(txt_placar), ver_tabela("placar-votos", "dos votos"),
+                          "<h3>Votações decididas por pouco ou por muito</h3>", nota_p(txt_margem), ver_tabela("placar-margem", "da diferença entre sim e não")) if txt_placar else "")
+                 + (bloco("Como a inteligência artificial é usada", nota_p(txt_ia),
+                          "<h3>Como é feito</h3><ol class=\"numeros__passos\">" + "".join(f"<li>{esc(p)}</li>" for p in passos) + "</ol>",
+                          nota_p(ate_ia) if ate_ia else "",
+                          "<h3>Confiança de cada texto</h3>",
+                          nota_p("Cada assunto e cada resumo recebe uma confiança calculada por máquina, não por pessoas. Alta quer dizer que as conferências automáticas concordaram, não que o texto está certo."),
+                          nota_p("Assunto. " + conf(ia["assunto"])), nota_p("Resumo. " + conf(ia["resumo"], ia["so_ementa"])),
+                          ver_tabela("ia-confianca", "da confiança"),
+                          "<h3>Avisos que o site mostra</h3><ul class=\"numeros__fatos\">" + "".join(f"<li>{esc(a)}</li>" for a in avisos) + "</ul>",
+                          "<h3>Limites e correções</h3><ul class=\"numeros__fatos\">" + "".join(f"<li>{esc(l)}</li>" for l in limites) + '<li><a href="../sobre/">Como o site funciona</a></li></ul>') if txt_ia else "")
+                 + "</div>")
         md = ["# Em números", "", lead, "", nota, "", "## Votações nominais e simbólicas ao longo do tempo", ""]
         md += [f"- {mes_extenso(m['m'])}: {m['n']} nominais, {m['s']} simbólicas" + (f", {m['x']} secreta" if m["x"] else "") for m in pn["meses"]]
         md += ["", "## Votações por assunto", ""]
         md += [f"- {a['nome']}: {a['n']} nominais, {a['s']} simbólicas" + (f", {a['x']} secreta" if a["x"] else "") for a in pn["assuntos"]]
-        md += ["", "## Resultado das votações", ""]
+        md += ["", "## Resultado das votações", "",
+               f"Nas votações simbólicas ({pct_simbolicas} do total), os partidos chegam a um acordo antes e o resultado é apenas anunciado. Por isso a grande maioria das votações aparece como aprovada.", ""]
         md += [f"- {nomes_tipo[k]}: {r['aprovadas']} aprovadas, {r['rejeitadas']} rejeitadas" for k, r in pn["resultado"].items()]
-        g.montar("em-numeros", "em-numeros", f"Em números: votações da Câmara ao longo do tempo | {NOME}",
-                 "Votações nominais e simbólicas ao longo do tempo, por assunto e o resultado. Só números, sem nota e sem ranking.",
+        if txt_part:
+            md += ["", "## Quantos deputados votaram", "", txt_part]
+        if txt_placar:
+            md += ["", "## Placar das votações nominais", "", txt_placar, ""]
+            md += [f"- {nome}: {n_br(pl['votos'][c])} ({pct(pl['votos'][c], soma_votos)})" for c, nome in votos_placar]
+            md += ["", "### Votações decididas por pouco ou por muito", "", txt_margem, ""]
+            md += [f"- {nome} ({det}): {pl['margem'][k]}" for k, nome, det in faixas]
+        if txt_ia:
+            md += ["", "## Como a inteligência artificial é usada", "", txt_ia, "", "### Como é feito", ""]
+            md += [f"{i}. {p}" for i, p in enumerate(passos, 1)]
+            md += ["", ate_ia, "", "### Confiança de cada texto", "", "- Assunto. " + conf(ia["assunto"]), "- Resumo. " + conf(ia["resumo"], ia["so_ementa"]),
+                   "", "### Avisos que o site mostra", ""] + [f"- {a}" for a in avisos] + ["", "### Limites e correções", ""] + [f"- {l}" for l in limites]
+        descricao_painel = "Votações nominais e simbólicas ao longo do tempo, por assunto, resultado, participação, placar e como a inteligência artificial é usada. Só números, sem nota e sem ranking."
+        g.montar("em-numeros", "em-numeros", f"Em números: votações da Câmara ao longo do tempo | {NOME}", descricao_painel,
                  corpo, markdown="\n".join(md) + "\n",
                  estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": "Em números",
                                "url": f"{URL}/em-numeros/", "inLanguage": "pt-BR", "dateModified": pn["gerado_em"]})
+
+        # uma página para cada tabela (/em-numeros/por-mes/ e as outras)
+        for id_, (titulo_t, cab, linhas) in tabelas.items():
+            linhas_html = "".join("<tr>" + "".join((f'<td class="num">{esc(str(c))}</td>' if k else f'<th scope="row">{esc(str(c))}</th>') for k, c in enumerate(l)) + "</tr>" for l in linhas)
+            cab_html = "".join(f'<th scope="col"{" class=\"num\"" if k else ""}>{esc(c)}</th>' for k, c in enumerate(cab))
+            corpo_t = ('<div class="miolo numeros"><nav class="migalhas" aria-label="Você está em"><ol><li><a href="../../">Início</a></li><li><a href="../">Em números</a></li>'
+                       f'<li aria-current="page">{esc(titulo_t)}</li></ol></nav><h1>{esc(titulo_t)}</h1>'
+                       f'<p class="numeros__nota">{esc(f"Os mesmos números do gráfico, de {data_br(pn['de'])} a {data_br(pn['ate'])}. Atualizado em {data_br(pn['gerado_em'])}.")}</p>'
+                       '<div class="numeros__bloco"><div class="tabela-rolavel"><table class="tabela-painel">'
+                       f'<caption class="so-leitor">{esc(titulo_t)}</caption><thead><tr>{cab_html}</tr></thead><tbody>{linhas_html}</tbody></table></div>'
+                       '<p class="numeros__tabela"><a href="../">Voltar para Em números</a></p></div></div>')
+            md_t = [f"# {titulo_t}", "", f"Os mesmos números do gráfico, de {data_br(pn['de'])} a {data_br(pn['ate'])}. Atualizado em {data_br(pn['gerado_em'])}.", "",
+                    "| " + " | ".join(cab) + " |", "|" + " --- |" * len(cab)] + ["| " + " | ".join(str(c) for c in l) + " |" for l in linhas]
+            g.montar(f"em-numeros/{id_}", f"em-numeros/{id_}", f"{titulo_t}: tabela | {NOME}",
+                     f"Tabela com os números do gráfico «{titulo_t}», de {data_br(pn['de'])} a {data_br(pn['ate'])}.",
+                     corpo_t, markdown="\n".join(md_t) + "\n",
+                     estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": titulo_t,
+                                   "url": f"{URL}/em-numeros/{id_}/", "inLanguage": "pt-BR", "dateModified": pn["gerado_em"]})
 
     # ---- apoie (só quando há um link de doação em site/config.json)
     servico_doacao = (doacao.get("servico") or "").strip() or "serviço de pagamento"

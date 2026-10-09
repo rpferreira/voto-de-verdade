@@ -461,23 +461,88 @@
   const pct1 = (a, b) => (b ? (100 * a / b).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) : "0") + "%";
   const rotuloVotacoes = (n) => plural(n, "votação", "votações");
 
-  function tabelaDoPainel(legenda, cabecalho, linhas) {
-    return h("details", { class: "ajuda numeros__tabela" },
-      h("summary", {}, "Ver como tabela"),
-      h("div", { class: "tabela-rolavel" },
-        h("table", { class: "tabela-painel" },
-          h("caption", { class: "so-leitor" }, legenda),
-          h("thead", {}, h("tr", {}, cabecalho.map((c, i) => h("th", { scope: "col", class: i ? "num" : null }, c)))),
-          h("tbody", {}, linhas.map((l) => h("tr", {}, l.map((c, i) => (i ? h("td", { class: "num" }, c) : h("th", { scope: "row" }, c)))))))));
+  const ROTULOS_TIPO = { nominal: "Nominais", simbolica: "Simbólicas", secreta: "Secretas" };
+  // Cada gráfico tem a sua tabela numa página própria (#/em-numeros/<id>), para a tela Em números ficar limpa.
+  const TABELAS_NUMEROS = {
+    "por-mes": {
+      titulo: "Votações por mês", cab: ["Mês", "Nominais", "Simbólicas", "Secretas"],
+      linhas: (pn) => pn.meses.map((m) => [mesPorExtenso(m.m), num(m.n), num(m.s), num(m.x)]),
+    },
+    "por-assunto": {
+      titulo: "Votações por assunto", cab: ["Assunto", "Nominais", "Simbólicas", "Secretas", "Total"],
+      linhas: (pn) => pn.assuntos.map((a) => [a.nome, num(a.n), num(a.s), num(a.x), num(a.n + a.s + a.x)]),
+    },
+    "participacao": {
+      titulo: "Deputados que votaram, por mês", cab: ["Mês", "Votações nominais", "Deputados que votaram (média)"],
+      linhas: (pn) => pn.participacao.meses.map((m) => [mesPorExtenso(m.m), num(m.n), m.n ? num(m.v) : "sem votação nominal"]),
+    },
+    "placar-votos": {
+      titulo: "Votos nas votações nominais", cab: ["Voto", "Total", "Parte do total"],
+      linhas: (pn) => { const soma = somaDe(pn.placar.votos, VOTOS_PLACAR.map((x) => x[0])); return VOTOS_PLACAR.map(([c, , nome]) => [nome, num(pn.placar.votos[c]), pct1(pn.placar.votos[c], soma)]); },
+    },
+    "placar-margem": {
+      titulo: "Votações nominais por tamanho da diferença", cab: ["Diferença entre sim e não", "Votações", "Parte das nominais"],
+      linhas: (pn) => FAIXAS_PLACAR.map(([k, nome, det]) => [`${nome} (${det})`, num(pn.placar.margem[k]), pct1(pn.placar.margem[k], pn.placar.nominais)]),
+    },
+    "ia-confianca": {
+      titulo: "Confiança da inteligência artificial", cab: ["Confiança", "Assunto", "Resumo"],
+      linhas: (pn) => NIVEIS_IA.map(([k, nome]) => [nome, num(pn.ia.assunto[k]), num(pn.ia.resumo[k])]),
+    },
+    "resultado": {
+      titulo: "Resultado por tipo de votação", cab: ["Tipo", "Aprovadas", "Rejeitadas", "Total"],
+      linhas: (pn) => ["nominal", "simbolica", "secreta"].map((k) => { const r = pn.resultado[k] || { aprovadas: 0, rejeitadas: 0 }; return [ROTULOS_TIPO[k], num(r.aprovadas), num(r.rejeitadas), num(r.aprovadas + r.rejeitadas)]; }),
+    },
+  };
+  const NOME_MODELO = { "claude-sonnet-5-5": "Claude Sonnet 5.5", "claude-haiku-4-5-20251001": "Claude Haiku 4.5" };
+  const nomeModelo = (id) => NOME_MODELO[id] || id || "";
+  const VOTOS_PLACAR = [["S", "sim", "Sim"], ["N", "nao", "Não"], ["A", "abstencao", "Abstenção"], ["O", "obstrucao", "Obstrução"]];
+  // Diferença entre sim e não, dividida pelo total de sim e não (o mesmo corte de 15% da home, em «Decididas por pouco»).
+  const FAIXAS_PLACAR = [
+    ["sem_contra", "Sem voto contrário", "só houve votos de um lado"],
+    ["ampla", "Ampla", "diferença de 50% ou mais"],
+    ["maioria", "Maioria", "diferença de 15% a 50%"],
+    ["apertada", "Apertada", "diferença de menos de 15%"],
+  ];
+  const NIVEIS_IA = [["alta", "Alta"], ["media", "Média"], ["baixa", "Baixa"]];
+  const somaDe = (obj, chaves) => chaves.reduce((a, k) => a + (obj[k] || 0), 0);
+  const linkTabela = (id, sobre) => h("p", { class: "numeros__tabela" },
+    h("a", { href: "#/em-numeros/" + id }, "Ver como tabela", sobre ? h("span", { class: "so-leitor" }, " " + sobre) : null));
+
+  async function telaTabelaNumeros(id) {
+    const def = Object.prototype.hasOwnProperty.call(TABELAS_NUMEROS, id) ? TABELAS_NUMEROS[id] : null;
+    if (!def) return telaNaoEncontrada();
+    const pn = await dados("painel");
+    principal.replaceChildren(h("div", { class: "miolo numeros" },
+      h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {},
+        h("li", {}, h("a", { href: "#/" }, "Início")), h("li", {}, h("a", { href: "#/em-numeros" }, "Em números")), h("li", { "aria-current": "page" }, def.titulo))),
+      h("h1", { id: "titulo-painel", tabindex: "-1" }, def.titulo),
+      h("p", { class: "numeros__nota" }, `Os mesmos números do gráfico, de ${data(pn.de)} a ${data(pn.ate)}. Atualizado em ${data(pn.gerado_em)}.`),
+      h("div", { class: "numeros__bloco" },
+        h("div", { class: "tabela-rolavel" },
+          h("table", { class: "tabela-painel" },
+            h("caption", { class: "so-leitor" }, def.titulo),
+            h("thead", {}, h("tr", {}, def.cab.map((c, k) => h("th", { scope: "col", class: k ? "num" : null }, c)))),
+            h("tbody", {}, def.linhas(pn).map((l) => h("tr", {}, l.map((c, k) => (k ? h("td", { class: "num" }, c) : h("th", { scope: "row" }, c)))))))),
+        h("p", { class: "numeros__tabela" }, h("a", { href: "#/em-numeros" }, "Voltar para Em números")))));
+    document.title = `${def.titulo}: tabela | Voto de Verdade`;
+    return document.getElementById("titulo-painel");
   }
 
   const legendaDoPainel = (itens) => h("ul", { class: "pn-legenda", "aria-label": "Legenda" },
     itens.map(([cor, texto]) => h("li", {}, h("span", { class: "pn-chip pn-chip--" + cor, "aria-hidden": "true" }), texto)));
 
-  function graficoMeses(meses) {
-    const maior = Math.max(1, ...meses.map((m) => m.n + m.s + m.x));
-    const passo = maior <= 30 ? 10 : maior <= 80 ? 20 : 50;
-    const topo = Math.ceil(maior / passo) * passo;
+  const dicaVotacoes = (m) => [
+    h("span", {}, h("span", { class: "pn-chip pn-chip--nominal", "aria-hidden": "true" }), `Nominais: ${num(m.n)}`),
+    h("span", {}, h("span", { class: "pn-chip pn-chip--simbolica", "aria-hidden": "true" }), `Simbólicas: ${num(m.s)}`),
+    m.x ? h("span", {}, `Secretas: ${num(m.x)}`) : null,
+  ];
+
+  // opc: series ([[campo, textura]...]), topo e passo do eixo (opcionais), aria (o que o gráfico mostra) e dica (linhas do balão de cada mês).
+  function graficoMeses(meses, opc) {
+    const o = Object.assign({ series: [["n", "nominal"], ["s", "simbolica"], ["x", "secreta"]], dica: dicaVotacoes, aria: "o número de votações nominais e simbólicas em cada mês" }, opc || {});
+    const maior = Math.max(1, ...meses.map((m) => o.series.reduce((a, [k]) => a + m[k], 0)));
+    const passo = o.passo || (maior <= 30 ? 10 : maior <= 80 ? 20 : 50);
+    const topo = o.topo || Math.ceil(maior / passo) * passo;
     const marcas = [];
     for (let v = topo; v >= 0; v -= passo) marcas.push(v);
 
@@ -489,18 +554,14 @@
     eixoX.style.setProperty("--n", meses.length);
     meses.forEach((m, i) => {
       const col = h("div", { class: "pn-col" });
-      for (const [k, cls] of [["n", "nominal"], ["s", "simbolica"], ["x", "secreta"]]) {
+      for (const [k, cls] of o.series) {
         if (!m[k]) continue;
         const seg = h("span", { class: "pn-seg pn-seg--" + cls });
         seg.style.setProperty("--v", m[k]);
         col.append(seg);
       }
       const mostrar = () => {
-        dica.replaceChildren(
-          h("strong", {}, mesPorExtenso(m.m)),
-          h("span", {}, h("span", { class: "pn-chip pn-chip--nominal", "aria-hidden": "true" }), `Nominais: ${num(m.n)}`),
-          h("span", {}, h("span", { class: "pn-chip pn-chip--simbolica", "aria-hidden": "true" }), `Simbólicas: ${num(m.s)}`),
-          m.x ? h("span", {}, `Secretas: ${num(m.x)}`) : null);
+        dica.replaceChildren(h("strong", {}, mesPorExtenso(m.m)), ...o.dica(m));
         dica.hidden = false;
         const area = colunas.getBoundingClientRect();
         const c = col.getBoundingClientRect();
@@ -519,7 +580,7 @@
     document.addEventListener("pointerdown", (e) => { if (!colunas.contains(e.target)) dica.hidden = true; });
 
     return h("div", { class: "pn-grafico", role: "img",
-      "aria-label": `Gráfico de colunas com o número de votações nominais e simbólicas em cada mês, de ${mesPorExtenso(meses[0].m)} a ${mesPorExtenso(meses[meses.length - 1].m)}. Os mesmos números estão na tabela logo abaixo.` },
+      "aria-label": `Gráfico de colunas com ${o.aria}, de ${mesPorExtenso(meses[0].m)} a ${mesPorExtenso(meses[meses.length - 1].m)}. Os mesmos números estão numa tabela, no link abaixo do gráfico.` },
       h("div", { class: "pn-eixo-y", "aria-hidden": "true" }, marcas.map((v) => h("span", {}, num(v)))),
       h("div", { class: "pn-area" },
         h("div", { class: "pn-grades", "aria-hidden": "true" }, marcas.map(() => h("span", {}))),
@@ -545,7 +606,7 @@
   async function telaPainel() {
     const pn = await dados("painel");
     const t = pn.totais;
-    const rotulos = { nominal: "Nominais", simbolica: "Simbólicas", secreta: "Secretas" };
+    const rotulos = ROTULOS_TIPO;
     const maiorAssunto = Math.max(1, ...pn.assuntos.map((a) => a.n + a.s + a.x));
 
     const blocoMeses = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t1" },
@@ -554,8 +615,7 @@
       legendaDoPainel([["nominal", "Nominais"], ["simbolica", "Simbólicas"]]),
       graficoMeses(pn.meses),
       t.secretas ? h("p", { class: "numeros__nota" }, `Há também ${plural(t.secretas, "votação secreta", "votações secretas")}, mostrada na tabela.`) : null,
-      tabelaDoPainel("Votações por mês", ["Mês", "Nominais", "Simbólicas", "Secretas"],
-        pn.meses.map((m) => [mesPorExtenso(m.m), num(m.n), num(m.s), num(m.x)])));
+      linkTabela("por-mes", "das votações por mês"));
 
     const blocoAssuntos = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t2" },
       h("h2", { id: "pn-t2" }, "Votações por assunto"),
@@ -567,12 +627,12 @@
         li.append(h("span", { class: "pn-total" }, num(total), h("span", { class: "so-leitor" }, ` votações: ${num(a.n)} nominais e ${num(a.s)} simbólicas`)));
         return li;
       })),
-      tabelaDoPainel("Votações por assunto", ["Assunto", "Nominais", "Simbólicas", "Secretas", "Total"],
-        pn.assuntos.map((a) => [a.nome, num(a.n), num(a.s), num(a.x), num(a.n + a.s + a.x)])));
+      linkTabela("por-assunto", "das votações por assunto"));
 
     const blocoResultado = h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t3" },
       h("h2", { id: "pn-t3" }, "Resultado das votações"),
       h("p", { class: "numeros__nota" }, "Cada votação termina aprovada ou rejeitada pelo plenário. Aprovar uma votação não quer dizer, sozinho, que o projeto virou lei."),
+      h("p", { class: "numeros__nota" }, `Nas votações simbólicas (${pct1(t.simbolicas, t.votacoes)} do total), os partidos chegam a um acordo antes e o resultado é apenas anunciado. Por isso a grande maioria das votações aparece como aprovada.`),
       legendaDoPainel([["aprovada", "Aprovadas"], ["rejeitada", "Rejeitadas"]]),
       h("ul", { class: "pn-linhas pn-linhas--resultado", "aria-label": "Resultado por tipo de votação" },
         ["nominal", "simbolica", "secreta"].filter((k) => pn.resultado[k] && pn.resultado[k].aprovadas + pn.resultado[k].rejeitadas > 0).map((k) => {
@@ -582,8 +642,80 @@
           li.append(h("span", { class: "pn-total" }, `${num(r.aprovadas)} aprovadas (${pct1(r.aprovadas, total)}) · ${num(r.rejeitadas)} rejeitadas (${pct1(r.rejeitadas, total)})`));
           return li;
         })),
-      tabelaDoPainel("Resultado por tipo de votação", ["Tipo", "Aprovadas", "Rejeitadas", "Total"],
-        ["nominal", "simbolica", "secreta"].map((k) => { const r = pn.resultado[k] || { aprovadas: 0, rejeitadas: 0 }; return [rotulos[k], num(r.aprovadas), num(r.rejeitadas), num(r.aprovadas + r.rejeitadas)]; })));
+      linkTabela("resultado", "do resultado das votações"));
+
+    const pa = pn.participacao, pl = pn.placar, ia = pn.ia;
+
+    const blocoParticipacao = pa && pa.votacoes ? h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t4" },
+      h("h2", { id: "pn-t4" }, "Quantos deputados votaram"),
+      h("p", { class: "numeros__nota" }, `Só nas votações nominais, que registram o voto de cada deputado. A Câmara tem ${num(pa.cadeiras)} deputados e, em média, ${num(pa.media)} registraram voto em cada votação nominal (de ${num(pa.minimo)} a ${num(pa.maximo)}). O site não sabe o motivo de quem não aparece (falta, licença ou outro). Aqui entra só o total de cada votação, nunca quem faltou.`),
+      legendaDoPainel([["nominal", "Deputados que votaram (média do mês)"]]),
+      graficoMeses(pa.meses, {
+        series: [["v", "nominal"]], topo: 600, passo: 100, aria: "a média de deputados que votaram nas votações nominais de cada mês",
+        dica: (m) => (m.n ? [
+          h("span", {}, `Votações nominais: ${num(m.n)}`),
+          h("span", {}, h("span", { class: "pn-chip pn-chip--nominal", "aria-hidden": "true" }), `Votaram, em média: ${num(m.v)}`)] : [h("span", {}, "Sem votação nominal")]),
+      }),
+      linkTabela("participacao", "da participação por mês")) : null;
+
+    const somaVotos = pl ? somaDe(pl.votos || {}, VOTOS_PLACAR.map((x) => x[0])) : 0;
+    const maiorFaixa = pl ? Math.max(1, ...FAIXAS_PLACAR.map(([k]) => pl.margem[k])) : 1;
+    const linhaPlacar = () => {
+      const li = linhaBarras("Todas as votações nominais", VOTOS_PLACAR.map(([c, cls]) => [pl.votos[c], cls]), somaVotos, somaVotos);
+      li.append(h("span", { class: "pn-total" }, VOTOS_PLACAR.map(([c, , nome]) => `${nome}: ${num(pl.votos[c])} (${pct1(pl.votos[c], somaVotos)})`).join(" · ")));
+      return li;
+    };
+    const blocoPlacar = pl && pl.nominais ? h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t5" },
+      h("h2", { id: "pn-t5" }, "Placar das votações nominais"),
+      h("p", { class: "numeros__nota" }, "Somando todas as votações nominais, quantos votos foram sim, não, abstenção ou obstrução. Votar sim ou não não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
+      legendaDoPainel(VOTOS_PLACAR.map(([, cls, nome]) => [cls, nome])),
+      h("ul", { class: "pn-linhas pn-linhas--resultado", "aria-label": "Votos nas votações nominais" }, linhaPlacar()),
+      linkTabela("placar-votos", "dos votos"),
+      h("h3", {}, "Votações decididas por pouco ou por muito"),
+      h("p", { class: "numeros__nota" }, `A diferença é a distância entre sim e não, dividida pelo total de sim e não. Cada uma das ${num(pl.nominais)} votações nominais cai em uma faixa.`),
+      h("ul", { class: "pn-linhas", "aria-label": "Votações nominais por diferença entre sim e não" }, FAIXAS_PLACAR.map(([k, nome, det]) => {
+        const li = linhaBarras(h("span", {}, nome, h("span", { class: "pn-detalhe" }, det)), [[pl.margem[k], "faixa"]], pl.margem[k], maiorFaixa);
+        li.append(h("span", { class: "pn-total" }, num(pl.margem[k]), h("span", { class: "so-leitor" }, ` votações (${pct1(pl.margem[k], pl.nominais)})`)));
+        return li;
+      })),
+      linkTabela("placar-margem", "da diferença entre sim e não")) : null;
+
+    const m1 = ia && ia.modelo ? ` (${nomeModelo(ia.modelo)})` : "";
+    const m2 = ia && ia.conferencia ? ` (${nomeModelo(ia.conferencia)})` : "";
+    const linhaConfianca = (nome, c, sem) => {
+      const total = somaDe(c, NIVEIS_IA.map((x) => x[0]));
+      const li = linhaBarras(nome, NIVEIS_IA.map(([k]) => [c[k], k]), total, total);
+      li.append(h("span", { class: "pn-total" }, NIVEIS_IA.map(([k, rotulo]) => `${rotulo}: ${num(c[k])} (${pct1(c[k], total)})`).concat(sem ? [`Sem resumo: ${num(sem)}`] : []).join(" · ")));
+      return li;
+    };
+    const blocoIa = ia && ia.projetos ? h("section", { class: "numeros__bloco", "aria-labelledby": "pn-t6" },
+      h("h2", { id: "pn-t6" }, "Como a inteligência artificial é usada"),
+      h("p", { class: "numeros__nota" }, `O assunto e o resumo dos ${num(ia.projetos)} projetos do site são feitos por inteligência artificial, e ninguém revisa esses textos antes de irem ao ar. Aqui está como o trabalho é feito e o que as conferências automáticas encontraram.`),
+      h("h3", {}, "Como é feito"),
+      h("ol", { class: "numeros__passos" },
+        h("li", {}, `Um modelo${m1} lê o texto oficial do projeto, escolhe o assunto, escreve o resumo e diz quanto tem de certeza.`),
+        h("li", {}, `Um segundo modelo${m2} escolhe o assunto sem ver a resposta do primeiro. Se os dois discordam, a confiança no assunto cai.`),
+        h("li", {}, "Uma checagem por palavras da ementa confere se o assunto faz sentido."),
+        h("li", {}, "O segundo modelo confere o resumo contra o texto original. Se achar partes sem apoio no texto, o projeto mostra um aviso. Se o resumo não se sustenta, ele é descartado e a tela mostra só a ementa.")),
+      ia.ate ? h("p", { class: "numeros__nota" }, `Último texto gerado em ${data(ia.ate)}. O site só refaz o resumo de projetos novos ou cujo texto oficial mudou.`) : null,
+      h("h3", {}, "Confiança de cada texto"),
+      h("p", { class: "numeros__nota" }, "Cada assunto e cada resumo recebe uma confiança calculada por máquina, não por pessoas. Alta quer dizer que as conferências automáticas concordaram, não que o texto está certo."),
+      legendaDoPainel(NIVEIS_IA.map(([k, nome]) => [k, nome])),
+      h("ul", { class: "pn-linhas pn-linhas--resultado", "aria-label": "Confiança do assunto e do resumo" }, linhaConfianca("Assunto", ia.assunto), linhaConfianca("Resumo", ia.resumo, ia.so_ementa)),
+      linkTabela("ia-confianca", "da confiança"),
+      h("h3", {}, "Avisos que o site mostra"),
+      h("ul", { class: "numeros__fatos" },
+        h("li", {}, `${plural(ia.aviso_assunto, "projeto", "projetos")} com aviso de que o assunto pode estar errado.`),
+        h("li", {}, `${plural(ia.aviso_resumo, "projeto", "projetos")} com aviso de que o resumo pode conter erros.`),
+        ia.so_ementa ? h("li", {}, `${plural(ia.so_ementa, "projeto", "projetos")} sem resumo da inteligência artificial, porque ela não conseguiu resumir ou a conferência não achou apoio no texto. A tela mostra só a ementa.`) : null,
+        h("li", {}, `${plural(ia.texto_pode_diferir, "projeto", "projetos")} cuja votação foi sobre um substitutivo ou emenda: o texto votado pode ser diferente da ementa.`),
+        ia.votacao_aviso ? h("li", {}, `${plural(ia.votacao_aviso, "votação", "votações")} com aviso de que a classificação foi feita automaticamente e pode estar errada.`) : null),
+      h("h3", {}, "Limites e correções"),
+      h("ul", { class: "numeros__fatos" },
+        h("li", {}, "A inteligência artificial pode errar, mesmo quando diz ter certeza."),
+        h("li", {}, "O texto oficial de cada projeto fica sempre ao lado do resumo. Em caso de dúvida, vale o texto oficial."),
+        h("li", {}, "Por enquanto o site não tem um canal para pedir correções."),
+        h("li", {}, h("a", { href: "#/sobre" }, "Como o site funciona")))) : null;
 
     principal.replaceChildren(h("div", { class: "miolo numeros" },
       h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Em números"))),
@@ -591,7 +723,7 @@
       h("p", { class: "numeros__lead" },
         `${rotuloVotacoes(t.votacoes)} em plenário, de ${data(pn.de)} a ${data(pn.ate)}: ${num(t.nominais)} nominais, ${num(t.simbolicas)} simbólicas` + (t.secretas ? ` e ${num(t.secretas)} secreta.` : ".")),
       h("p", { class: "numeros__nota" }, `Atualizado em ${data(pn.gerado_em)}. Esta página só conta e descreve: não dá nota nem compara deputados ou partidos. `, h("a", { href: "#/sobre" }, "Como o site funciona")),
-      blocoMeses, blocoAssuntos, blocoResultado));
+      blocoMeses, blocoAssuntos, blocoResultado, blocoParticipacao, blocoPlacar, blocoIa));
     document.title = "Em números: votações da Câmara ao longo do tempo | Voto de Verdade";
     return document.getElementById("titulo-painel");
   }
@@ -1196,7 +1328,7 @@
       else if (partes[0] === "projeto" && partes[1]) titulo = await telaProjeto(partes[1], p);
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
       else if (partes[0] === "sobre") titulo = await telaSobre();
-      else if (partes[0] === "em-numeros") titulo = await telaPainel();
+      else if (partes[0] === "em-numeros") titulo = partes[1] ? await telaTabelaNumeros(partes[1]) : await telaPainel();
       else if (partes[0] === "apoie" && soHttps(CONFIG.doacao)) titulo = telaApoie();
       else if (partes[0] === "deputados") titulo = await telaDeputados(p);
       else if (partes[0] === "deputado" && partes[1]) titulo = await telaDeputado(partes[1], p);

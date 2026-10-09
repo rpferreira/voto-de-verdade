@@ -96,6 +96,8 @@ def envenenar(site):
     def painel(d):
         for x in d["assuntos"]:
             x["nome"] += HTML + SCRIPT
+        for k in ("modelo", "conferencia"):
+            d["ia"][k] = (d["ia"].get(k) or "") + HTML + SCRIPT
 
     mexer("projetos.json", projetos)
     mexer("painel.json", painel)
@@ -132,7 +134,7 @@ def ataque(p, base, projetos, deputados, assuntos):
         urls += [f"/deputado/{i}/", f"/#/deputado/{i}"]
     for a in assuntos[:4]:
         urls += [f"/assunto/{a['slug']}/", f"/#/assunto/{a['slug']}"]
-    urls += ["/", "/#/", "/deputados/", "/#/deputados", "/sobre/", "/em-numeros/", "/#/em-numeros"]
+    urls += ["/", "/#/", "/deputados/", "/#/deputados", "/sobre/", "/em-numeros/", "/#/em-numeros", "/em-numeros/por-assunto/", "/#/em-numeros/por-assunto", "/em-numeros/ia-confianca/", "/#/em-numeros/ia-confianca"]
     img = "%3Cimg%20src=x%20onerror=window.__pwn=9%3E"
     urls += [
         f"/#/assunto/%22%3E{img}", f"/#/projeto/%22%3E{img}", "/#/deputado/<img src=x onerror=window.__pwn=9>",

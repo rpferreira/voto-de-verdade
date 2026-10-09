@@ -497,15 +497,21 @@ a.botao, a.botao:hover { text-decoration: none; }
 .numeros__bloco { display: grid; gap: var(--item); margin-top: var(--bloco); padding: var(--grupo); background: var(--superficie); border-radius: var(--raio-grande); box-shadow: var(--sombra); }
 .numeros__bloco h2 { margin: 0; font-size: 1.25rem; line-height: 1.75rem; }
 .numeros__tabela { max-width: none; }
+.numeros__bloco h3 { margin: var(--junto) 0 0; font-size: 1.05rem; line-height: 1.5rem; }
+.numeros__passos, .numeros__fatos { display: grid; gap: var(--perto); margin: 0; padding-inline-start: var(--grupo); max-width: 72ch; font-size: 0.95rem; line-height: 1.5rem; }
+.pn-detalhe { display: block; color: var(--tinta-suave); font-size: 0.85rem; line-height: 1.25rem; }
 .pn-legenda { display: flex; flex-wrap: wrap; gap: var(--item); list-style: none; margin: 0; padding: 0; font-size: 0.95rem; line-height: 1.5rem; }
 .pn-legenda li { display: inline-flex; align-items: center; gap: var(--perto); }
 .pn-chip { display: inline-block; flex: none; width: 0.75rem; height: 0.75rem; border-radius: 3px; }
 /* Cada série tem cor e textura (traço mais escuro da própria cor), para não depender só da cor: nominais 45°, simbólicas 135°, secretas pontos, aprovadas lisas, rejeitadas traços horizontais. */
 .pn-chip--nominal, .pn-seg--nominal { background-color: var(--pn-1); background-image: repeating-linear-gradient(45deg, transparent 0 4px, var(--pn-traco) 4px 6px); }
 .pn-chip--simbolica, .pn-seg--simbolica { background-color: var(--pn-2); background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--pn-traco) 4px 6px); }
-.pn-chip--secreta, .pn-seg--secreta { background-color: var(--pn-sec); background-image: radial-gradient(circle, var(--pn-traco) 1px, transparent 1.5px); background-size: 5px 5px; }
-.pn-chip--aprovada, .pn-seg--aprovada { background-color: var(--pn-ok); }
-.pn-chip--rejeitada, .pn-seg--rejeitada { background-color: var(--pn-no); background-image: repeating-linear-gradient(0deg, transparent 0 3px, var(--pn-traco) 3px 4px); }
+.pn-chip--secreta, .pn-seg--secreta, .pn-chip--abstencao, .pn-seg--abstencao, .pn-chip--media, .pn-seg--media { background-color: var(--pn-sec); background-image: radial-gradient(circle, var(--pn-traco) 1px, transparent 1.5px); background-size: 5px 5px; }
+.pn-chip--aprovada, .pn-seg--aprovada, .pn-chip--faixa, .pn-seg--faixa, .pn-chip--alta, .pn-seg--alta { background-color: var(--pn-ok); }
+.pn-chip--rejeitada, .pn-seg--rejeitada, .pn-chip--obstrucao, .pn-seg--obstrucao, .pn-chip--baixa, .pn-seg--baixa { background-color: var(--pn-no); background-image: repeating-linear-gradient(0deg, transparent 0 3px, var(--pn-traco) 3px 4px); }
+/* Placar: sim em xadrez de traços cruzados, não em traços verticais, abstenção em pontos, obstrução em traços horizontais */
+.pn-chip--sim, .pn-seg--sim { background-color: var(--pn-1); background-image: repeating-linear-gradient(45deg, transparent 0 4px, var(--pn-traco) 4px 6px), repeating-linear-gradient(135deg, transparent 0 4px, var(--pn-traco) 4px 6px); }
+.pn-chip--nao, .pn-seg--nao { background-color: var(--pn-2); background-image: repeating-linear-gradient(90deg, transparent 0 4px, var(--pn-traco) 4px 6px); }
 /* colunas por mês */
 .pn-grafico { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--perto); row-gap: var(--junto); }
 .pn-eixo-y { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; font-size: 0.75rem; line-height: 1rem; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }

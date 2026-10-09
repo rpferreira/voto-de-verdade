@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Números do painel (tela "Painel"): votações simbólicas × nominais ao longo do tempo, por assunto e o resultado.
+"""Números do painel (tela "Em números"): votações simbólicas × nominais ao longo do tempo, por assunto, o resultado,
+a participação, o placar e como a inteligência artificial é usada.
 
 Só conta e descreve. Não ordena pessoas, não dá nota e não compara partidos.
 Roda sozinho a cada atualização diária (o exportar_dados.py chama montar_painel) e também pode ser
@@ -15,12 +16,22 @@ Arquivo gerado (painel.json):
     assuntos                     uma linha por assunto, na ordem fixa dos assuntos do site (não por tamanho):
                                  slug, nome, n, s, x. Cada votação conta no assunto principal do projeto
     resultado                    por tipo de votação (nominal, simbolica, secreta): aprovadas e rejeitadas
+    participacao                 só nominais: cadeiras (513), votacoes, media/minimo/maximo de deputados que registraram
+                                 voto (sim, não, abstenção ou obstrução) e, por mês com nominal, m, n (votações) e v (média)
+    placar                       só nominais: votos (S, N, A, O somados) e margem: quantas votações ficaram em cada faixa
+                                 de diferença entre sim e não (sem_contra, ampla, maioria, apertada)
+    ia                           transparência: projetos, modelos, datas, confiança do assunto e do resumo, avisos mostrados
+Nada aqui ordena ou compara pessoas ou partidos: são só totais da Câmara inteira.
 """
 import json
 import os
 import sys
 
 TIPOS = ("nominal", "simbolica", "secreta")
+CADEIRAS = 513
+# Faixas da diferença entre sim e não, em relação a sim + não. O limite de 15% é o mesmo da home («Decididas por pouco»).
+LIMITE_APERTADA = 0.15
+LIMITE_AMPLA = 0.5
 CHAVE = {"nominal": "n", "simbolica": "s", "secreta": "x"}
 
 
@@ -35,12 +46,77 @@ def _meses(de, ate):
             ano, mes = ano + 1, 1
 
 
-def montar_painel(votacoes, projetos, assuntos, gerado_em):
-    """votacoes: lista de {id, p, d, t, ap}; projetos: lista de {id, a}; assuntos: lista de {slug, nome} na ordem do site."""
+def _faixa(sim, nao):
+    if sim == 0 or nao == 0:
+        return "sem_contra"
+    margem = abs(sim - nao) / (sim + nao)
+    if margem < LIMITE_APERTADA:
+        return "apertada"
+    return "ampla" if margem >= LIMITE_AMPLA else "maioria"
+
+
+def _participacao_e_placar(votacoes, meses):
+    """Só as votações nominais (a simbólica não registra o voto de cada deputado). Cada votação traz s = [S, N, A, O, P]."""
+    nominais = [v for v in votacoes if v["t"] == "nominal" and v.get("s")]
+    por_mes = {}
+    votos = {"S": 0, "N": 0, "A": 0, "O": 0}
+    margem = {"sem_contra": 0, "ampla": 0, "maioria": 0, "apertada": 0}
+    presentes = []
+    for v in nominais:
+        sim, nao, abst, obs = v["s"][:4]  # o quinto (presidia a sessão) não entra na conta
+        votaram = sim + nao + abst + obs
+        presentes.append(votaram)
+        mes = por_mes.setdefault(v["d"][:7], [])
+        mes.append(votaram)
+        for c, n in zip("SNAO", (sim, nao, abst, obs)):
+            votos[c] += n
+        margem[_faixa(sim, nao)] += 1
+    participacao = {
+        "cadeiras": CADEIRAS, "votacoes": len(nominais),
+        "media": round(sum(presentes) / len(presentes)) if presentes else 0,
+        "minimo": min(presentes) if presentes else 0, "maximo": max(presentes) if presentes else 0,
+        "meses": [{"m": m["m"], "n": len(por_mes[m["m"]]), "v": round(sum(por_mes[m["m"]]) / len(por_mes[m["m"]]))} if m["m"] in por_mes
+                  else {"m": m["m"], "n": 0, "v": 0} for m in meses],
+    }
+    return participacao, {"nominais": len(nominais), "votos": votos, "margem": margem}
+
+
+def _contar(valores, chaves):
+    return {k: sum(1 for x in valores if x == k) for k in chaves}
+
+
+def _ia(votacoes, projetos, resumos):
+    """Como a IA é usada: só contagens. Os modelos e a data vêm do resumos.json (feito por coleta/resumir_projetos.py)."""
+    ia = {
+        "projetos": len(projetos),
+        "assunto": _contar([p.get("ca") for p in projetos], ("alta", "media", "baixa")),
+        "resumo": _contar([p.get("cr") for p in projetos], ("alta", "media", "baixa")),
+        "aviso_assunto": sum(1 for p in projetos if p.get("aa")),
+        "aviso_resumo": sum(1 for p in projetos if p.get("ar")),
+        "so_ementa": sum(1 for p in projetos if not p.get("cr")),
+        "texto_pode_diferir": sum(1 for p in projetos if p.get("subst")),
+        "votacoes": len(votacoes),
+        "votacao_aviso": sum(1 for v in votacoes if v.get("av")),
+        "modelo": None, "conferencia": None, "de": None, "ate": None, "conferencia_apontou": None,
+    }
+    if resumos:
+        itens = list(resumos.values())
+        mais_comum = lambda chave: max(set(x.get(chave) for x in itens), key=lambda m: sum(1 for x in itens if x.get(chave) == m))
+        ia["modelo"], ia["conferencia"] = mais_comum("modelo"), mais_comum("conferencia")
+        datas = [x["gerado_em"] for x in itens if x.get("gerado_em")]
+        ia["de"], ia["ate"] = (min(datas), max(datas)) if datas else (None, None)
+        ia["conferencia_apontou"] = sum(1 for x in itens if x.get("conferencia_obs"))
+    return ia
+
+
+def montar_painel(votacoes, projetos, assuntos, gerado_em, resumos=None):
+    """votacoes: lista de {id, p, d, t, ap, s}; projetos: lista de {id, a, ca, cr...}; assuntos: lista de {slug, nome} na ordem do site;
+    resumos: o dados/resumos.json (opcional, só para os modelos e a data da IA)."""
     assunto_do_projeto = {p["id"]: p["a"] for p in projetos}
     votacoes = [v for v in votacoes if v["t"] in TIPOS]
     if not votacoes:
-        return {"gerado_em": gerado_em, "de": None, "ate": None, "totais": {}, "meses": [], "assuntos": [], "resultado": {}}
+        return {"gerado_em": gerado_em, "de": None, "ate": None, "totais": {}, "meses": [], "assuntos": [], "resultado": {},
+                "participacao": {}, "placar": {}, "ia": {}}
     de, ate = min(v["d"] for v in votacoes), max(v["d"] for v in votacoes)
 
     meses = {m: {"m": m, "n": 0, "s": 0, "x": 0} for m in _meses(de, ate)}
@@ -62,12 +138,17 @@ def montar_painel(votacoes, projetos, assuntos, gerado_em):
         "aprovadas": sum(r["aprovadas"] for r in resultado.values()),
         "rejeitadas": sum(r["rejeitadas"] for r in resultado.values()),
     }
+    lista_meses = list(meses.values())
+    participacao, placar = _participacao_e_placar(votacoes, lista_meses)
     return {
         "gerado_em": gerado_em, "de": de, "ate": ate,
         "totais": totais,
-        "meses": list(meses.values()),
+        "meses": lista_meses,
         "assuntos": [a for a in por_assunto.values() if a["n"] + a["s"] + a["x"] > 0],
         "resultado": resultado,
+        "participacao": participacao,
+        "placar": placar,
+        "ia": _ia(votacoes, projetos, resumos),
     }
 
 
@@ -81,7 +162,9 @@ def main():
             return json.load(f)
 
     meta = ler("meta.json")
-    painel = montar_painel(ler("votacoes.json"), ler("projetos.json"), ler("assuntos.json"), meta["gerado_em"])
+    caminho_resumos = os.path.join(os.path.dirname(os.path.abspath(pasta)), "..", "dados", "resumos.json")
+    resumos = json.load(open(caminho_resumos, encoding="utf-8")) if os.path.exists(caminho_resumos) else None
+    painel = montar_painel(ler("votacoes.json"), ler("projetos.json"), ler("assuntos.json"), meta["gerado_em"], resumos)
     caminho = os.path.join(pasta, "painel.json")
     with open(caminho, "w", encoding="utf-8") as f:
         json.dump(painel, f, ensure_ascii=False, separators=(",", ":"))

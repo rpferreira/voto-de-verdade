@@ -269,7 +269,9 @@ def main():
     gravar("meta.json", meta)
     gravar("votacoes.json", votacoes)
     gravar("deputados.json", deputados)
-    gravar("painel.json", montar_painel(votacoes, projetos, assuntos, meta["gerado_em"]))
+    caminho_resumos = os.path.join(os.path.dirname(os.path.abspath(args.banco)), "resumos.json")
+    resumos = json.load(open(caminho_resumos, encoding="utf-8")) if os.path.exists(caminho_resumos) else None
+    gravar("painel.json", montar_painel(votacoes, projetos, assuntos, meta["gerado_em"], resumos))
     print(f"   {pasta_proj}/: {len(projetos)} arquivos")
     print(f"   {pasta_votos}/: {n_arquivos} arquivos")
     print(f"   {pasta_dep}/: {len(por_dep)} arquivos")
