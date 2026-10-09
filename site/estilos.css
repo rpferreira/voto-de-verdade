@@ -127,6 +127,13 @@ h3 { font-weight: 500; }
 .apoie-topo { display: inline-flex; align-items: center; gap: var(--perto); height: 2.5rem; padding: 0 var(--item); border-radius: 99px; color: var(--cobalto); text-decoration: none; font-weight: 500; font-size: 0.975rem; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cobalto) 45%, var(--linha)); }
 .apoie-topo:hover { background: var(--cobalto-claro); }
 .apoie-topo svg { width: 1.25rem; height: 1.25rem; flex: none; }
+/* Idioma (PT | EN): no computador fica no topo, antes do modo escuro; no celular vai para dentro do menu. O idioma de agora é só texto, o outro é um link. */
+.idioma { display: inline-flex; align-items: center; gap: var(--junto); font-size: 0.9rem; font-weight: 600; line-height: 1.5rem; }
+.idioma__atual, .idioma__outro { display: inline-grid; place-items: center; min-width: 2.5rem; height: 2.5rem; border-radius: 99px; }
+.idioma__atual { color: var(--tinta); background: color-mix(in srgb, var(--tinta) 7%, transparent); }
+.idioma__outro { color: var(--tinta-suave); text-decoration: none; }
+.idioma__outro:hover { color: var(--tinta); background: color-mix(in srgb, var(--tinta) 7%, transparent); }
+.idioma__sep { color: var(--linha); }
 .tema { display: inline-grid; place-items: center; width: 2.5rem; height: 2.5rem; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--tinta); cursor: pointer; }
 .tema:hover { background: color-mix(in srgb, var(--tinta) 7%, transparent); }
 /* Celular: nav e apoie saem do topo e vão para o menu (popover nativo); o modo escuro fica ao lado do botão do menu. */
@@ -139,8 +146,12 @@ h3 { font-weight: 500; }
 .topo .menu-topo a:hover { background: color-mix(in srgb, var(--tinta) 7%, transparent); }
 .topo .menu-topo a[aria-current="page"] { background: var(--tinta); color: var(--papel); }
 .topo .menu-topo .menu-apoie { color: var(--cobalto); }
+.topo .menu-topo .menu-idioma { display: flex; align-items: center; justify-content: space-between; gap: var(--item); padding: var(--perto) var(--item); box-shadow: inset 0 1px 0 var(--linha); }
+.menu-idioma__rotulo { color: var(--tinta-suave); font-size: 1rem; line-height: 1.5rem; }
+.topo .menu-topo .idioma a { width: auto; min-width: 2.5rem; height: 2.5rem; padding: 0; justify-content: center; border-radius: 99px; font-size: 0.9rem; font-weight: 600; line-height: 1.5rem; color: var(--tinta-suave); }
+.topo .menu-topo .idioma a:hover { color: var(--tinta); }
 .menu-topo svg { width: 1.5rem; height: 1.5rem; flex: none; }
-@media (max-width: 64rem) { .topo__acoes nav, .apoie-topo { display: none; } .marca-grupo { flex: 1; } .menu-botao { display: inline-grid; } }
+@media (max-width: 64rem) { .topo__acoes nav, .apoie-topo, .topo__acoes .idioma { display: none; } .marca-grupo { flex: 1; } .menu-botao { display: inline-grid; } }
 .tema svg { width: 1.5rem; height: 1.5rem; }
 .tema .sol { display: none; }
 .tema[aria-pressed="true"] .sol { display: inline; }
@@ -474,7 +485,7 @@ a.botao, a.botao:hover { text-decoration: none; }
 @media (forced-colors: active) {
   .seg-S, .seg-N, .seg-A, .seg-O, .seg-P { background: CanvasText; forced-color-adjust: none; }
   .voto--S, .voto--N { forced-color-adjust: none; }
-  .topo nav a[aria-current="page"] { outline: 2px solid Highlight; }
+  .topo nav a[aria-current="page"], .idioma__atual { outline: 2px solid Highlight; }
 }
 
 @media (max-width: 39.99rem) {

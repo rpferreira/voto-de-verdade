@@ -72,6 +72,11 @@
     else if (nome === "projetos") for (const p of dado) sobrepor(p, en[p.id], ["titulo", "resumo", "tags", "aa", "ar"]);
     else if (nome === "votacoes") for (const v of dado) sobrepor(v, en[v.id], ["desc", "av"]);
     else if (nome.startsWith("projetos/")) sobrepor(dado, en, ["pontos"]);
+    else if (nome === "painel") {
+      const trocar = (lista) => { for (const a of lista || []) if (en.assuntos && en.assuntos[a.slug]) a.nome = en.assuntos[a.slug]; };
+      trocar(dado.assuntos);
+      for (const ano of Object.values(dado.por_ano || {})) trocar(ano.assuntos);
+    }
   }
 
   const semAcento = (t) => (t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
