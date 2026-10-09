@@ -20,6 +20,8 @@ Arquivo gerado (painel.json):
                                  voto (sim, não, abstenção ou obstrução) e, por mês com nominal, m, n (votações) e v (média)
     placar                       só nominais: votos (S, N, A, O somados) e margem: quantas votações ficaram em cada faixa
                                  de diferença entre sim e não (sem_contra, ampla, maioria, apertada)
+    anos, por_ano                os anos com votação e, para cada um, os mesmos campos de cima (de, ate, totais, meses, assuntos,
+                                 resultado, participacao, placar), para o filtro por ano da tela
     ia                           transparência: projetos, modelos, datas, confiança do assunto e do resumo, avisos mostrados
 Nada aqui ordena ou compara pessoas ou partidos: são só totais da Câmara inteira.
 """
@@ -109,17 +111,11 @@ def _ia(votacoes, projetos, resumos):
     return ia
 
 
-def montar_painel(votacoes, projetos, assuntos, gerado_em, resumos=None):
-    """votacoes: lista de {id, p, d, t, ap, s}; projetos: lista de {id, a, ca, cr...}; assuntos: lista de {slug, nome} na ordem do site;
-    resumos: o dados/resumos.json (opcional, só para os modelos e a data da IA)."""
-    assunto_do_projeto = {p["id"]: p["a"] for p in projetos}
-    votacoes = [v for v in votacoes if v["t"] in TIPOS]
-    if not votacoes:
-        return {"gerado_em": gerado_em, "de": None, "ate": None, "totais": {}, "meses": [], "assuntos": [], "resultado": {},
-                "participacao": {}, "placar": {}, "ia": {}}
+def _numeros(votacoes, assunto_do_projeto, assuntos, meses_de=None, meses_ate=None):
+    """Os números de um conjunto de votações (o período inteiro ou um ano): totais, meses, assuntos, resultado, participação e placar.
+    meses_de e meses_ate (opcionais) alargam a lista de meses: um ano mostra janeiro a dezembro, sem pular nenhum."""
     de, ate = min(v["d"] for v in votacoes), max(v["d"] for v in votacoes)
-
-    meses = {m: {"m": m, "n": 0, "s": 0, "x": 0} for m in _meses(de, ate)}
+    meses = {m: {"m": m, "n": 0, "s": 0, "x": 0} for m in _meses(meses_de or de, meses_ate or ate)}
     por_assunto = {a["slug"]: {"slug": a["slug"], "nome": a["nome"], "n": 0, "s": 0, "x": 0} for a in assuntos}
     resultado = {t: {"aprovadas": 0, "rejeitadas": 0} for t in TIPOS}
     for v in votacoes:
@@ -129,7 +125,6 @@ def montar_painel(votacoes, projetos, assuntos, gerado_em, resumos=None):
         if slug in por_assunto:
             por_assunto[slug][k] += 1
         resultado[v["t"]]["aprovadas" if v["ap"] else "rejeitadas"] += 1
-
     totais = {
         "votacoes": len(votacoes),
         "nominais": sum(1 for v in votacoes if v["t"] == "nominal"),
@@ -141,15 +136,35 @@ def montar_painel(votacoes, projetos, assuntos, gerado_em, resumos=None):
     lista_meses = list(meses.values())
     participacao, placar = _participacao_e_placar(votacoes, lista_meses)
     return {
-        "gerado_em": gerado_em, "de": de, "ate": ate,
+        "de": de, "ate": ate,
         "totais": totais,
         "meses": lista_meses,
         "assuntos": [a for a in por_assunto.values() if a["n"] + a["s"] + a["x"] > 0],
         "resultado": resultado,
         "participacao": participacao,
         "placar": placar,
-        "ia": _ia(votacoes, projetos, resumos),
     }
+
+
+def montar_painel(votacoes, projetos, assuntos, gerado_em, resumos=None):
+    """votacoes: lista de {id, p, d, t, ap, s}; projetos: lista de {id, a, ca, cr...}; vazio se não houver votação.
+    assuntos: lista de {slug, nome} na ordem do site; resumos: o dados/resumos.json (opcional, só para os modelos e a data da IA).
+    O período inteiro fica na raiz; cada ano, com os mesmos campos, em por_ano (para o filtro por ano da tela)."""
+    assunto_do_projeto = {p["id"]: p["a"] for p in projetos}
+    votacoes = [v for v in votacoes if v["t"] in TIPOS]
+    if not votacoes:
+        return {"gerado_em": gerado_em, "de": None, "ate": None, "totais": {}, "meses": [], "assuntos": [], "resultado": {},
+                "participacao": {}, "placar": {}, "anos": [], "por_ano": {}, "ia": {}}
+    painel = {"gerado_em": gerado_em}
+    painel.update(_numeros(votacoes, assunto_do_projeto, assuntos))
+    anos = sorted({v["d"][:4] for v in votacoes})
+    painel["anos"] = anos
+    ultimo = max(v["d"] for v in votacoes)
+    # Cada ano mostra janeiro a dezembro; no último ano, vai só até o mês da última votação (os meses seguintes ainda não aconteceram).
+    painel["por_ano"] = {ano: _numeros([v for v in votacoes if v["d"][:4] == ano], assunto_do_projeto, assuntos,
+                                       f"{ano}-01-01", ultimo if ano == ultimo[:4] else f"{ano}-12-31") for ano in anos}
+    painel["ia"] = _ia(votacoes, projetos, resumos)
+    return painel
 
 
 def main():

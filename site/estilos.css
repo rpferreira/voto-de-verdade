@@ -140,7 +140,7 @@ h3 { font-weight: 500; }
 .topo .menu-topo a[aria-current="page"] { background: var(--tinta); color: var(--papel); }
 .topo .menu-topo .menu-apoie { color: var(--cobalto); }
 .menu-topo svg { width: 1.5rem; height: 1.5rem; flex: none; }
-@media (max-width: 48rem) { .topo__acoes nav, .apoie-topo { display: none; } .marca-grupo { flex: 1; } .menu-botao { display: inline-grid; } }
+@media (max-width: 64rem) { .topo__acoes nav, .apoie-topo { display: none; } .marca-grupo { flex: 1; } .menu-botao { display: inline-grid; } }
 .tema svg { width: 1.5rem; height: 1.5rem; }
 .tema .sol { display: none; }
 .tema[aria-pressed="true"] .sol { display: inline; }
@@ -497,6 +497,13 @@ a.botao, a.botao:hover { text-decoration: none; }
 .numeros__bloco { display: grid; gap: var(--item); margin-top: var(--bloco); padding: var(--grupo); background: var(--superficie); border-radius: var(--raio-grande); box-shadow: var(--sombra); }
 .numeros__bloco h2 { margin: 0; font-size: 1.25rem; line-height: 1.75rem; }
 .numeros__tabela { max-width: none; }
+.numeros__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--perto) var(--grupo); max-width: none; margin: 0; font-size: 0.95rem; line-height: 1.5rem; }
+.exportar { display: inline-flex; flex-wrap: wrap; gap: var(--perto) var(--item); }
+/* Botão com cara de link: baixa um arquivo em vez de abrir uma página */
+.link-botao { appearance: none; border: 0; background: none; padding: 0; font: inherit; color: var(--cobalto); text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; cursor: pointer; }
+.link-botao:hover { text-decoration-thickness: 2px; }
+.lista-acoes { margin: var(--junto) 0 var(--item); font-size: 0.95rem; line-height: 1.5rem; }
+.numeros__filtro { max-width: 16rem; margin: var(--item) 0; }
 .numeros__bloco h3 { margin: var(--junto) 0 0; font-size: 1.05rem; line-height: 1.5rem; }
 .numeros__passos, .numeros__fatos { display: grid; gap: var(--perto); margin: 0; padding-inline-start: var(--grupo); max-width: 72ch; font-size: 0.95rem; line-height: 1.5rem; }
 .pn-detalhe { display: block; color: var(--tinta-suave); font-size: 0.85rem; line-height: 1.25rem; }
@@ -506,12 +513,14 @@ a.botao, a.botao:hover { text-decoration: none; }
 /* Cada série tem cor e textura (traço mais escuro da própria cor), para não depender só da cor: nominais 45°, simbólicas 135°, secretas pontos, aprovadas lisas, rejeitadas traços horizontais. */
 .pn-chip--nominal, .pn-seg--nominal { background-color: var(--pn-1); background-image: repeating-linear-gradient(45deg, transparent 0 4px, var(--pn-traco) 4px 6px); }
 .pn-chip--simbolica, .pn-seg--simbolica { background-color: var(--pn-2); background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--pn-traco) 4px 6px); }
-.pn-chip--secreta, .pn-seg--secreta, .pn-chip--abstencao, .pn-seg--abstencao, .pn-chip--media, .pn-seg--media { background-color: var(--pn-sec); background-image: radial-gradient(circle, var(--pn-traco) 1px, transparent 1.5px); background-size: 5px 5px; }
+.pn-chip--secreta, .pn-seg--secreta, .pn-chip--media, .pn-seg--media { background-color: var(--pn-sec); background-image: radial-gradient(circle, var(--pn-traco) 1px, transparent 1.5px); background-size: 5px 5px; }
 .pn-chip--aprovada, .pn-seg--aprovada, .pn-chip--faixa, .pn-seg--faixa, .pn-chip--alta, .pn-seg--alta { background-color: var(--pn-ok); }
-.pn-chip--rejeitada, .pn-seg--rejeitada, .pn-chip--obstrucao, .pn-seg--obstrucao, .pn-chip--baixa, .pn-seg--baixa { background-color: var(--pn-no); background-image: repeating-linear-gradient(0deg, transparent 0 3px, var(--pn-traco) 3px 4px); }
-/* Placar: sim em xadrez de traços cruzados, não em traços verticais, abstenção em pontos, obstrução em traços horizontais */
-.pn-chip--sim, .pn-seg--sim { background-color: var(--pn-1); background-image: repeating-linear-gradient(45deg, transparent 0 4px, var(--pn-traco) 4px 6px), repeating-linear-gradient(135deg, transparent 0 4px, var(--pn-traco) 4px 6px); }
-.pn-chip--nao, .pn-seg--nao { background-color: var(--pn-2); background-image: repeating-linear-gradient(90deg, transparent 0 4px, var(--pn-traco) 4px 6px); }
+.pn-chip--rejeitada, .pn-seg--rejeitada, .pn-chip--baixa, .pn-seg--baixa { background-color: var(--pn-no); background-image: repeating-linear-gradient(0deg, transparent 0 3px, var(--pn-traco) 3px 4px); }
+/* Placar: as mesmas cores das fichas de voto do resto do site (sim cobalto, não escuro, abstenção e obstrução cinza), cada uma com a sua textura */
+.pn-chip--sim, .pn-seg--sim { background-color: var(--cobalto); background-image: repeating-linear-gradient(45deg, transparent 0 4px, color-mix(in srgb, var(--sobre-cobalto) 40%, transparent) 4px 6px), repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in srgb, var(--sobre-cobalto) 40%, transparent) 4px 6px); }
+.pn-chip--nao, .pn-seg--nao { background-color: var(--tinta); background-image: repeating-linear-gradient(90deg, transparent 0 4px, color-mix(in srgb, var(--papel) 45%, transparent) 4px 6px); }
+.pn-chip--abstencao, .pn-seg--abstencao { background-color: var(--cinza-voto); background-image: radial-gradient(circle, color-mix(in srgb, var(--tinta) 70%, transparent) 1px, transparent 1.5px); background-size: 5px 5px; }
+.pn-chip--obstrucao, .pn-seg--obstrucao { background-color: color-mix(in srgb, var(--cinza-voto) 45%, var(--superficie)); background-image: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--tinta) 55%, transparent) 3px 4px); }
 /* colunas por mês */
 .pn-grafico { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--perto); row-gap: var(--junto); }
 .pn-eixo-y { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; font-size: 0.75rem; line-height: 1rem; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
@@ -527,6 +536,9 @@ a.botao, a.botao:hover { text-decoration: none; }
 .pn-seg + .pn-seg { box-shadow: 0 -2px 0 var(--superficie); }
 .pn-eixo-x { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); font-size: 0.75rem; line-height: 1rem; color: var(--tinta-suave); }
 .pn-rotulo-x { white-space: nowrap; }
+.pn-rotulo-x--mes { text-align: center; }
+.pn-mes-curto { display: none; }
+@media (max-width: 40rem) { .pn-mes-longo { display: none; } .pn-mes-curto { display: inline; } }
 .pn-dica { position: absolute; top: 0; z-index: 2; display: grid; gap: var(--junto); padding: var(--perto) var(--item); border-radius: var(--raio); background: var(--tinta); color: var(--papel); font-size: 0.875rem; line-height: 1.25rem; white-space: nowrap; pointer-events: none; box-shadow: var(--sombra-alta); }
 .pn-dica[hidden] { display: none; }
 .pn-dica span { display: inline-flex; align-items: center; gap: var(--perto); }
