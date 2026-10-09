@@ -558,7 +558,7 @@ def main():
                  '<h2>O que a doação não muda</h2>'
                  '<p>O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos. Não é doação a uma associação ou ONG: o site é mantido por uma pessoa e a doação não dá direito a abatimento de imposto.</p>'
                  '<h2>Para onde vai o dinheiro</h2>'
-                 '<p>Para manter o site no ar. Os principais custos são a inteligência artificial que escreve os resumos dos projetos e o endereço do site (domínio).</p></div>',
+                 '<p>Primeiro, para cobrir os custos do site: a inteligência artificial que escreve os resumos dos projetos e o endereço do site (domínio). O que sobrar ajuda a pagar o trabalho de desenvolvimento e manutenção, que é feito por uma pessoa só. Doar não muda nada no site: ele continua igual e gratuito para todos.</p></div>',
                  markdown=f"# Apoie o Voto de Verdade\n\nDoação única, sem assinatura: {doacao['url']}\n")
 
     # ---- página inicial (com o endereço de compartilhamento certo e o conteúdo já escrito)
@@ -574,6 +574,7 @@ def main():
         'Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. '
         '<a href="sobre/">Ver objetivos</a></p></div></aside>'
         '<div class="miolo"><section class="heroi"><div>'
+        f'<p class="heroi__data">Atualizado em <time datetime="{meta["gerado_em"]}">{data_br(meta["gerado_em"])}</time></p>'
         '<h1>Veja como a Câmara votou, assunto por assunto</h1>'
         '<p class="heroi__texto">Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.</p></div></section>'
         + principios_html()

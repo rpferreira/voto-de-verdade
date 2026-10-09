@@ -351,7 +351,9 @@
         h("a", { href: "#/sobre" }, "Ver objetivos")))),
       h("div", { class: "miolo" },
       h("section", { class: "heroi", "aria-labelledby": "titulo-inicio" },
-        h("h1", { id: "titulo-inicio", tabindex: "-1" }, "Veja como a Câmara votou, assunto por assunto"),
+        h("div", { class: "heroi__topo" },
+          h("p", { class: "heroi__data" }, "Atualizado em ", h("time", { datetime: meta.gerado_em }, data(meta.gerado_em))),
+          h("h1", { id: "titulo-inicio", tabindex: "-1" }, "Veja como a Câmara votou, assunto por assunto")),
         h("div", { class: "heroi__lado" },
           h("p", { class: "heroi__texto" }, "Escolha um tema e leia o que foi votado, com o voto de cada deputado federal."),
           h("form", { class: "heroi__busca", role: "search", "aria-label": "Procurar assunto ou projeto", onsubmit: (e) => e.preventDefault() },
@@ -1014,7 +1016,7 @@
       h("h2", {}, "O que a doação não muda"),
       h("p", {}, "O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos. Não é doação a uma associação ou ONG: o site é mantido por uma pessoa e a doação não dá direito a abatimento de imposto."),
       h("h2", {}, "Para onde vai o dinheiro"),
-      h("p", {}, "Para manter o site no ar. Os principais custos são a inteligência artificial que escreve os resumos dos projetos e o endereço do site (domínio)."),
+      h("p", {}, "Primeiro, para cobrir os custos do site: a inteligência artificial que escreve os resumos dos projetos e o endereço do site (domínio). O que sobrar ajuda a pagar o trabalho de desenvolvimento e manutenção, que é feito por uma pessoa só. Doar não muda nada no site: ele continua igual e gratuito para todos."),
       h("p", {}, h("a", { href: "#/" }, "Voltar ao início"))));
     document.title = "Apoie o Voto de Verdade";
     return document.getElementById("titulo-apoie");
