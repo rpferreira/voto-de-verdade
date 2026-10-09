@@ -13,6 +13,7 @@ Só usa a biblioteca padrão do Python. Arquivos gerados:
     painel.json     números da tela Painel (feitos por site/painel.py)
     votacoes.json   uma linha por votação (lista de votações de cada projeto e tela de votação)
     deputados.json  nome, partido e estado de cada deputado
+    en/              o texto em inglês por cima do português (feito por site/exportar_en.py a partir de dados/traducoes_en.json)
     votacoes/<id>.json   o voto de cada deputado, só das votações nominais (tela de votação)
     deputados/<id>.json  os votos de um deputado em todas as votações nominais (página do deputado)
 """
@@ -29,6 +30,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from construir_banco import ASSUNTOS  # noqa: E402  (a lista de assuntos fica em um lugar só)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from painel import montar_painel  # noqa: E402
+import exportar_en  # noqa: E402  (os dados em inglês, por cima do português)
 
 # O que cada assunto inclui, em linguagem de quem não conhece o Congresso. Mantenha curto.
 DESCRICOES = {
@@ -275,6 +277,10 @@ def main():
     print(f"   {pasta_proj}/: {len(projetos)} arquivos")
     print(f"   {pasta_votos}/: {n_arquivos} arquivos")
     print(f"   {pasta_dep}/: {len(por_dep)} arquivos")
+    arquivo_en = os.path.join(os.path.dirname(os.path.abspath(args.banco)), "traducoes_en.json")
+    if os.path.exists(arquivo_en):
+        n_p, n_v, f_p, f_v = exportar_en.exportar(args.saida, arquivo_en)
+        print(f"   {args.saida}/en/: {n_p} projetos e {n_v} votações em inglês (sem tradução, em português: {f_p} e {f_v})")
     print(f"Pronto: {len(assuntos)} assuntos, {len(projetos)} projetos, {meta['votacoes']} votações.")
     return 0
 
