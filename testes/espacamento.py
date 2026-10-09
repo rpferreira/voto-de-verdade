@@ -143,14 +143,15 @@ JS = """() => {
     const lh = parseFloat(cs.lineHeight);
     if (!isNaN(lh)) saida.push([nome, 'lineHeight', +lh.toFixed(2)]);
     const d = cs.display;
-    if (d !== 'inline' && d !== 'contents' && d !== 'table-cell' && r.height >= 8 && el.tagName.toLowerCase() !== 'svg') {
+    if (d !== 'inline' && d !== 'contents' && d !== 'table-cell' && r.height >= 8 && el.tagName.toLowerCase() !== 'svg' && !el.classList.contains('menu-topo')) { // o menu é um popover com borda de 1px
       saida.push([nome, 'altura', +r.height.toFixed(2)]);
     }
   }
   return saida;
 }"""
 
-ROTAS = ["/", "/assunto/saude/", "/projeto/2611313/", "/deputados/", "/deputado/204549/", "/sobre/"]
+ROTAS = ["/", "/assunto/saude/", "/projeto/2611313/", "/deputados/", "/deputado/204549/", "/sobre/",
+         "/en/", "/en/projeto/2611313/", "/en/sobre/"]
 
 
 def navegador(pasta, escala):
@@ -180,13 +181,19 @@ def navegador(pasta, escala):
                     continue
                 pg.goto(f"http://127.0.0.1:{porta}{rota}")
                 pg.wait_for_timeout(1200)
-                for nome, prop, valor in pg.evaluate(JS):
-                    if prop in ("lineHeight", "altura"):
-                        ok = abs(valor / 4 - round(valor / 4)) < 0.02
-                    else:
-                        ok = any(abs(valor - x) < 0.02 for x in permitidos)
-                    if not ok:
-                        fora.setdefault((nome, prop, valor), set()).add(f"{rota}@{largura}")
+                medidas = [(pg.evaluate(JS), "")]
+                if largura == 390 and rota in ("/", "/en/"):  # com o menu aberto (nele fica o seletor de idioma)
+                    pg.click(".menu-botao")
+                    pg.wait_for_timeout(300)
+                    medidas.append((pg.evaluate(JS), " (menu aberto)"))
+                for itens, extra in medidas:
+                    for nome, prop, valor in itens:
+                        if prop in ("lineHeight", "altura"):
+                            ok = abs(valor / 4 - round(valor / 4)) < 0.02
+                        else:
+                            ok = any(abs(valor - x) < 0.02 for x in permitidos)
+                        if not ok:
+                            fora.setdefault((nome, prop, valor), set()).add(f"{rota}@{largura}{extra}")
         b.close()
     servidor.shutdown()
     for (nome, prop, valor), onde in sorted(fora.items())[:40]:
