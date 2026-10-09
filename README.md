@@ -118,6 +118,18 @@ quando tudo o que a conferência apontou estava no próprio texto ou era só "a 
 **Testes com projetos escolhidos.** "espalhar" = `sim` sorteia projetos de toda a lista (em vez dos mais recentes), e "ids"
 aceita uma lista de projetos separados por vírgula.
 
+## Versão em inglês
+
+O site inteiro existe também em inglês, em `/en/` (mesmas telas e endereços: `/en/projeto/<id>/`, `/en/deputado/<id>/`…). Um seletor **PT | EN** fica no cabeçalho; no celular, dentro do menu (o botão de modo escuro continua ao lado do menu). Cada página aponta para a outra versão (`hreflang`, `x-default` e alternativas no `sitemap.xml`), e há também `llms.txt`, Markdown, `dados/LEIA-ME.md` e `openapi.json` em inglês.
+
+- **Textos fixos** (botões, títulos, explicações): `site/idiomas/en.json`. A chave é o texto em português, igual ao do código; `{0}`, `{1}`… marcam os trechos que mudam. O mesmo dicionário serve ao JavaScript (`tx()`) e ao Python (`site/idioma.py`).
+- **Projetos e votações**: a IA traduz o assunto, o resumo, os pontos-chave e a descrição de cada votação (`coleta/traduzir_projetos.py`, que grava em `dados/traducoes_en.json`). Cada tradução guarda uma impressão do texto em português; se o português muda, a tradução é refeita. `site/exportar_en.py` junta tudo em `site/dados/en/`, que o site lê no lugar dos dados em português.
+- **Ementa oficial**: continua em português (é o texto da Câmara), marcada com `lang="pt-BR"` e uma nota dizendo isso.
+- **Rotina diária**: depois dos resumos, a etapa "Traduzir para o inglês os projetos novos com IA" traduz só o que é novo ou mudou (`limite_traducoes` no Run workflow; use `5` para um teste barato). Sem a chave `ANTHROPIC_API_KEY`, a etapa é pulada. Se algo ficar sem tradução, o site em inglês mostra esse item em português e o monitoramento avisa quando passam de 50.
+- **Testar**: `python3 testes/idiomas.py _site` confere o dicionário, os dados, as páginas e as telas no navegador (nenhum texto faltando nem português solto). Roda em todo pull request.
+- **Só em português**: a página 404 e os arquivos `.well-known/` (a skill de agentes).
+- **Montar só um idioma**: `python3 site/gerar_paginas.py --saida _site --idiomas pt` (ou `en`).
+
 ## Telas e filtros planejados
 
 | Tela | Filtros | Ordenações (a primeira é a padrão) |
@@ -174,22 +186,29 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `coleta/guardar_no_repositorio.sh` | Guarda arquivos da rotina no repositório, repetindo se alguém mexeu nele |
 | `dados/cache_v5.json` | Tudo o que veio da API (a base do banco) |
 | `dados/resumos.json` | Assunto e resumo de cada projeto, com confiança (escrito pela IA) |
-| `dados/custo.json` | Quanto cada rodada de resumos gastou com a IA (escrito pela rotina) |
+| `dados/custo.json` | Quanto cada rodada de resumos e traduções gastou com a IA (escrito pela rotina) |
 | `dados/monitor.json` | Histórico das conferências do monitoramento (escrito pela rotina) |
 | `site/` | O site (`index.html`, `estilos.css`, `app.js`, fontes, `og.png`) |
 | `site/exportar_dados.py` | Passa o banco para os JSON que o site lê (`site/dados/`) |
 | `site/painel.py` | Faz `site/dados/painel.json`, os números da tela **Em números** (simbólicas × nominais ao longo do tempo, por assunto e resultado, participação, placar e transparência da IA). Roda junto com o `exportar_dados.py` |
 | `testes/captura_painel.py` | Tira a foto (PNG) da tela Em números; a atualização diária guarda a mais recente em `painel/ultima-geracao.png` |
-| `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404 |
+| `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404, em português e em inglês (`--idiomas`) |
+| `site/idioma.py` | Carrega o dicionário de um idioma para o gerador de páginas |
+| `site/idiomas/en.json` | Dicionário português → inglês dos textos fixos do site |
+| `site/exportar_en.py` | Junta as traduções de projetos e votações em `site/dados/en/` |
+| `coleta/traducoes.py` | Guarda e confere as traduções (impressão do texto em português) |
+| `coleta/traduzir_projetos.py` | Traduz para o inglês, com IA, os projetos e votações novos |
+| `dados/traducoes_en.json` | Tradução em inglês de cada projeto e votação (escrito pela IA) |
 | `site/baixar_fotos.py` | Guarda as fotos dos deputados em `site/fotos/` |
 | `testes/fumaca.py` | Teste de fumaça do site num navegador de verdade |
 | `testes/espacamento.py` | Confere as regras de espaçamento (grade de 8px) no CSS e nas telas |
+| `testes/idiomas.py` | Confere a versão em inglês: dicionário, dados, páginas e telas |
 | `testes/seguranca.py` | Ataca o site com dados maliciosos e confere a política de segurança (CSP), sem rastreio e sem cookies |
 | `testes/requirements.txt` | Versão fixa do programa de teste (o Dependabot avisa quando sai nova) |
 | `SECURITY.md` | Como avisar de uma falha e o que o site garante |
 | `.github/dependabot.yml` | Mantém em dia as versões fixas das ações do GitHub e do programa de teste |
 | `docs/espacamento.md` | As regras de espaçamento: escala, papéis e padrões |
-| `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, dados do site, fotos e publicação |
+| `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, traduções, dados do site, fotos e publicação |
 | `.github/workflows/publicar-site.yml` | Põe o site no ar (depois da rotina diária e a cada mudança em `site/`) |
 | `.github/workflows/vigiar-site.yml` | Todo dia à noite, confere se o site está no ar e com dados recentes |
 | `.github/workflows/testar-site.yml` | Testa o site em cada pull request |
@@ -231,7 +250,7 @@ Brasília (workflow `Vigiar o site`, que só olha o site no ar).
 | Área | Vira erro (alerta) quando | Vira só aviso quando |
 | --- | --- | --- |
 | Execução | a atualização ou a publicação terminaram com falha | |
-| Dados | não foram gerados hoje; o número de votações, projetos, deputados ou votos **diminuiu**; algum voto, votação ou projeto aponta para algo que não existe; a coleta registrou problemas; a parte de projetos com aviso de incerteza saltou mais de 5 pontos de um dia para o outro | faz mais de 45 dias sem votação; mais de 50 projetos sem resumo; mais de 25% com aviso de incerteza |
+| Dados | não foram gerados hoje; o número de votações, projetos, deputados ou votos **diminuiu**; algum voto, votação ou projeto aponta para algo que não existe; a coleta registrou problemas; a parte de projetos com aviso de incerteza saltou mais de 5 pontos de um dia para o outro | faz mais de 45 dias sem votação; mais de 50 projetos sem resumo; mais de 25% com aviso de incerteza; mais de 50 projetos ou votações sem tradução para o inglês |
 | Custo da IA | a rodada gastou mais de US$ 5; o mês passou de US$ 30; o saldo de créditos acabou | o mês passou de 70% do limite; projetos deram erro na rodada |
 | Site no ar | a página inicial, os dados, o mapa do site, uma página de projeto ou uma de deputado não abrem; os dados no ar são mais velhos que os de hoje | |
 
@@ -244,7 +263,7 @@ atualizado; quando tudo volta ao normal, ele se fecha sozinho. Avisos ficam só 
 ("Failed workflows only" basta) e deixe ligado o aviso por e-mail.
 
 **Mudar os limites.** Em Settings, Secrets and variables, Actions, aba **Variables**, crie
-`LIMITE_CUSTO_RODADA`, `LIMITE_CUSTO_MES`, `LIMITE_PENDENTES`, `DIAS_SEM_VOTACAO` ou `LIMITE_INCERTOS`.
+`LIMITE_CUSTO_RODADA`, `LIMITE_CUSTO_MES`, `LIMITE_PENDENTES`, `LIMITE_PENDENTES_EN`, `DIAS_SEM_VOTACAO` ou `LIMITE_INCERTOS`.
 Sem elas valem os números da tabela.
 
 **Histórico.** `dados/monitor.json` guarda o resultado de cada dia (as contagens também servem de base para
