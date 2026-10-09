@@ -344,7 +344,12 @@
        ["p-sem-rastreio", "Sem cookies nem rastreio", "Não usamos ferramentas que rastreiam quem visita."]]
         .map(([ic, t, d]) => h("li", {}, h("span", { class: "principios__icone" }, icone(ic)), h("strong", {}, t), h("span", { class: "principios__desc" }, d))));
 
-    principal.replaceChildren(h("div", { class: "miolo" },
+    principal.replaceChildren(
+      h("aside", { class: "faixa", "aria-label": "Sobre o projeto" }, h("div", { class: "miolo" }, h("p", {},
+        h("strong", {}, "Em beta, em desenvolvimento. "),
+        "Nossa meta é aproximar a sociedade do Congresso: transparência e visibilidade para você acompanhar, de forma simples e prática, como seus parlamentares agem. ",
+        h("a", { href: "#/sobre" }, "Ver objetivos")))),
+      h("div", { class: "miolo" },
       h("section", { class: "heroi", "aria-labelledby": "titulo-inicio" },
         h("h1", { id: "titulo-inicio", tabindex: "-1" }, "Veja como a Câmara votou, assunto por assunto"),
         h("div", { class: "heroi__lado" },
@@ -450,12 +455,23 @@
   }
 
   // ------------------------------------------------------------------ como o site funciona
+  const OBJETIVOS = [
+    "Mostrar o que cada deputado votou, em linguagem simples, sem nota e sem ranking.",
+    "Organizar os projetos por assunto, para você achar o que importa para a sua vida.",
+    "Ser neutro e apartidário, sem dizer quem votou certo ou errado.",
+    "Deixar sempre o texto oficial ao lado do resumo, e avisar quando a inteligência artificial tem dúvida.",
+    "Ser gratuito, sem anúncios e sem rastrear quem visita, com código aberto.",
+  ];
   async function telaSobre() {
     const meta = await dados("meta");
     const pct = Math.round((meta.simbolicas / meta.votacoes) * 100);
     principal.replaceChildren(h("div", { class: "miolo texto-longo" },
       h("nav", { class: "migalhas", "aria-label": "Você está em" }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, "Início")), h("li", { "aria-current": "page" }, "Como o site funciona"))),
       h("h1", { id: "titulo-sobre", tabindex: "-1" }, "Como o site funciona"),
+      h("h2", {}, "Uma ferramenta em beta, em desenvolvimento"),
+      h("p", {}, "O Voto de Verdade ainda está em desenvolvimento. Pode ter erros, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no texto oficial da Câmara."),
+      h("p", {}, "O Voto de Verdade pretende aproximar a sociedade do Congresso, dando transparência e visibilidade à atuação parlamentar, para que o cidadão acompanhe de forma simples e prática como seus parlamentares estão agindo. Para isso, o site busca:"),
+      h("ul", {}, ...OBJETIVOS.map((o) => h("li", {}, o))),
       h("h2", {}, "Neutro e apartidário, sem nota e sem ranking"),
       h("p", {}, "Não dá nota, não faz ranking e não diz quem votou certo ou errado. Mostra o que cada deputado votou. Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
       h("h2", {}, "De onde vêm os dados"),

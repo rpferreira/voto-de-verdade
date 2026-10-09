@@ -502,7 +502,17 @@ def main():
                            "url": f"{URL}/deputados/", "inLanguage": "pt-BR"})
 
     pct = round(100 * meta["simbolicas"] / meta["votacoes"])
+    objetivos = [
+        "Mostrar o que cada deputado votou, em linguagem simples, sem nota e sem ranking.",
+        "Organizar os projetos por assunto, para você achar o que importa para a sua vida.",
+        "Ser neutro e apartidário, sem dizer quem votou certo ou errado.",
+        "Deixar sempre o texto oficial ao lado do resumo, e avisar quando a inteligência artificial tem dúvida.",
+        "Ser gratuito, sem anúncios e sem rastrear quem visita, com código aberto.",
+    ]
     sobre = [
+        ("Uma ferramenta em beta, em desenvolvimento",
+         "O Voto de Verdade ainda está em desenvolvimento. Pode ter erros, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no texto oficial da Câmara. "
+         "O Voto de Verdade pretende aproximar a sociedade do Congresso, dando transparência e visibilidade à atuação parlamentar, para que o cidadão acompanhe de forma simples e prática como seus parlamentares estão agindo. Para isso, o site busca:", objetivos),
         ("Neutro e apartidário, sem nota e sem ranking",
          "O Voto de Verdade não dá nota, não faz ranking e não diz quem votou certo ou errado. Mostra o que cada deputado votou. "
          "Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
@@ -527,10 +537,12 @@ def main():
          "O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita."),
     ]
     corpo = ('<div class="miolo texto-longo"><nav class="migalhas" aria-label="Você está em"><ol><li><a href="../">Início</a></li><li aria-current="page">Como o site funciona</li></ol></nav>'
-             '<h1>Como o site funciona</h1>' + "".join(f"<h2>{esc(t)}</h2><p>{esc(x)}</p>" for t, x in sobre) + "</div>")
+             '<h1>Como o site funciona</h1>'
+             + "".join(f"<h2>{esc(s[0])}</h2><p>{esc(s[1])}</p>" + (("<ul>" + "".join(f"<li>{esc(i)}</li>" for i in s[2]) + "</ul>") if len(s) > 2 else "") for s in sobre)
+             + "</div>")
     g.montar("sobre", "sobre", f"Como o site funciona: {NOME}",
              "Neutro e apartidário, sem nota e sem ranking. De onde vêm os dados, como a inteligência artificial é usada e o que o site não faz.",
-             corpo, markdown="# Como o site funciona\n\n" + "\n\n".join(f"## {t}\n\n{x}" for t, x in sobre) + "\n",
+             corpo, markdown="# Como o site funciona\n\n" + "\n\n".join(f"## {s[0]}\n\n{s[1]}" + (("\n\n" + "\n".join(f"- {i}" for i in s[2])) if len(s) > 2 else "") for s in sobre) + "\n",
              estruturados={"@context": "https://schema.org", "@type": "AboutPage", "name": "Como o site funciona",
                            "url": f"{URL}/sobre/", "inLanguage": "pt-BR"})
 
@@ -558,6 +570,9 @@ def main():
             vistos.add(pr["id"])
             lista_rec.append((pr, v))
     corpo = (
+        '<aside class="faixa" aria-label="Sobre o projeto"><div class="miolo"><p><strong>Em beta, em desenvolvimento.</strong> '
+        'Nossa meta é aproximar a sociedade do Congresso: transparência e visibilidade para você acompanhar, de forma simples e prática, como seus parlamentares agem. '
+        '<a href="sobre/">Ver objetivos</a></p></div></aside>'
         '<div class="miolo"><section class="heroi"><div>'
         '<h1>Veja como a Câmara votou, assunto por assunto</h1>'
         '<p class="heroi__texto">Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.</p></div></section>'
