@@ -126,6 +126,7 @@ h3 { font-weight: 500; }
 }
 .topo__miolo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--item); padding-block: var(--perto); }
 .marca { display: inline-flex; align-items: center; gap: var(--perto); color: var(--tinta); text-decoration: none; white-space: nowrap; font-size: 1.2rem; font-weight: 600; line-height: 1.5rem; letter-spacing: -0.02em; }
+.beta { display: inline-block; padding: 0 var(--perto); border-radius: 99px; color: var(--cobalto); background: var(--cobalto-claro); font-size: 0.75rem; font-weight: 600; line-height: 1.25rem; letter-spacing: 0.02em; }
 .marca svg { width: 2rem; height: auto; color: var(--cobalto); flex: none; }
 .topo__acoes { display: flex; align-items: center; gap: var(--perto); }
 .apoie-topo { display: inline-flex; align-items: center; gap: var(--perto); height: 2.5rem; padding: 0 var(--item); border-radius: 99px; color: var(--cobalto); text-decoration: none; font-weight: 500; font-size: 0.975rem; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cobalto) 45%, var(--linha)); }
@@ -150,9 +151,12 @@ h3 { font-weight: 500; }
 .topo nav a { display: inline-block; padding: var(--perto) var(--item); border-radius: 99px; color: var(--tinta); text-decoration: none; font-weight: 500; font-size: 0.975rem; }
 .topo nav a:hover { background: color-mix(in srgb, var(--tinta) 7%, transparent); }
 .topo nav a[aria-current="page"] { background: var(--tinta); color: var(--papel); }
-@media (max-width: 30rem) { .heroi__busca input[type="search"] { font-size: 1.05rem; padding-right: var(--item); } .topo__acoes { gap: 0; } .marca { font-size: 1.05rem; } .marca svg { width: 1.5rem; } .topo nav a { padding: var(--perto); font-size: 0.9375rem; } }
+@media (max-width: 30rem) { .heroi__busca input[type="search"] { font-size: 1.05rem; padding-right: var(--item); } .topo__acoes { gap: 0; } .topo__miolo { column-gap: var(--perto); } .marca { font-size: 1.05rem; gap: var(--junto); } .marca svg { width: 1.5rem; } .beta { padding: 0 var(--junto); font-size: 0.6875rem; } .topo nav a { padding: var(--perto); font-size: 0.9375rem; } }
 
 /* ---------- tela inicial ---------- */
+.faixa { background: var(--cobalto-claro); color: var(--tinta); font-size: 0.95rem; line-height: 1.5rem; }
+.faixa .miolo { padding-block: var(--item); }
+.faixa p { margin: 0; max-width: 72ch; }
 .heroi { display: grid; gap: var(--grupo); padding-block: var(--respiro) var(--grupo); position: relative; }
 .heroi h1 { margin: 0; max-width: 20ch; font-size: clamp(2.3rem, 7.2vw, 4.4rem); line-height: 1.02; line-height: round(up, 1.02em, 4px); letter-spacing: -0.035em; }
 .heroi__lado { max-width: 40rem; }
@@ -403,6 +407,7 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 .texto-longo h1 { font-size: clamp(2rem, 5.6vw, 3rem); line-height: 1.05; line-height: round(up, 1.05em, 4px); margin: var(--item) 0; }
 .texto-longo h2 { margin: var(--bloco) 0 var(--perto); font-size: 1.4rem; }
 .texto-longo p { margin: 0 0 var(--item); }
+.texto-longo ul { margin: 0 0 var(--item); padding-left: var(--grupo); display: grid; gap: var(--perto); }
 
 /* ---------- deputados ---------- */
 .abertura { padding-block: var(--bloco) var(--grupo); }
