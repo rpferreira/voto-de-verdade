@@ -174,8 +174,8 @@ RAIOS_JS = """() => {
   return saida;
 }"""
 
-ROTAS = ["/", "/assunto/saude/", "/projeto/2611313/", "/deputados/", "/deputado/204549/", "/sobre/",
-         "/en/", "/en/projeto/2611313/", "/en/sobre/"]
+ROTAS = ["/", "/assunto/saude/", "/projeto/2611313/", "/deputados/", "/deputado/204549/", "/sobre/", "/licenca/",
+         "/en/", "/en/projeto/2611313/", "/en/sobre/", "/en/licenca/"]
 
 
 def navegador(pasta, escala):
