@@ -2,6 +2,15 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.4.0 (2026-10-10)
+
+### Novidades
+- Página inicial: o campo de busca diz «Busque por assunto ou palavra» e os temas de exemplo ficam em botões logo abaixo («impostos», «trabalho»…), que preenchem o campo com um toque; novo link «as últimas votações», que leva direto à lista.
+- Deputados: o campo de nome vem primeiro e, no celular, os 27 estados ficam recolhidos em «Deputados do seu estado» (abrem sozinhos se já houver um estado escolhido, e o título mostra qual).
+
+### Correções
+- Página do projeto: a etiqueta de resultado não se repete mais na seção «Como cada deputado votou». Ela só reaparece ali quando a votação escolhida teve resultado diferente do da última votação.
+
 ## 0.3.0 (2026-10-10)
 
 ### Novidades

@@ -689,11 +689,52 @@ with sync_playwright() as p:
                 confere(topo["selo"] == esperada, f"{nome} {modo} {largura}px: resultado «{esperada}» em etiqueta (veio «{topo['selo']}»)")
                 confere(not topo["meta"].startswith(com_voto["nome"]) and not topo["estoura"], f"{nome} {modo} {largura}px: data da última votação sem repetir o número, sem rolagem para o lado")
                 if modo == "aplicativo":
-                    pg.wait_for_selector(".resultado-linha .selo-resultado", timeout=15000)
-                    linha = pg.evaluate("""() => ({ selo: document.querySelector('.resultado-linha .selo-resultado').innerText,
+                    pg.wait_for_selector(".resultado-barra .barra-voto", timeout=15000)
+                    linha = pg.evaluate("""() => ({ selos: [...document.querySelectorAll('.selo-resultado')].map((e) => e.innerText),
                       barra: document.querySelectorAll('.resultado-barra .barra-voto > i').length, larg: document.querySelector('.resultado-barra').getBoundingClientRect().width })""")
-                    confere(linha["selo"] in pilulas and linha["barra"] >= 2 and linha["larg"] > 150, f"{nome} {largura}px: votação com etiqueta de resultado e barra de sim/não")
+                    repetida = len(linha["selos"]) > 1 and len(set(linha["selos"])) == 1
+                    confere(not repetida and all(x in pilulas for x in linha["selos"]) and linha["barra"] >= 2 and linha["larg"] > 150, f"{nome} {largura}px: etiqueta de resultado não se repete na página (só aparece de novo se a votação tiver outro resultado) e há barra de sim/não")
                 pg.context.close()
+
+    print("Home: temas de exemplo e atalho para as últimas votações; Deputados: nome antes dos estados")
+    for caminho, nome in (("/", "PT"), ("/en/", "EN")):
+        for largura, esperados_chips in ((390, 3), (1280, 4)):
+            pg = nova(largura)
+            pg.goto(base + caminho)
+            pg.wait_for_selector(".chip-exemplo", timeout=15000)
+            termos = pg.locator(".chip-exemplo").all_inner_texts()
+            confere(len(termos) == esperados_chips, f"{nome} {largura}px: {esperados_chips} temas de exemplo sob a busca ({termos})")
+            for i, t in enumerate(termos):
+                pg.locator(".chip-exemplo").nth(i).click()
+                pg.wait_for_function("document.querySelector('#busca').value !== '' && document.querySelectorAll('a.proj, .tile').length > 0 && !document.querySelector('.vazio')", timeout=15000, polling=100)
+                confere(pg.input_value("#busca") == t and pg.locator("a.proj, .tile").count() > 0, f"{nome} {largura}px: o tema «{t}» preenche a busca e acha resultados")
+                pg.fill("#busca", "")
+                pg.wait_for_selector("#t-recentes", state="attached", timeout=15000)
+            pg.wait_for_selector("#t-recentes", timeout=15000)
+            pg.locator('.heroi__link a[href="#/"]').click()
+            pg.wait_for_timeout(1200)
+            topo = pg.evaluate("document.getElementById('t-recentes').getBoundingClientRect().top")
+            confere(-5 <= topo <= 200 and pg.evaluate("document.activeElement.id") == "t-recentes", f"{nome} {largura}px: «últimas votações» leva até a lista (topo em {topo:.0f}px, foco no título)")
+            pg.context.close()
+        pg = nova(390)
+        pg.goto(base + caminho + "#/deputados")
+        pg.wait_for_selector(".filtro-uf", timeout=15000)
+        info = pg.evaluate("""() => { const q = (s) => document.querySelector(s); return { aberto: q('.filtro-uf').open, nomeY: q('#busca-d').getBoundingClientRect().top,
+           ufY: q('.filtro-uf').getBoundingClientRect().top, listaY: q('.linha-dep').getBoundingClientRect().top, alto: window.innerHeight, resumo: q('#rotulo-uf').innerText }; }""")
+        confere(not info["aberto"] and info["nomeY"] < info["ufY"] and info["listaY"] < info["alto"] * 1.1, f"{nome} 390px: estados recolhidos, nome antes dos estados e primeiro deputado já na primeira tela (lista em {info['listaY']:.0f}px de {info['alto']})")
+        pg.locator("#rotulo-uf").click()
+        pg.locator('.chip-uf[data-uf="GO"]').click()
+        pg.wait_for_timeout(300)
+        confere("GO" in pg.locator("#rotulo-uf").inner_text() and "de 6" in pg.locator(".estado").inner_text().replace("of 6", "de 6"), f"{nome} 390px: estado escolhido aparece no título do filtro")
+        pg.goto(base + caminho + "#/deputados?uf=GO")
+        pg.wait_for_selector(".filtro-uf", timeout=15000)
+        confere(pg.evaluate("document.querySelector('.filtro-uf').open"), f"{nome} 390px: com estado na endereço, o filtro de estados já vem aberto")
+        pg.context.close()
+        pg = nova(1280)
+        pg.goto(base + caminho + "#/deputados")
+        pg.wait_for_selector(".filtro-uf", timeout=15000)
+        confere(pg.evaluate("document.querySelector('.filtro-uf').open"), f"{nome} 1280px: estados abertos no desktop")
+        pg.context.close()
 
     print("Licença publicada")
     raiz_repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
