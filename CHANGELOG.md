@@ -2,6 +2,17 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.6.0 (2026-10-10)
+
+### Novidades
+- **Visual padronizado em todas as telas.** Os projetos das listas (últimas votações, assuntos e busca) agora são cartões com seta à direita, iguais aos de Deputados. Os votos na página do deputado também viram cartões, com o voto Sim/Não antes da seta.
+- Títulos de página com o mesmo tamanho em todas as telas (exceções: a abertura da home e o título do projeto, que é uma frase inteira); títulos de seção, subtítulos, textos de apoio, notas e contagens também seguem uma escala só.
+- Botões secundários («Limpar filtros», «Mostrar mais», «Compartilhar», atalhos da página de erro) com o mesmo tamanho; só o botão de doação é maior.
+- Espaço entre o caminho de navegação («Início / Em números») e o título igual em todas as telas; as páginas de texto (Como o site funciona, Apoie, Licença) alinham à esquerda como as demais, com o texto corrido numa coluna de leitura.
+
+### Ajustes
+- Saiu o seletor **Ordem** da lista de votos do projeto: a lista fica sempre em ordem alfabética por nome.
+
 ## 0.5.0 (2026-10-10)
 
 ### Novidades
