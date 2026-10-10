@@ -406,8 +406,6 @@
 "O endereço pode estar errado. Procure o projeto pelo assunto ou por uma palavra.": "The address may be wrong. Look for the bill by subject or by a word.",
 "Buscar um projeto": "Search for a bill",
 "Não achamos esta página": "We could not find this page",
-"O endereço pode estar errado ou a página não existe mais.": "The address may be wrong or the page may no longer exist.",
-"Nada aqui": "Nothing here",
 "Não foi possível carregar os dados": "The data could not be loaded",
 "Algo impediu a página de carregar": "Something kept the page from loading",
 "Verifique sua conexão e tente de novo. Se continuar assim, volte mais tarde: o problema pode estar no site.": "Check your connection and try again. If it keeps happening, come back later: the problem may be on our side.",
@@ -614,5 +612,7 @@
 "{0}: tabela | {1}": "{0}: table | {1}",
 "Última votação": "Latest vote",
 "Últimas votações com o voto de cada deputado": "Latest votes with each deputy's vote",
-"última votação em {0}": "latest vote on {0}"
+"última votação em {0}": "latest vote on {0}",
+"Erro 404": "Error 404",
+"O endereço pode estar errado ou a página não existe mais. Procure o que você queria ou escolha um dos caminhos abaixo.": "The address may be wrong or the page may no longer exist. Search for what you were looking for, or pick one of the paths below."
 }

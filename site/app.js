@@ -29,6 +29,13 @@
   // Configuração da página (raiz relativa, rota inicial e doação): vem num bloco de dados, não em script embutido.
   const CONFIG = (() => { try { return JSON.parse(document.getElementById("config").textContent) || {}; } catch (e) { return {}; } })();
   const RAIZ = CONFIG.raiz || "";
+  // Página de erro (404): o GitHub Pages usa a mesma 404.html para qualquer endereço quebrado. Se o endereço era do site em
+  // inglês (/en/...), vamos para en/404.html, guardando o endereço que deu erro em ?de=.
+  const EM_404 = CONFIG.rota === "nao-encontrada" && !location.hash;
+  if (EM_404 && CONFIG.lang !== "en" && location.pathname.startsWith(RAIZ + "en/")) {
+    location.replace(RAIZ + "en/404.html?de=" + encodeURIComponent(location.pathname));
+    return;
+  }
   // Idioma da página: português (padrão) ou inglês (páginas em /en/). Os endereços de página ficam dentro do idioma.
   const LANG = CONFIG.lang === "en" ? "en" : "pt";
   const LOCALE = LANG === "en" ? "en-US" : "pt-BR";
@@ -37,7 +44,7 @@
   // e anota a falta em window.__IDIOMA_FALTA__ (o teste testes/idiomas.py exige que fique vazio).
   let DICIONARIO = {};
   if (LANG === "en") {
-    try { const r = await fetch(RAIZ + "idiomas/en.json"); if (r.ok) DICIONARIO = await r.json(); } catch (e) { console.error(e); }
+    try { const r = await fetch(RAIZ + "idiomas/en.json" + (CONFIG.dic ? "?v=" + CONFIG.dic : "")); if (r.ok) DICIONARIO = await r.json(); } catch (e) { console.error(e); }
   }
   const FALTAM = (window.__IDIOMA_FALTA__ = new Set());
   const tx = (chave, ...valores) => {
@@ -202,6 +209,7 @@
     "v-mapa": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z|M15.5 8.5l-2 5-5 2 2-5z",
     "v-erro": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z|M12 7v6|M12 16h.01",
     "v-pessoa": "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z|M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8",
+    "ia": "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z|M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z",
     "p-sem-rastreio": "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z|M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z|M3 3l18 18",
   };
   const SVGNS = "http://www.w3.org/2000/svg";
@@ -301,6 +309,18 @@
     return c.slice(0, i > max / 2 ? i : max - 1) + "…";
   };
 
+  // Uma linha por votação: data, resultado e descrição oficial. A descrição costuma começar pelo próprio resultado
+  // ("Aprovada a Medida Provisória…"); nesse caso não repetimos a palavra.
+  function linhaVotacao(v) {
+    const resultado = v.ap ? tx("Aprovada") : tx("Rejeitada");
+    const inicio = ((v.desc || "").match(/^(aprovad[ao]|rejeitad[ao]|approved|rejected)\b/i) || [""])[0].toLowerCase();
+    const jaDiz = inicio && (v.ap ? /^(aprovad|approved)/ : /^(rejeitad|rejected)/).test(inicio);
+    return `${data(v.d)} · ${jaDiz ? "" : resultado + ". "}${v.desc}`;
+  }
+
+  // Selo "feito por inteligência artificial", com o link de como a IA é usada.
+  const seloIA = (texto) => h("p", { class: "rotulo-ia" }, icone("ia"), h("span", {}, texto, h("a", { href: "#/inteligencia-artificial" }, tx("Como é usada"))));
+
   // Resumo, avisos, pontos principais e texto oficial de um projeto.
   function blocosProjeto(pr) {
     const avisos = [];
@@ -308,7 +328,7 @@
     if (pr.ar) avisos.push(h("p", {}, pr.ar));
     return {
       resumo: pr.resumo
-        ? h("div", {}, h("span", { class: "rotulo-ia" }, tx("Resumo feito por inteligência artificial. "), h("a", { href: "#/inteligencia-artificial" }, tx("Como é usada"))), h("p", {}, pr.resumo))
+        ? h("div", {}, seloIA(tx("Resumo feito por inteligência artificial. ")), h("p", {}, pr.resumo))
         : h("p", {}, tx("Ainda não há resumo deste projeto. Leia o texto oficial abaixo.")),
       avisos: avisos.length ? h("div", { class: "cartao-aviso" }, h("strong", {}, tx("Atenção")), avisos) : null,
       substitutivo: pr.subst
@@ -329,7 +349,7 @@
     const base = cortado ? titulo.slice(0, -1).trimEnd() : titulo;
     let resto = pr.resumo.startsWith(base) ? pr.resumo.slice(base.length).trim() : pr.resumo;
     if (cortado && resto && pr.resumo.startsWith(base)) resto = "… " + resto;
-    return h("div", {}, h("span", { class: "rotulo-ia" }, tx("Título e resumo feitos por inteligência artificial. "), h("a", { href: "#/inteligencia-artificial" }, tx("Como é usada"))), resto ? h("p", {}, resto) : null);
+    return h("div", {}, seloIA(tx("Título e resumo feitos por inteligência artificial. ")), resto ? h("p", {}, resto) : null);
   }
 
   // ------------------------------------------------------------------ tela inicial
@@ -1203,7 +1223,7 @@
       secaoVotos.append(estadoVazio(secreta
         ? { icone: "v-urna", titulo: tx("Votação secreta"), texto: tx("Votação secreta: o voto de cada deputado não é divulgado.") }
         : { icone: "v-urna", titulo: tx("Votação simbólica, sem voto individual"), texto: tx("Votação simbólica: os partidos chegaram a um acordo e o resultado foi anunciado sem registrar o voto de cada deputado. Por isso não há como mostrar como cada um votou.") }));
-      secaoVotos.append(h("ul", { class: "lista-simples" }, minhas.map((v) => h("li", {}, `${data(v.d)} · ${v.ap ? tx("Aprovada") : tx("Rejeitada")}. ${v.desc}`))));
+      secaoVotos.append(h("ul", { class: "lista-simples" }, minhas.map((v) => h("li", {}, linhaVotacao(v)))));
     }
     const partes = blocosProjeto(pr);
     const outrasSimbolicas = nominais.length ? minhas.filter((x) => x.t !== "nominal") : [];
@@ -1507,13 +1527,29 @@
     assunto: { titulo: tx("Não achamos este assunto"), texto: tx("O endereço pode estar errado. Os assuntos disponíveis estão na página inicial."), acoes: [{ rotulo: tx("Ver todos os assuntos"), href: "#/" }] },
     deputado: { titulo: tx("Não achamos este deputado"), texto: tx("O endereço pode estar errado, ou a pessoa não foi deputada federal no período coberto (desde 1º de fevereiro de 2023). Procure pelo nome na lista."), acoes: [{ rotulo: tx("Procurar um deputado"), href: "#/deputados" }] },
     votacao: { titulo: tx("Não achamos esta votação"), texto: tx("O endereço pode estar errado. Procure o projeto pelo assunto ou por uma palavra."), acoes: [{ rotulo: tx("Buscar um projeto"), href: "#/" }] },
-    pagina: { titulo: tx("Não achamos esta página"), texto: tx("O endereço pode estar errado ou a página não existe mais."), acoes: [{ rotulo: tx("Ver todos os assuntos"), href: "#/" }, { rotulo: tx("Procurar um deputado"), href: "#/deputados" }, { rotulo: tx("Como o site funciona"), href: "#/sobre" }] },
+    pagina: { titulo: tx("Não achamos esta página"), texto: tx("O endereço pode estar errado ou a página não existe mais. Procure o que você queria ou escolha um dos caminhos abaixo."), acoes: [{ rotulo: tx("Ver todos os assuntos"), href: "#/" }, { rotulo: tx("Procurar um deputado"), href: "#/deputados" }, { rotulo: tx("Em números"), href: "#/em-numeros" }, { rotulo: tx("Como o site funciona"), href: "#/sobre" }] },
   };
+  // De que tipo era o endereço que deu erro? Na página de erro (404) vem do caminho (/projeto/123/) ou do ?de= (inglês).
+  function tipoDoEndereco() {
+    let c = new URLSearchParams(location.search).get("de") || location.pathname;
+    c = decodificar(c.split("#")[0]);
+    c = (c.startsWith(RAIZ) ? c.slice(RAIZ.length) : c.replace(/^\//, "")).replace(/^en\//, "");
+    const tipo = c.split("/")[0];
+    return tipo !== "pagina" && NAO_ENCONTRADA[tipo] ? tipo : "pagina";
+  }
   function telaNaoEncontrada(tipo = "pagina") {
     const t = NAO_ENCONTRADA[tipo] || NAO_ENCONTRADA.pagina;
-    principal.replaceChildren(h("div", { class: "miolo" },
+    const campo = h("input", { id: "busca", type: "search", name: "q", autocomplete: "off", spellcheck: "false", placeholder: tx("Procurar assunto ou projeto"), enterkeyhint: "search" });
+    const busca = h("form", { class: "heroi__busca naoachou__busca", role: "search", "aria-label": tx("Procurar assunto ou projeto"),
+      onsubmit: (e) => { e.preventDefault(); const q = campo.value.trim(); location.href = PAGINAS + "#/" + (q ? "?q=" + encodeURIComponent(q) : ""); } },
+      h("label", { for: "busca", class: "so-leitor" }, tx("Procure por um tema ou palavra")), campo);
+    // Na página de erro o endereço é qualquer um; os links precisam ser do site, não do endereço quebrado.
+    principal.replaceChildren(h("div", { class: "miolo naoachou" },
+      h("p", { class: "naoachou__codigo" }, tx("Erro 404")),
       h("h1", { id: "titulo-nao", tabindex: "-1" }, t.titulo),
-      estadoVazio({ icone: "v-mapa", titulo: tx("Nada aqui"), texto: t.texto, acoes: t.acoes, pagina: true })));
+      h("p", { class: "naoachou__texto" }, t.texto),
+      busca,
+      h("div", { class: "vazio__acoes" }, t.acoes.map((a) => h("a", { class: "botao botao--leve", href: a.href.startsWith("#") ? PAGINAS + a.href : a.href }, a.rotulo)))));
     document.title = tx("{0}: Voto de Verdade", t.titulo);
     return document.getElementById("titulo-nao");
   }
@@ -1534,7 +1570,7 @@
     const emDeputados = partes[0] === "deputados" || partes[0] === "deputado";
     const emPainel = partes[0] === "em-numeros";
     const emIa = partes[0] === "inteligencia-artificial";
-    const emAssuntos = !emDeputados && !emPainel && !emIa;
+    const emAssuntos = !EM_404 && !emDeputados && !emPainel && !emIa;
     for (const [id, ativo] of [["nav-assuntos", emAssuntos], ["nav-deputados", emDeputados], ["nav-numeros", emPainel], ["nav-ia", emIa], ["menu-assuntos", emAssuntos], ["menu-deputados", emDeputados], ["menu-numeros", emPainel], ["menu-ia", emIa]]) {
       const a = document.getElementById(id);
       if (!a) continue;
@@ -1552,7 +1588,7 @@
       else if (partes[0] === "apoie" && soHttps(CONFIG.doacao)) titulo = telaApoie();
       else if (partes[0] === "deputados") titulo = await telaDeputados(p);
       else if (partes[0] === "deputado" && partes[1]) titulo = await telaDeputado(partes[1], p);
-      else titulo = telaNaoEncontrada();
+      else titulo = telaNaoEncontrada(EM_404 ? tipoDoEndereco() : "pagina");
     } catch (e) {
       console.error(e);
       principal.replaceChildren(h("div", { class: "miolo" },

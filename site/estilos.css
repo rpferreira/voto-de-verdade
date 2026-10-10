@@ -338,7 +338,8 @@ details.ajuda p { margin: var(--perto) 0 0; color: var(--tinta-suave); }
 .lista-home .proj__titulo { font-size: 1.0625rem; line-height: 1.5rem; }
 
 .selo-aviso { display: inline-flex; align-items: center; height: 1.5rem; background: var(--aviso-fundo); color: var(--aviso-texto); border: 1px solid var(--aviso-borda); border-radius: 99px; padding: 0 var(--perto); font-size: 0.875rem; }
-.rotulo-ia { display: block; font-size: 0.9rem; color: var(--tinta-suave); margin-bottom: var(--junto); }
+.rotulo-ia { display: flex; align-items: flex-start; gap: var(--perto); width: fit-content; max-width: 100%; margin: 0 0 var(--item); padding: var(--perto) var(--item); border-radius: calc(var(--raio) - var(--perto)); background: color-mix(in srgb, var(--tinta) 6%, transparent); font-size: 0.9rem; line-height: 1.5rem; color: var(--tinta-suave); }
+.rotulo-ia .icone { width: 1.5rem; height: 1.5rem; flex: none; }
 .cartao-aviso { background: var(--aviso-fundo); color: var(--aviso-texto); box-shadow: inset 0 0 0 1px var(--aviso-borda); border-radius: var(--raio); padding: var(--item); }
 .cartao-aviso strong { display: block; margin-bottom: var(--junto); font-weight: 600; }
 .cartao-aviso p + p { margin-top: var(--perto); }
@@ -578,3 +579,11 @@ a.botao, a.botao:hover { text-decoration: none; }
 .tabela-painel th, .tabela-painel td { padding: var(--perto); text-align: left; box-shadow: inset 0 -1px 0 var(--linha); vertical-align: top; }
 .tabela-painel thead th { font-size: 0.95rem; color: var(--tinta-suave); font-weight: 400; }
 .tabela-painel .num { text-align: right; }
+
+/* Página de erro (404): código, título, texto, busca e caminhos. */
+.naoachou { display: grid; gap: var(--item); justify-items: start; padding-block: var(--bloco) var(--respiro); }
+.naoachou__codigo { margin: 0; color: var(--tinta-suave); font-size: 0.875rem; font-weight: 600; line-height: 1.5rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.naoachou h1 { margin: 0; line-height: round(up, 1.2em, 4px); }
+.naoachou__texto { margin: 0; max-width: 60ch; color: var(--tinta-suave); font-size: 1.125rem; line-height: 1.75rem; }
+.naoachou__busca { width: min(100%, 36rem); margin-top: var(--perto); }
+.naoachou .vazio__acoes { margin-top: var(--perto); }
