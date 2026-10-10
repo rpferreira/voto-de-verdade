@@ -33,6 +33,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from painel import montar_painel  # noqa: E402
 import exportar_en  # noqa: E402  (os dados em inglês, por cima do português)
 import destaques as destaques_inicio  # noqa: E402  (as duas listas curtas da tela inicial)
+import novos  # noqa: E402  (a data em que cada projeto entrou no site, para a etiqueta «Novo»)
 
 # O que cada assunto inclui, em linguagem de quem não conhece o Congresso. Mantenha curto.
 DESCRICOES = {
@@ -284,7 +285,10 @@ def main():
         n_p, n_v, f_p, f_v = exportar_en.exportar(args.saida, arquivo_en)
         print(f"   {args.saida}/en/: {n_p} projetos e {n_v} votações em inglês (sem tradução, em português: {f_p} e {f_v})")
     # depois do inglês: o título traduzido dos destaques sai de en/projetos.json
-    destaques_inicio.gravar(args.saida, destaques_inicio.montar_destaques(votacoes, projetos))
+    arquivo_novos = os.path.join(os.path.dirname(os.path.abspath(args.banco)), "primeira_vez.json")
+    registro = novos.atualizar(novos.carregar(arquivo_novos), [p["id"] for p in projetos], meta["gerado_em"])
+    novos.gravar(registro, arquivo_novos)
+    destaques_inicio.gravar(args.saida, destaques_inicio.montar_destaques(votacoes, projetos, novos.datas(registro)))
     print(f"Pronto: {len(assuntos)} assuntos, {len(projetos)} projetos, {meta['votacoes']} votações.")
     return 0
 

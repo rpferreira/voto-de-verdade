@@ -115,13 +115,14 @@ jobs:
 
       - name: Guardar os dados do site no repositório
         if: steps.site.outcome == 'success'
-        run: bash coleta/guardar_no_repositorio.sh "Dados do site" site/dados
+        run: bash coleta/guardar_no_repositorio.sh "Dados do site" site/dados dados/primeira_vez.json  # a data em que cada projeto entrou no site (etiqueta «Novo»)
 
       # Fotos dos deputados (só as que faltam). Uma falha aqui não impede a atualização.
       - name: Guardar as fotos dos deputados
         if: steps.site.outcome == 'success'
         continue-on-error: true
         run: |
+          pip install pillow==12.3.0  # reduz cada foto para 192 px de largura (site/baixar_fotos.py)
           python site/baixar_fotos.py
           bash coleta/guardar_no_repositorio.sh "Fotos dos deputados" site/fotos
 

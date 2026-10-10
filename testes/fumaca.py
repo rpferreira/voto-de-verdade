@@ -11,10 +11,12 @@ prontas (título, prévia de compartilhamento), buscadores e agentes de IA (cont
 llms.txt, ferramentas WebMCP), tela estreita sem rolagem para o lado e modo escuro.
 Sai com código 1 se algo falhar.
 """
+import datetime
 import functools
 import http.server
 import json
 import os
+import re
 import socketserver
 import sys
 import threading
@@ -61,6 +63,12 @@ with sync_playwright() as p:
         pg.erros = []
         pg.on("pageerror", lambda e: pg.erros.append(str(e)))
         pg.on("console", lambda m: pg.erros.append(m.text) if m.type == "error" and "Failed to load resource" not in m.text else None)
+        return pg
+
+    def com_tema(pg, tema):
+        """O site abre sempre no modo claro (mesmo com o aparelho no escuro); o escuro vem da escolha guardada de quem visita."""
+        if tema == "dark":
+            pg.add_init_script("try { localStorage.setItem('tema', 'dark'); } catch (e) {}")
         return pg
 
     def sem_rolagem_lateral(pg):
@@ -469,7 +477,7 @@ with sync_playwright() as p:
     }"""
     for caminho, nome in (("/", "PT"), ("/en/", "EN")):
         for tema in ("light", "dark"):
-            pg = nova(1280, tema)
+            pg = com_tema(nova(1280, tema), tema)
             pg.goto(base + caminho)
             pg.wait_for_selector(".topo nav a", timeout=15000)
             m = pg.evaluate(cabecalho_js)
@@ -479,7 +487,7 @@ with sync_playwright() as p:
             confere(m["topoAltura"] <= 80 and m["rolagem"] <= 1, f"{rot}: topo em uma linha, sem rolagem lateral (altura {m['topoAltura']}px)")
             confere(m["contrasteAtualTopo"] is not None and m["contrasteAtualTopo"] >= 4.5, f"{rot}: item atual legível, contraste {m['contrasteAtualTopo'] and round(m['contrasteAtualTopo'], 1)}")
             pg.context.close()
-            pg = nova(390, tema)
+            pg = com_tema(nova(390, tema), tema)
             pg.goto(base + caminho)
             pg.wait_for_selector(".menu-botao", state="visible", timeout=15000)
             pg.click(".menu-botao")
@@ -498,8 +506,9 @@ with sync_playwright() as p:
     # O arquivo dos destaques é feito pelo mesmo script da exportação diária; se ficar velho, a tela inicial mostraria votações erradas.
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "site"))
     import destaques as destaques_inicio
+    import novos
     with open(os.path.join(pasta, "dados", "destaques.json"), encoding="utf-8") as f:
-        confere(json.load(f) == json.loads(json.dumps(destaques_inicio.montar_destaques(json.load(open(os.path.join(pasta, "dados", "votacoes.json"), encoding="utf-8")), projetos))), "destaques.json confere com projetos.json e votacoes.json (não está velho)")
+        confere(json.load(f) == json.loads(json.dumps(destaques_inicio.montar_destaques(json.load(open(os.path.join(pasta, "dados", "votacoes.json"), encoding="utf-8")), projetos, novos.datas(novos.carregar())))), "destaques.json confere com projetos.json, votacoes.json e primeira_vez.json (não está velho)")
     # A tela inicial mostra 10 votações em destaque e não pode baixar projetos.json e votacoes.json (cerca de 156 KB
     # comprimidos) antes de a pessoa buscar: os destaques vêm prontos em dados/destaques.json.
     for caminho, nome in (("/", "PT"), ("/en/", "EN")):
@@ -521,6 +530,128 @@ with sync_playwright() as p:
         pg.wait_for_selector("#t-projetos", timeout=15000)
         confere("projetos.json" in baixados and "votacoes.json" in baixados, f"{nome}: a busca baixa projetos.json e votacoes.json só quando é usada")
         pg.context.close()
+
+    print("Lista de deputados parece clicável")
+    # Cada deputado da busca tem de parecer um link: cartão com borda e seta à direita (antes era só texto solto, sem pista de clique).
+    for largura in (390, 1280):
+        for tema in ("light", "dark"):
+            pg = com_tema(nova(largura, tema), tema)
+            pg.goto(base + "/#/deputados")
+            pg.wait_for_selector(".linha-dep", timeout=15000)
+            m = pg.evaluate("""() => { const a = document.querySelector('.linha-dep'), cs = getComputedStyle(a), seta = getComputedStyle(a, '::after'), r = a.getBoundingClientRect();
+              return { link: a.tagName === 'A' && a.getAttribute('href').startsWith('#/deputado/'), altura: Math.round(r.height), borda: cs.boxShadow !== 'none',
+                       fundo: getComputedStyle(a).backgroundColor, seta: parseFloat(seta.width) >= 16 && seta.content !== 'none' && seta.backgroundColor !== 'rgba(0, 0, 0, 0)' }; }""")
+            rot = f"{largura}px {tema}"
+            confere(m["link"] and m["altura"] >= 48, f"deputado da lista é link com área de toque de 48px ou mais ({rot}, {m['altura']}px)")
+            confere(m["borda"] and m["fundo"] != "rgba(0, 0, 0, 0)", f"deputado da lista tem cara de cartão: borda e fundo ({rot})")
+            confere(m["seta"], f"deputado da lista tem seta à direita ({rot})")
+            pg.context.close()
+
+    print("Fotos dos deputados leves")
+    # A foto é mostrada com 96 px de largura: guardamos no máximo 192 px (nítida em tela de alta densidade), ~8 KB cada.
+    def tamanho_jpeg(caminho):
+        with open(caminho, "rb") as f:
+            d = f.read()
+        i = 2
+        while i < len(d):
+            if d[i] != 0xFF:
+                i += 1
+                continue
+            marca = d[i + 1]
+            if marca in (0xC0, 0xC1, 0xC2):  # início do quadro: altura e largura
+                return int.from_bytes(d[i + 7:i + 9], "big"), int.from_bytes(d[i + 5:i + 7], "big")
+            i += 2 + int.from_bytes(d[i + 2:i + 4], "big")
+        return 0, 0
+    pasta_fotos = os.path.join(pasta, "fotos")
+    arquivos = sorted(os.listdir(pasta_fotos))
+    medidas = [(a, tamanho_jpeg(os.path.join(pasta_fotos, a)), os.path.getsize(os.path.join(pasta_fotos, a))) for a in arquivos]
+    largas = [a for a, (l, _), _ in medidas if l > 192]
+    pesadas = [(a, t // 1024) for a, _, t in medidas if t > 24 * 1024]
+    pequenas = [a for a, (l, _), _ in medidas if l < 96]
+    confere(len(arquivos) >= 600 and not largas, f"{len(arquivos)} fotos, nenhuma com mais de 192 px de largura {largas[:3]}")
+    confere(not pesadas, f"nenhuma foto com mais de 24 KB {pesadas[:3]}")
+    confere(not pequenas, f"nenhuma foto menor que os 96 px mostrados {pequenas[:3]}")
+    confere(sum(t for _, _, t in medidas) < 8 * 1024 * 1024, f"fotos somam {sum(t for _, _, t in medidas) / 1e6:.1f} MB (limite: 8 MB)")
+    pg = nova(390)
+    pg.goto(base + f"/#/deputado/{dep['id']}")
+    pg.wait_for_selector("img.foto-dep", timeout=15000)
+    pg.wait_for_function("document.querySelector('img.foto-dep').complete && document.querySelector('img.foto-dep').naturalWidth > 0", polling=100, timeout=15000)
+    confere(pg.evaluate("document.querySelector('img.foto-dep').naturalWidth") >= 96, "foto do deputado carrega e não é menor que o espaço em que aparece")
+    pg.context.close()
+
+    print("Situações em destaque (pílula)")
+    # "Fora do exercício agora" e "votação simbólica/secreta" são informações que mudam como o dado é lido: ficam em pílula, não em texto solto.
+    fora = next(d for d in deputados if not d["ex"])
+    em_exercicio = next(d for d in deputados if d["ex"])
+    for caminho, nome in (("", "PT"), ("/en", "EN")):
+        pg = nova(390)
+        pg.goto(base + f"{caminho}/#/deputados?q={fora['nome'].split()[0]}")
+        pg.wait_for_selector(".linha-dep", timeout=15000)
+        pill = pg.locator(f".linha-dep[href='#/deputado/{fora['id']}'] .selo-aviso")
+        confere(pill.count() == 1 and pill.inner_text() == ("Fora do exercício agora" if nome == "PT" else "Not in office now"), f"{nome}: deputado fora do exercício aparece com pílula na lista")
+        pg.goto(base + f"{caminho}/#/deputados?q={em_exercicio['nome'].split()[0]}")
+        pg.wait_for_selector(".linha-dep", timeout=15000)
+        confere(pg.locator(f".linha-dep[href='#/deputado/{em_exercicio['id']}'] .selo-aviso").count() == 0, f"{nome}: deputado em exercício não tem pílula")
+        pg.goto(base + f"{caminho}/#/deputado/{fora['id']}")
+        pg.wait_for_selector(".cabeca-dep", timeout=15000)
+        confere(pg.locator(".cabeca-dep .selo-aviso").count() == 1 and pg.locator(".cabeca-dep .selo-aviso").inner_text() == ("Fora do exercício agora" if nome == "PT" else "Not in office now"), f"{nome}: página do deputado fora do exercício tem pílula no cabeçalho")
+        pg.context.close()
+    pg = nova(390)
+    pg.goto(base + "/#/assunto/saude?todos=1")
+    pg.wait_for_selector("ul.projetos .proj", timeout=15000)
+    simbolicas = pg.locator(".proj__meta .selo-info")
+    confere(simbolicas.count() > 0 and simbolicas.first.evaluate("e => getComputedStyle(e).borderRadius") != "0px", "votação simbólica ou secreta aparece em pílula nas listas de projetos")
+    pg.context.close()
+
+    print("Etiqueta «Novo» nas últimas votações")
+    # Regras: só vale para projetos que entraram no site depois de o registro começar, só em «Últimas votações» da tela inicial,
+    # e some depois de DIAS_COMO_NOVO dias. O registro (site/novos.py) começa com todos os projetos de hoje como «já existia».
+    reg = novos.atualizar(None, [1, 2], "2026-01-01")
+    confere(reg == {"desde": "2026-01-01", "projetos": {"1": None, "2": None}} and novos.datas(reg) == {}, "registro novo: todos os projetos existentes valem «já existia» (nada vira Novo de uma vez)")
+    reg2 = novos.atualizar(reg, [1, 2, 3], "2026-01-05")
+    confere(novos.datas(reg2) == {"3": "2026-01-05"} and novos.atualizar(reg2, [1, 2, 3], "2026-02-01") == reg2, "projeto que chega depois recebe a data de entrada, e só na primeira vez")
+    prazo_js = re.search(r"const DIAS_COMO_NOVO = (\d+);", open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "site", "app.js"), encoding="utf-8").read())
+    confere(prazo_js and int(prazo_js.group(1)) == novos.DIAS_COMO_NOVO, f"prazo da etiqueta igual no aplicativo e em site/novos.py ({novos.DIAS_COMO_NOVO} dias)")
+    hoje_utc = datetime.datetime.now(datetime.timezone.utc).date()
+
+    def dias_atras(n):
+        return (hoje_utc - datetime.timedelta(days=n)).isoformat()
+
+    for caminho, nome, esperado in (("/", "PT", "novo"), ("/en/", "EN", "new")):
+        for tema in ("light", "dark"):
+            pg = com_tema(nova(390, tema), tema)
+            def adulterar(rota):
+                resp = rota.fetch()
+                d = json.loads(resp.text())
+                for lista, datas_ in ((d["recentes"], [dias_atras(0), dias_atras(6), dias_atras(8), None, dias_atras(1)]), (d["apertadas"], [dias_atras(0)] * 5)):
+                    for it, quando in zip(lista, datas_):
+                        if quando:
+                            it["p"]["inc"] = quando
+                        else:
+                            it["p"].pop("inc", None)
+                rota.fulfill(response=resp, body=json.dumps(d))
+            pg.route("**/dados/destaques.json", adulterar)
+            pg.goto(base + caminho)
+            pg.wait_for_selector("#t-recentes ~ ul > li", timeout=15000)
+            etiquetas = pg.locator("#t-recentes ~ ul > li .selo-novo")
+            # a etiqueta vem logo depois da data, na mesma linha
+            depois_da_data = pg.evaluate("""() => { const e = document.querySelector('#t-recentes ~ ul .selo-novo'), ant = e.previousElementSibling, r1 = ant.getBoundingClientRect(), r2 = e.getBoundingClientRect();
+              return /\\d{4}/.test(ant.textContent) && r2.left >= r1.right && Math.abs((r1.top + r1.height / 2) - (r2.top + r2.height / 2)) < 4; }""")
+            confere(depois_da_data, f"{nome} {tema}: «Novo» fica logo depois da data, na mesma linha")
+            confere(etiquetas.count() == 3 and etiquetas.first.inner_text().lower() == esperado, f"{nome} {tema}: 3 de 5 últimas votações com «Novo» (hoje, 6 dias e 1 dia); 8 dias e sem data ficam sem")
+            confere(pg.locator("#t-apertadas ~ ul .selo-novo").count() == 0, f"{nome} {tema}: «Decididas por pouco» nunca mostra «Novo»")
+            contraste = pg.evaluate("""() => { const e = document.querySelector('.selo-novo'), cs = getComputedStyle(e);
+              const rgb = (c) => c.match(/[\\d.]+/g).slice(0, 3).map(Number); const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+              const a = lum(rgb(cs.color)), b = lum(rgb(cs.backgroundColor)); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); }""")
+            confere(contraste >= 4.5, f"{nome} {tema}: «Novo» legível, contraste {contraste:.1f}")
+            pg.context.close()
+    pg = nova(390)
+    pg.goto(base + "/")
+    pg.wait_for_selector("#t-recentes ~ ul > li", timeout=15000)
+    confere(pg.locator(".selo-novo").count() == 0, "com os dados de hoje (nenhum projeto entrou depois do registro começar) não há «Novo»")
+    pg.goto(base + "/#/assunto/saude?todos=1")
+    pg.wait_for_selector("ul.projetos .proj", timeout=15000)
+    pg.context.close()
 
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
