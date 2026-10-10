@@ -419,7 +419,22 @@ with sync_playwright() as p:
         pg.wait_for_selector(".rotulo-ia", timeout=15000)
         info = pg.evaluate("""() => [...document.querySelectorAll('.rotulo-ia')].map(e => { const n = e.nextElementSibling;
           return [parseFloat(getComputedStyle(e).fontSize), n ? Math.round(n.getBoundingClientRect().top - e.getBoundingClientRect().bottom) : 99]; })""")
-        confere(bool(info) and all(f == 11 and g >= 16 for f, g in info), f"faixa de IA com fonte 11px e 16px de respiro do resumo ({largura}px) {info}")
+        confere(bool(info) and all(f == 12 and g == 8 for f, g in info), f"faixa de IA com fonte 12px e 8px de respiro do resumo ({largura}px) {info}")
+
+    print("Contagem colada na caixa de filtros")
+    medir_dist = """() => [...document.querySelectorAll('.estado')].filter(e => e.offsetParent && e.previousElementSibling && e.previousElementSibling.classList.contains('filtros'))
+              .map(e => Math.round(e.getBoundingClientRect().top - e.previousElementSibling.getBoundingClientRect().bottom))"""
+    for largura in (390, 1280):
+        for rota in ["/#/assunto/saude", "/#/assunto/saude?todos=1", "/#/deputados", f"/#/deputado/{dep['id']}", f"/#/projeto/{com_voto['id']}"]:
+            pg = nova(largura)  # página nova a cada rota: ao trocar só o # a tela anterior ainda poderia contar
+            pg.goto(base + rota)
+            try:  # a página monta a lista aos poucos: espera a contagem aparecer ao lado da caixa
+                pg.wait_for_function("(" + medir_dist + ")().length > 0", polling=100, timeout=15000)
+            except Exception:
+                pass
+            dist = pg.evaluate(medir_dist)
+            confere(bool(dist) and max(dist) <= 4, f"contagem a no máximo 4px da caixa de filtros em {rota} ({largura}px) {dist}")
+            pg.context.close()  # páginas abertas em segundo plano ficam lentas para montar a tela
 
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
