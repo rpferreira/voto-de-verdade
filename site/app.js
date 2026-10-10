@@ -324,6 +324,7 @@
     const sem = !v ? TIPO_SEM[pr.tipo] || TIPO_SEM.simbolica : null;
     const href = "#/projeto/" + pr.id + (opc.votacao ? "?votacao=" + encodeURIComponent(opc.votacao.id) : "");
     return h("li", {}, h("a", { class: "proj", href },
+      h("span", { class: "proj__id" }, pr.nome),
       h("span", { class: "proj__titulo" }, pr.titulo),
       h("span", { class: "proj__meta" },
         h("span", {}, data(v ? v.d : pr.ultima)),
@@ -405,7 +406,7 @@
     // Temas de exemplo (botões sob a busca): os assuntos com mais projetos na base. O campo diz o que buscar; os botões mostram como.
     const TERMO_CURTO = { "impostos-e-economia": tx("impostos"), "trabalho-e-direitos": tx("trabalho"), "seguranca-publica": tx("segurança pública"), "administracao-publica-e-congresso": tx("servidores públicos"), "relacoes-internacionais-e-defesa": tx("acordos internacionais") };
     const estreito = window.matchMedia("(max-width: 30rem)").matches;
-    const termosExemplo = assuntos.filter((x) => x.slug !== "outros").sort((x, y) => y.n - x.n).slice(0, 4)
+    const termosExemplo = assuntos.filter((x) => x.slug !== "outros").sort((x, y) => y.n - x.n).slice(0, 3)
       .map((x) => TERMO_CURTO[x.slug] || x.nome.toLowerCase());
     const campoBusca = h("input", {
       id: "busca", type: "search", name: "q", autocomplete: "off", spellcheck: "false",
@@ -416,7 +417,7 @@
     const destaques = h("div", {});
     // Atalhos: temas de exemplo (os assuntos com mais projetos) preenchem a busca; o link «últimas votações» rola até a lista.
     const exemplos = h("p", { class: "heroi__exemplos" }, h("span", {}, tx("Por exemplo:")),
-      ...termosExemplo.slice(0, estreito ? 3 : 4).map((t) => h("button", { type: "button", class: "chip-exemplo", onclick: () => { campoBusca.value = t; atualizar(true); campoBusca.focus(); } }, t)));
+      ...termosExemplo.slice(0, estreito ? 2 : 3).map((t) => h("button", { type: "button", class: "chip-exemplo", onclick: () => { campoBusca.value = t; atualizar(true); campoBusca.focus(); } }, t)));
     const irParaUltimas = (e) => {
       e.preventDefault();
       const alvo = document.getElementById("t-recentes");
@@ -1090,6 +1091,7 @@
         h("strong", {}, tx("Votação simbólica: ")), tx("os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Por isso só os projetos da aba “Com voto de cada deputado” mostram como cada um votou; “Todos os projetos” inclui também os votados de forma simbólica ou secreta.")),
       h("div", { class: "abas", role: "group", "aria-label": tx("Quais projetos mostrar") }, abaInd, abaTodos),
       h("form", { class: "filtros filtros--compacto", role: "search", "aria-label": tx("Procurar em {0}", a.nome), onsubmit: (e) => e.preventDefault() },
+        h("p", { class: "filtros__titulo" }, tx("Filtrar por")),
         h("div", { class: "campo" }, h("label", { for: "busca-a" }, tx("Procurar neste assunto")), campoBusca),
         maisFiltros,
       ),
@@ -1195,6 +1197,12 @@
       const selUf = h("select", { id: id("uf") }, h("option", { value: "" }, tx("Todos")), ufs.map((x) => h("option", { value: x }, x)));
       const selV = h("select", { id: id("v") }, h("option", { value: "" }, tx("Todos")), ORDEM_VOTO.filter((c) => total[c]).map((c) => h("option", { value: c }, VOTO[c].nome)));
       selPt.value = estado.pt; selUf.value = estado.uf; selV.value = estado.v;
+      // Ordem da lista: sempre alfabética por nome dentro de cada grupo (o site não ordena pessoas por mérito nem por tamanho).
+      const ORDENS = ["nome", "partido", "uf", "voto"];
+      const selOrd = h("select", { id: id("ord") },
+        h("option", { value: "nome" }, tx("Nome (A a Z)")), h("option", { value: "partido" }, tx("Partido")),
+        h("option", { value: "uf" }, tx("Estado")), h("option", { value: "voto" }, tx("Voto")));
+      selOrd.value = ORDENS.includes(p.get("o")) ? p.get("o") : "nome";
       const limpar = h("button", { type: "button", class: "botao botao--leve botao--pequeno" }, tx("Limpar filtros"));
       const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
       const lista = h("ul", { class: "deputados" });
@@ -1202,11 +1210,13 @@
       const maisBox = h("div", { class: "mais" });
 
       const filtros = h("form", { class: "filtros filtros--compacto", role: "search", "aria-label": tx("Filtrar os votos"), onsubmit: (e) => e.preventDefault() },
+        h("p", { class: "filtros__titulo" }, tx("Filtrar por")),
         h("div", { class: "filtros__linha filtros__linha--4" },
           h("div", { class: "campo campo--nome" }, h("label", { for: id("q") }, tx("Deputado")), campoQ),
           h("div", { class: "campo" }, h("label", { for: id("pt") }, tx("Partido")), selPt),
           h("div", { class: "campo" }, h("label", { for: id("uf") }, tx("Estado")), selUf),
-          h("div", { class: "campo campo--so-desktop" }, h("label", { for: id("v") }, tx("Voto")), selV)),
+          h("div", { class: "campo campo--so-desktop" }, h("label", { for: id("v") }, tx("Voto")), selV),
+          h("div", { class: "campo campo--ord" }, h("label", { for: id("ord") }, tx("Ordem")), selOrd)),
         h("div", { class: "filtros__rodape" }, limpar));
 
       const ajudaVotos = h("details", { class: "ajuda ajuda--solta" },
@@ -1233,17 +1243,20 @@
 
       function atualizar(reiniciar) {
         if (reiniciar) limite = 60;
-        estado.q = campoQ.value.trim(); estado.pt = selPt.value; estado.uf = selUf.value; estado.v = selV.value;
-        if (opc.gravar) opc.gravar(limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, v: estado.v }));
+        estado.q = campoQ.value.trim(); estado.pt = selPt.value; estado.uf = selUf.value; estado.v = selV.value; estado.o = selOrd.value;
+        if (opc.gravar) opc.gravar(limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, v: estado.v, o: estado.o === "nome" ? "" : estado.o }));
         const filtrando = !!(estado.q || estado.pt || estado.uf || estado.v);
-        const r = filtrar().sort((a, b) => a.nome.localeCompare(b.nome, LOCALE));
+        const porNome = (a, b) => a.nome.localeCompare(b.nome, LOCALE);
+        const texto = (c) => (a, b) => (!a[c]) - (!b[c]) || (a[c] || "").localeCompare(b[c] || "", LOCALE) || porNome(a, b);
+        const comparar = { nome: porNome, partido: texto("partido"), uf: texto("uf"), voto: (a, b) => ORDEM_VOTO.indexOf(a.cod) - ORDEM_VOTO.indexOf(b.cod) || porNome(a, b) }[estado.o];
+        const r = filtrar().sort(comparar);
         linhasAtuais = r;
         const mostrados = r.slice(0, limite);
         placar.marcar(estado.v);
-        lista.replaceChildren(...mostrados.map((l) => h("li", { class: "deputado" },
-          h("a", { class: "deputado__nome", href: "#/deputado/" + l.id }, l.nome),
-          h("span", { class: "deputado__sub" }, [l.partido, l.uf].filter(Boolean).join(" · ")),
-          fichaVoto(l.cod))));
+        lista.replaceChildren(...mostrados.map((l) => h("li", {}, h("a", { class: "linha-dep linha-dep--voto", href: "#/deputado/" + l.id },
+          h("span", { class: "linha-dep__nome" }, l.nome),
+          h("span", { class: "linha-dep__sub" }, [l.partido, l.uf].filter(Boolean).join(" · ")),
+          fichaVoto(l.cod)))));
         anunciar(estadoTxt, r.length
           ? `${plural(r.length, tx("deputado"), tx("deputados"))}${r.length !== nTotal ? tx(" de {0}", num(nTotal)) : ""}`
           : tx("Nenhum deputado com esses filtros. Tire algum filtro ou escreva outro nome."));
@@ -1259,7 +1272,7 @@
         }
       }
       comEspera(campoQ, () => atualizar(true));
-      for (const el of [selPt, selUf, selV]) el.addEventListener("change", () => atualizar(true));
+      for (const el of [selPt, selUf, selV, selOrd]) el.addEventListener("change", () => atualizar(true));
       limpar.addEventListener("click", () => { campoQ.value = ""; selPt.value = ""; selUf.value = ""; selV.value = ""; atualizar(true); campoQ.focus(); });
       atualizar(true);
     }
@@ -1383,6 +1396,7 @@
         h("h1", { id: "titulo-deputados", tabindex: "-1" }, tx("Procure um deputado federal")),
         h("p", { class: "abertura__texto" }, tx("Veja como cada deputado votou nas votações nominais, as únicas em que o voto de cada um fica registrado. Sem nota e sem ranking."))),
       h("form", { class: "filtros", role: "search", "aria-label": tx("Procurar deputado"), onsubmit: (e) => e.preventDefault() },
+        h("p", { class: "filtros__titulo" }, tx("Filtrar por")),
         h("div", { class: "filtros__linha" },
           h("div", { class: "campo" }, h("label", { for: "busca-d" }, tx("Nome")), campoQ),
           h("div", { class: "campo" }, h("label", { for: "dep-pt" }, tx("Partido")), selPt)),
@@ -1514,6 +1528,7 @@
         h("section", { class: "bloco", "aria-labelledby": "lista-dep" },
           h("h2", { id: "lista-dep" }, tx("Como votou")),
           h("form", { class: "filtros filtros--compacto", role: "search", "aria-label": tx("Filtrar os votos de {0}", dep.nome), onsubmit: (e) => e.preventDefault() },
+        h("p", { class: "filtros__titulo" }, tx("Filtrar por")),
             h("div", { class: "filtros__linha filtros__linha--dep" },
               h("div", { class: "campo campo--busca" }, h("label", { for: "busca-v" }, tx("Procurar nos projetos")), campoQ),
               h("div", { class: "campo" }, h("label", { for: "dep-a" }, tx("Assunto")), selA),
@@ -1884,6 +1899,31 @@
         h("p", {}, h("a", { href: RAIZ + "en/", "data-idioma": "en", hreflang: "en" }, "This site is also available in English")),
         dispensar));
     document.querySelector(".topo").after(aviso);
+  }
+
+  // Voltar ao topo: aparece depois de rolar duas telas (listas longas) e leva ao começo da página, com o foco no título.
+  {
+    const seta = svg("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round", "stroke-linejoin": "round" });
+    seta.append(svg("path", { d: "M12 19V5M5 12l7-7 7 7" }));
+    const topo = h("button", { type: "button", class: "voltar-topo", hidden: true, "aria-label": tx("Voltar ao topo"), title: tx("Voltar ao topo"),
+      onclick: () => {
+        window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+        const t = principal.querySelector("h1");
+        if (t) { t.setAttribute("tabindex", "-1"); t.focus({ preventScroll: true }); }
+      } }, seta);
+    document.body.append(topo);
+    let esperando = false;
+    window.addEventListener("scroll", () => {
+      if (esperando) return;
+      esperando = true;
+      requestAnimationFrame(() => { esperando = false; topo.hidden = window.scrollY < window.innerHeight * 2; });
+    }, { passive: true });
+  }
+  // Imprimir ou gerar PDF: abre os blocos recolhidos (pontos principais e texto oficial) e fecha de novo depois.
+  {
+    let abertos = [];
+    window.addEventListener("beforeprint", () => { abertos = [...document.querySelectorAll("details:not([open])")]; for (const d of abertos) d.open = true; });
+    window.addEventListener("afterprint", () => { for (const d of abertos) d.open = false; abertos = []; });
   }
 
   window.addEventListener("hashchange", () => rotear(true));

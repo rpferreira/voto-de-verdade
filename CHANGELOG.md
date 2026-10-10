@@ -2,6 +2,19 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.5.0 (2026-10-10)
+
+### Novidades
+- Número oficial («PLP 74/2026») antes do título em todas as listas de projetos: últimas votações, assuntos e busca.
+- Lista de votos do projeto: cada deputado em um cartão clicável (nome, partido e estado, voto Sim/Não e seta), igual ao da lista de Deputados, e novo seletor **Ordem** (nome, partido, estado ou voto; sempre em ordem alfabética dentro de cada grupo). A ordem escolhida vai para o endereço da página.
+- Caixas de filtros ganham o título **Filtrar por** (votos do projeto, Deputados, assunto e página do deputado).
+- Botão **Voltar ao topo**, que aparece depois de duas telas de rolagem.
+- **Impressão e PDF:** somem o menu, as faixas, os filtros e os botões; o texto sai em preto sobre branco (com as cores do modo claro no Sim/Não), os blocos recolhidos «Pontos principais e texto oficial» abrem sozinhos e os links para fora mostram o endereço.
+
+### Ajustes
+- Temas de exemplo sob a busca da home: três no computador e dois no celular (saiu «servidores públicos» e, no celular, «segurança pública»).
+- `destaques.json` passa a trazer o número oficial de cada projeto.
+
 ## 0.4.0 (2026-10-10)
 
 ### Novidades

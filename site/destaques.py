@@ -65,7 +65,7 @@ def montar_destaques(votacoes, projetos, incluidos=None):
 
     def item(v):
         p = por_id[v["p"]]
-        proj = {"id": p["id"], "titulo": p["titulo"], "ca": p.get("ca"), "cr": p.get("cr")}
+        proj = {"id": p["id"], "nome": p["nome"], "titulo": p["titulo"], "ca": p.get("ca"), "cr": p.get("cr")}
         if str(p["id"]) in incluidos:
             proj["inc"] = incluidos[str(p["id"])]
         return {"v": {"id": v["id"], "p": v["p"], "d": v["d"], "ap": v["ap"], "s": v["s"]}, "p": proj}
