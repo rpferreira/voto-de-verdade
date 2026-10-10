@@ -122,6 +122,7 @@ jobs:
         if: steps.site.outcome == 'success'
         continue-on-error: true
         run: |
+          pip install pillow==12.3.0  # reduz cada foto para 192 px de largura (site/baixar_fotos.py)
           python site/baixar_fotos.py
           bash coleta/guardar_no_repositorio.sh "Fotos dos deputados" site/fotos
 

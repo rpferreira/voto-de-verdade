@@ -522,6 +522,54 @@ with sync_playwright() as p:
         confere("projetos.json" in baixados and "votacoes.json" in baixados, f"{nome}: a busca baixa projetos.json e votacoes.json só quando é usada")
         pg.context.close()
 
+    print("Lista de deputados parece clicável")
+    # Cada deputado da busca tem de parecer um link: cartão com borda e seta à direita (antes era só texto solto, sem pista de clique).
+    for largura in (390, 1280):
+        for tema in ("light", "dark"):
+            pg = nova(largura, tema)
+            pg.goto(base + "/#/deputados")
+            pg.wait_for_selector(".linha-dep", timeout=15000)
+            m = pg.evaluate("""() => { const a = document.querySelector('.linha-dep'), cs = getComputedStyle(a), seta = getComputedStyle(a, '::after'), r = a.getBoundingClientRect();
+              return { link: a.tagName === 'A' && a.getAttribute('href').startsWith('#/deputado/'), altura: Math.round(r.height), borda: cs.boxShadow !== 'none',
+                       fundo: getComputedStyle(a).backgroundColor, seta: parseFloat(seta.width) >= 16 && seta.content !== 'none' && seta.backgroundColor !== 'rgba(0, 0, 0, 0)' }; }""")
+            rot = f"{largura}px {tema}"
+            confere(m["link"] and m["altura"] >= 48, f"deputado da lista é link com área de toque de 48px ou mais ({rot}, {m['altura']}px)")
+            confere(m["borda"] and m["fundo"] != "rgba(0, 0, 0, 0)", f"deputado da lista tem cara de cartão: borda e fundo ({rot})")
+            confere(m["seta"], f"deputado da lista tem seta à direita ({rot})")
+            pg.context.close()
+
+    print("Fotos dos deputados leves")
+    # A foto é mostrada com 96 px de largura: guardamos no máximo 192 px (nítida em tela de alta densidade), ~8 KB cada.
+    def tamanho_jpeg(caminho):
+        with open(caminho, "rb") as f:
+            d = f.read()
+        i = 2
+        while i < len(d):
+            if d[i] != 0xFF:
+                i += 1
+                continue
+            marca = d[i + 1]
+            if marca in (0xC0, 0xC1, 0xC2):  # início do quadro: altura e largura
+                return int.from_bytes(d[i + 7:i + 9], "big"), int.from_bytes(d[i + 5:i + 7], "big")
+            i += 2 + int.from_bytes(d[i + 2:i + 4], "big")
+        return 0, 0
+    pasta_fotos = os.path.join(pasta, "fotos")
+    arquivos = sorted(os.listdir(pasta_fotos))
+    medidas = [(a, tamanho_jpeg(os.path.join(pasta_fotos, a)), os.path.getsize(os.path.join(pasta_fotos, a))) for a in arquivos]
+    largas = [a for a, (l, _), _ in medidas if l > 192]
+    pesadas = [(a, t // 1024) for a, _, t in medidas if t > 24 * 1024]
+    pequenas = [a for a, (l, _), _ in medidas if l < 96]
+    confere(len(arquivos) >= 600 and not largas, f"{len(arquivos)} fotos, nenhuma com mais de 192 px de largura {largas[:3]}")
+    confere(not pesadas, f"nenhuma foto com mais de 24 KB {pesadas[:3]}")
+    confere(not pequenas, f"nenhuma foto menor que os 96 px mostrados {pequenas[:3]}")
+    confere(sum(t for _, _, t in medidas) < 8 * 1024 * 1024, f"fotos somam {sum(t for _, _, t in medidas) / 1e6:.1f} MB (limite: 8 MB)")
+    pg = nova(390)
+    pg.goto(base + f"/#/deputado/{dep['id']}")
+    pg.wait_for_selector("img.foto-dep", timeout=15000)
+    pg.wait_for_function("document.querySelector('img.foto-dep').complete && document.querySelector('img.foto-dep').naturalWidth > 0", polling=100, timeout=15000)
+    confere(pg.evaluate("document.querySelector('img.foto-dep').naturalWidth") >= 96, "foto do deputado carrega e não é menor que o espaço em que aparece")
+    pg.context.close()
+
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
     sem_js.goto(base + "/em-numeros/")

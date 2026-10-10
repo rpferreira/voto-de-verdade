@@ -206,7 +206,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `coleta/traducoes.py` | Guarda e confere as traduções (impressão do texto em português) |
 | `coleta/traduzir_projetos.py` | Traduz para o inglês, com IA, os projetos e votações novos |
 | `dados/traducoes_en.json` | Tradução em inglês de cada projeto e votação (escrito pela IA) |
-| `site/baixar_fotos.py` | Guarda as fotos dos deputados em `site/fotos/` |
+| `site/baixar_fotos.py` | Guarda as fotos dos deputados em `site/fotos/`, reduzidas para 192 px de largura (cerca de 8 KB cada, em vez de 28 KB; usa Pillow). `--reduzir-existentes` reduz as já guardadas |
 | `testes/fumaca.py` | Teste de fumaça do site num navegador de verdade |
 | `testes/espacamento.py` | Confere as regras de espaçamento (grade de 8px) no CSS e nas telas |
 | `testes/idiomas.py` | Confere a versão em inglês: dicionário, dados, páginas e telas |
