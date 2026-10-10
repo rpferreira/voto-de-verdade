@@ -667,6 +667,34 @@ with sync_playwright() as p:
             confere(link.startswith("https://github.com/") and link.endswith("/CHANGELOG.md"), f"{nome} {largura}px: versão leva ao histórico de mudanças")
             pg.context.close()
 
+    print("Topo da home e cabeçalho do projeto (resultado e número oficial)")
+    pg = nova(390)
+    pg.goto(base + "/")
+    pg.wait_for_selector(".faixa", timeout=15000)
+    altura_faixa = pg.evaluate("document.querySelector('.faixa').getBoundingClientRect().height")
+    confere(altura_faixa <= 112, f"celular: faixa da versão beta com até três linhas ({altura_faixa:.0f}px)")
+    confere(pg.locator('.faixa a[href="#/sobre"]').count() == 1, "faixa beta continua levando a «Ver objetivos»")
+    pg.context.close()
+    for caminho, nome, pilulas in (("/", "PT", ("Aprovada", "Rejeitada")), ("/en/", "EN", ("Approved", "Rejected"))):
+        esperada = pilulas[0] if com_voto["aprovada"] else pilulas[1]
+        for modo, url in (("aplicativo", f"{caminho}#/projeto/{com_voto['id']}"), ("página pronta", f"{caminho}projeto/{com_voto['id']}/")):
+            for largura in (390, 1280):
+                pg = nova(largura)
+                pg.goto(base + url)
+                pg.wait_for_selector(".cabeca-projeto__id", timeout=15000)
+                topo = pg.evaluate("""() => { const c = document.querySelector('.cabeca-projeto'), id = c.querySelector('.cabeca-projeto__id'), h1 = c.querySelector('h1');
+                  return { nome: id.querySelector('strong').innerText, selo: id.querySelector('.selo-resultado').innerText, ordem: id.getBoundingClientRect().bottom <= h1.getBoundingClientRect().top + 1,
+                           meta: c.querySelector('.cabeca-projeto__meta').innerText, estoura: document.documentElement.scrollWidth > window.innerWidth + 1 }; }""")
+                confere(topo["nome"] == com_voto["nome"] and topo["ordem"], f"{nome} {modo} {largura}px: número oficial «{com_voto['nome']}» em destaque acima do título")
+                confere(topo["selo"] == esperada, f"{nome} {modo} {largura}px: resultado «{esperada}» em etiqueta (veio «{topo['selo']}»)")
+                confere(not topo["meta"].startswith(com_voto["nome"]) and not topo["estoura"], f"{nome} {modo} {largura}px: data da última votação sem repetir o número, sem rolagem para o lado")
+                if modo == "aplicativo":
+                    pg.wait_for_selector(".resultado-linha .selo-resultado", timeout=15000)
+                    linha = pg.evaluate("""() => ({ selo: document.querySelector('.resultado-linha .selo-resultado').innerText,
+                      barra: document.querySelectorAll('.resultado-barra .barra-voto > i').length, larg: document.querySelector('.resultado-barra').getBoundingClientRect().width })""")
+                    confere(linha["selo"] in pilulas and linha["barra"] >= 2 and linha["larg"] > 150, f"{nome} {largura}px: votação com etiqueta de resultado e barra de sim/não")
+                pg.context.close()
+
     print("Licença publicada")
     raiz_repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     api = navegador.new_context().request

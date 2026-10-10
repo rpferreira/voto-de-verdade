@@ -2,6 +2,17 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.3.0 (2026-10-10)
+
+### Novidades
+- Página do projeto: o número oficial (por exemplo «PLP 74/2026») e o resultado («Aprovada» ou «Rejeitada») aparecem em destaque acima do título. A etiqueta de resultado é neutra: a mesma cor para aprovada e rejeitada.
+- Na seção «Como cada deputado votou», a data da votação ganha a etiqueta de resultado e uma barra de sim, não e demais votos acima dos cartões.
+
+### Ajustes
+- Faixa de versão beta da página inicial mais curta (cabe em duas linhas no celular, antes eram quatro).
+- O convite para a versão em inglês cabe em uma linha no celular; a frase inteira é o link.
+- O botão de idioma passa a ter nome acessível que começa pelo texto visível («EN: English»), para quem usa leitor de tela ou comando de voz.
+
 ## 0.2.1 (2026-10-10)
 
 ### Ajustes

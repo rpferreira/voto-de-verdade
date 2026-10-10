@@ -300,6 +300,15 @@
     return dias > -1 && dias < DIAS_COMO_NOVO;  // tolera até 1 dia de diferença de fuso para trás
   };
 
+  // A barra de sim, não e demais votos (só desenho: os números vêm escritos ao lado ou nos cartões).
+  const barraDoPlacar = (s) => {
+    const soma = s.reduce((a, b) => a + b, 0);
+    return h("span", { class: "barra-voto", "aria-hidden": "true" },
+      ORDEM_VOTO.map((c, i) => (s[i] ? h("i", { class: "seg-" + c, style: `width:${(s[i] / soma) * 100}%` }) : null)));
+  };
+  // Resultado como etiqueta neutra (mesma cor para aprovada e rejeitada: o site não julga).
+  const seloResultado = (aprovada) => h("span", { class: "selo-resultado" }, aprovada ? tx("Aprovada") : tx("Rejeitada"));
+
   function linhaProjeto(pr, votacoes, opc) {
     opc = opc || {};
     const incerto = (pr.ca && pr.ca !== "alta") || (pr.cr && pr.cr !== "alta");
@@ -308,8 +317,7 @@
     if (v && v.s) {
       const soma = v.s.reduce((a, b) => a + b, 0), outros = v.s[2] + v.s[3] + v.s[4];
       placar = h("span", { class: "mini-placar" },
-        h("span", { class: "barra-voto", "aria-hidden": "true" },
-          ORDEM_VOTO.map((c, i) => (v.s[i] ? h("i", { class: "seg-" + c, style: `width:${(v.s[i] / soma) * 100}%` }) : null))),
+        barraDoPlacar(v.s),
         h("span", {}, tx("{0} sim · {1} não{2}", num(v.s[0]), num(v.s[1]), outros ? ` · ${num(outros)} ${outros === 1 ? tx("outro") : tx("outros")}` : "")));
     }
     const resultado = (v ? v.ap : pr.aprovada) ? tx("Votação aprovada") : tx("Votação rejeitada");
@@ -415,7 +423,7 @@
     principal.replaceChildren(
       h("aside", { class: "faixa", "aria-label": tx("Sobre o projeto") }, h("div", { class: "miolo" }, h("p", {},
         h("strong", {}, tx("Versão Beta. ")),
-        tx("Site em constante desenvolvimento. Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. "),
+        tx("Em desenvolvimento, para aproximar a sociedade do Congresso. "),
         h("a", { href: "#/sobre" }, tx("Ver objetivos"))))),
       h("div", { class: "miolo" },
       h("section", { class: "heroi", "aria-labelledby": "titulo-inicio" },
@@ -1263,7 +1271,8 @@
       const params = new URLSearchParams(p);
       params.set("votacao", v.id);
       caixa.replaceChildren(...[
-        h("p", { class: "nota" }, tx("{0} · Resultado: {1}", data(v.d), v.ap ? tx("aprovada") : tx("rejeitada"))),
+        h("p", { class: "resultado-linha" }, h("span", {}, tx("Votação de {0}", data(v.d))), seloResultado(v.ap)),
+        v.s ? h("div", { class: "resultado-barra" }, barraDoPlacar(v.s)) : null,
         v.c !== "alta" && v.av ? h("div", { class: "cartao-aviso" }, h("strong", {}, tx("Atenção")), h("p", {}, v.av)) : null,
         painelVotos(v, { titulo: tx("Votos de cada deputado em {0} (votação de {1})", pr.nome, data(v.d)), descricao: h("p", { class: "nota registro" }, tx("Registro oficial da votação: {0}", v.desc)), p: params, gravar: (q) => { q.set("votacao", v.id); gravarEndereco("projeto/" + pr.id, q); } })].filter(Boolean));
     };
@@ -1295,8 +1304,9 @@
           assunto ? h("li", {}, h("a", { href: "#/assunto/" + assunto.slug }, assunto.nome)) : null,
           h("li", { "aria-current": "page" }, pr.nome))),
       h("header", { class: "cabeca-projeto" },
+        h("p", { class: "cabeca-projeto__id" }, h("strong", {}, pr.nome), seloResultado(pr.aprovada)),
         h("h1", { id: "titulo-projeto", tabindex: "-1" }, tituloCompleto(pr)),
-        h("p", { class: "cabeca-projeto__meta" }, tx("{0} · última votação em {1}", pr.nome, data(pr.ultima))),
+        h("p", { class: "cabeca-projeto__meta" }, tx("Última votação em {0}", data(pr.ultima))),
         h("div", { class: "cabeca-projeto__acoes" }, botaoCompartilhar("projeto/" + pr.id, tx("{0} | Voto de Verdade", descCurta(pr.titulo, 90))))),
       h("div", { class: "resumo-projeto" }, resumoSemRepetir(pr), partes.avisos, partes.substitutivo),
       h("details", { class: "ajuda ajuda--solta" },
@@ -1855,7 +1865,7 @@
     const dispensar = h("button", { type: "button", class: "aviso-idioma__fechar", "aria-label": "Dismiss", onclick: () => { guardar("aviso-en", "1"); aviso.remove(); } }, x);
     const aviso = h("aside", { class: "aviso-idioma", lang: "en", "aria-label": "Language" },
       h("div", { class: "miolo aviso-idioma__miolo" },
-        h("p", {}, "This site is also available in English. ", h("a", { href: RAIZ + "en/", "data-idioma": "en", hreflang: "en" }, "Read in English")),
+        h("p", {}, h("a", { href: RAIZ + "en/", "data-idioma": "en", hreflang: "en" }, "This site is also available in English")),
         dispensar));
     document.querySelector(".topo").after(aviso);
   }
