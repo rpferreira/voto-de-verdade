@@ -35,6 +35,7 @@ from idioma import Idioma  # noqa: E402
 FONTE_DADOS = "https://dadosabertos.camara.leg.br/"
 NOME = "Voto de Verdade"
 REPOSITORIO = "https://github.com/rpferreira/voto-de-verdade"
+LICENCA_CONTEUDO = "https://creativecommons.org/licenses/by/4.0/"  # licença dos textos e resumos (a do código, MIT, está em /LICENSE)
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "VERSION"), encoding="utf-8") as _f:
     VERSAO_DO_SITE = _f.read().strip()  # a versão do site (regras em docs/versionamento.md); não é o ?v= dos arquivos
 LEMA = ("Site independente, neutro e apartidário: mostra o que a Câmara dos Deputados votou e como cada "
@@ -178,7 +179,8 @@ TEXTOS_DO_MODELO = [
     ("<p>", "Site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usamos cookies nem rastreamos quem visita. Por enquanto, cobrimos só a Câmara dos Deputados.", "</p>"),
     ("<p>", "Assuntos e resumos são feitos por inteligência artificial e podem conter erros. Quando não temos certeza, avisamos. O texto oficial de cada projeto está sempre ao lado. ", '<a href="#/sobre">'),
     ('<a href="#/sobre">', "Como o site funciona", "</a> · "),
-    ('<a href="#/inteligencia-artificial">', "Transparência da IA", "</a></p>"),
+    ('<a href="#/inteligencia-artificial">', "Transparência da IA", "</a> · "),
+    ('<a href="#/licenca">', "Licença", "</a></p>"),
 ]
 
 
@@ -236,6 +238,7 @@ class Gerador:
             f'<meta name="twitter:description" content="{d}">',
             f'<link rel="sitemap" type="application/xml" href="{esc(self.url)}/sitemap.xml">',
             f'<link rel="describedby" type="text/markdown" href="{esc(self.url)}/{L.prefixo}llms.txt">',
+            f'<link rel="license" href="{LICENCA_CONTEUDO}">',
         ]
         if extra:
             linhas.append(extra)
@@ -325,6 +328,7 @@ class Gerador:
             ('id="menu-deputados" href="#/deputados"', f'id="menu-deputados" href="{raiz}deputados/"'),
             ('<a href="#/sobre">', f'<a href="{raiz}sobre/">'),
             ('<a href="#/inteligencia-artificial">', f'<a href="{raiz}inteligencia-artificial/">'),
+            ('<a href="#/licenca">', f'<a href="{raiz}licenca/">'),
             ('<script type="application/json" id="config">{"raiz":""}</script>',
              '<script type="application/json" id="config">'
              + json.dumps({"raiz": ativos, "rota": rota, "doacao": self.doacao, "servico": self.servico, **({"lang": L.codigo, "dic": self.versoes.get("idiomas/en.json", "")} if L.en else {})},
@@ -680,7 +684,7 @@ def gerar_idioma(site, g, D, L, URL, doacao):
            meta["simbolicas"], meta["votacoes"], pct_simbolicas_int)),
         (L("Licença e uso do conteúdo"),
          L("O código do site é aberto, com licença MIT. Os textos do site e os resumos feitos por inteligência artificial podem ser copiados e usados por qualquer pessoa, inclusive em matérias, desde que citem o Voto de Verdade e o endereço votodeverdade.com.br (licença CC BY 4.0). Os dados originais são da Câmara dos Deputados, que tem as próprias regras. "
-           "Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultá-lo para responder perguntas, citando o site, é bem-vindo.")),
+           "Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultá-lo para responder perguntas, citando o site, é bem-vindo."), None, False, True),
         (L("Quem faz e privacidade"),
          L("O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita.")),
     ]
@@ -691,19 +695,57 @@ def gerar_idioma(site, g, D, L, URL, doacao):
     def com_link_ia(s):
         return len(s) > 3 and s[3]
 
+    def com_link_licenca(s):
+        return len(s) > 4 and s[4]
+
     link_ia = L("Veja como a inteligência artificial é usada, com os números")
+    link_licenca = L("Ler a licença completa")
     corpo = (f'<div class="miolo texto-longo"><nav class="migalhas" aria-label="{migalha_voce}"><ol><li><a href="../">{L("Início")}</a></li><li aria-current="page">{L("Como o site funciona")}</li></ol></nav>'
              f'<h1>{L("Como o site funciona")}</h1>'
              + "".join(f"<h2>{esc(s[0])}</h2><p>{esc(s[1])}</p>" + (("<ul>" + "".join(f"<li>{esc(i)}</li>" for i in itens_sobre(s)) + "</ul>") if itens_sobre(s) else "")
                        + (f'<p><a href="../inteligencia-artificial/">{link_ia}</a></p>' if com_link_ia(s) else "")
+                       + (f'<p><a href="../licenca/">{link_licenca}</a></p>' if com_link_licenca(s) else "")
                        for s in sobre)
              + "</div>")
     g.montar("sobre", "sobre", L("Como o site funciona: {0}", NOME),
              L("Neutro e apartidário, sem nota e sem ranking. De onde vêm os dados, como a inteligência artificial é usada e o que o site não faz."),
              corpo, markdown=f"# {L('Como o site funciona')}\n\n" + "\n\n".join(f"## {s[0]}\n\n{s[1]}" + (("\n\n" + "\n".join(f"- {i}" for i in itens_sobre(s))) if itens_sobre(s) else "")
-                                                   + (f"\n\n[{link_ia}]({URL}/{L.prefixo}inteligencia-artificial/)" if com_link_ia(s) else "") for s in sobre) + "\n",
+                                                   + (f"\n\n[{link_ia}]({URL}/{L.prefixo}inteligencia-artificial/)" if com_link_ia(s) else "")
+                                                   + (f"\n\n[{link_licenca}]({URL}/{L.prefixo}licenca/)" if com_link_licenca(s) else "") for s in sobre) + "\n",
              estruturados={"@context": "https://schema.org", "@type": "AboutPage", "name": L("Como o site funciona"),
                            "url": f"{URL}/{L.prefixo}sobre/", "inLanguage": lang_ld})
+
+    # ---- Licença (o que está sob MIT, o que está sob CC BY 4.0 e o que não está coberto); os textos completos ficam em /LICENSE e /LICENSE-CONTEUDO.md
+    lic_nao = [L("Dados originais da Câmara dos Deputados (votações, projetos, ementas, nomes de deputados): vêm do portal de Dados Abertos da Câmara e seguem as regras dele. Cite a Câmara como fonte."),
+               L("Fotos dos deputados: são da Câmara e seguem as regras dela."),
+               L("Fonte Atkinson Hyperlegible Next: licença OFL, de seus autores."),
+               L("Nome e logotipo «Voto de Verdade»: não são licenciados. Pode citar o nome para atribuir a fonte, mas não use o logotipo de modo que sugira que o seu site é o Voto de Verdade ou é apoiado por ele.")]
+    lic_secoes = [
+        (L("Código do site"),
+         L("O código é aberto, com licença MIT: pode usar, copiar e adaptar, mantendo o aviso de direitos. O texto da licença está em {0}.", f"{URL}/LICENSE"), None),
+        (L("Textos do site e resumos feitos por inteligência artificial"),
+         L("Estão sob a licença Creative Commons Atribuição 4.0 Internacional (CC BY 4.0). Você pode copiar, redistribuir e adaptar esse conteúdo para qualquer finalidade, inclusive em matérias e em outros sites, "
+           "desde que cite o Voto de Verdade, com o endereço votodeverdade.com.br, e indique se fez alterações. Ao reutilizar os resumos, diga que foram feitos por inteligência artificial e podem conter erros. "
+           "O texto oficial de cada projeto está sempre no site da Câmara."), None),
+        (L("O que não está coberto"), "", lic_nao),
+        (L("Treino de modelos de inteligência artificial"),
+         L("Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultar o site para responder perguntas de pessoas, citando a fonte com link, é bem-vindo. "
+           "Esse pedido está no robots.txt do site (Content-Signal: ai-train=no). É um sinal de preferência, que nem todo rastreador respeita, e não uma restrição jurídica: a licença CC BY 4.0, por si só, não proíbe esse uso."), None),
+    ]
+    arq_lic = [(f"{URL}/LICENSE", L("Licença do código (MIT)")), (LICENCA_CONTEUDO.replace("/licenses/by/4.0/", "/licenses/by/4.0/legalcode"), L("Texto legal da CC BY 4.0")),
+               (f"{URL}/LICENSE-CONTEUDO.md", L("Licença do conteúdo, em português, com o que não está coberto"))]
+    titulo_lic = L("Licença e uso do conteúdo")
+    corpo_lic = (f'<div class="miolo texto-longo"><nav class="migalhas" aria-label="{migalha_voce}"><ol><li><a href="../">{L("Início")}</a></li><li aria-current="page">{titulo_lic}</li></ol></nav>'
+                 f'<h1>{titulo_lic}</h1><p>{esc(L("O código e o conteúdo do Voto de Verdade têm licenças diferentes."))}</p>'
+                 + "".join(f"<h2>{esc(t)}</h2>" + (f"<p>{esc(x)}</p>" if x else "") + (("<ul>" + "".join(f"<li>{esc(i)}</li>" for i in it) + "</ul>") if it else "") for t, x, it in lic_secoes)
+                 + f'<h2>{esc(L("Textos completos"))}</h2><ul>' + "".join(f'<li><a href="{esc(h)}">{esc(n)}</a></li>' for h, n in arq_lic) + "</ul></div>")
+    g.montar("licenca", "licenca", L("Licença e uso do conteúdo: {0}", NOME),
+             L("Código do site sob licença MIT; textos e resumos sob CC BY 4.0, citando o Voto de Verdade. O que não está coberto e o pedido para não treinar modelos de IA."),
+             corpo_lic, markdown=f"# {titulo_lic}\n\n{L('O código e o conteúdo do Voto de Verdade têm licenças diferentes.')}\n\n"
+             + "\n\n".join(f"## {t}" + (f"\n\n{x}" if x else "") + (("\n\n" + "\n".join(f"- {i}" for i in it)) if it else "") for t, x, it in lic_secoes)
+             + f"\n\n## {L('Textos completos')}\n\n" + "\n".join(f"- [{n}]({h})" for h, n in arq_lic) + "\n",
+             estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": titulo_lic, "url": f"{URL}/{L.prefixo}licenca/", "inLanguage": lang_ld,
+                           "license": LICENCA_CONTEUDO, "isPartOf": {"@id": URL + "/" + L.prefixo + "#site"}})
 
     # ---- Em números (as colunas e barras aparecem quando o aplicativo abre; aqui ficam os textos e, em páginas próprias, as tabelas)
     pn = D.painel
@@ -937,7 +979,7 @@ def gerar_idioma(site, g, D, L, URL, doacao):
          "description": L("{0} votações em plenário da Câmara dos Deputados, de {1} a {2}, {3} projetos com assunto e resumo feitos por inteligência artificial, e o voto de cada deputado nas {4} votações nominais. Dados originais: Dados Abertos da Câmara dos Deputados.",
                           meta["votacoes"], L.data(meta["de"]), L.data(meta["ate"]), meta["projetos"], meta["nominais"]),
          "url": URL + "/" + L.prefixo, "inLanguage": lang_ld, "isAccessibleForFree": True, "isBasedOn": FONTE_DADOS,
-         "license": "https://creativecommons.org/licenses/by/4.0/",
+         "license": LICENCA_CONTEUDO,
          "temporalCoverage": f"{meta['de']}/{meta['ate']}", "spatialCoverage": L("Brasil"), "dateModified": meta["gerado_em"],
          "keywords": [L("Câmara dos Deputados"), L("votações"), L("deputados federais"), L("transparência"), L("Brasil")],
          "creator": {"@type": "Organization", "name": NOME, "url": URL + "/"}, "distribution": dist}]}
@@ -1039,7 +1081,8 @@ def arquivos_de_dados(g, L, URL, meta, site, tem_painel):
     llms += ["", f"## {L('Páginas principais')}", "",
              f"- [{L('Início, com as últimas votações')}]({URL}/{p}index.md)",
              f"- [{L('Deputados, por estado')}]({URL}/{p}deputados/index.md)",
-             f"- [{L('Como o site funciona')}]({URL}/{p}sobre/index.md)"]
+             f"- [{L('Como o site funciona')}]({URL}/{p}sobre/index.md)",
+             f"- [{L('Licença e uso do conteúdo')}]({URL}/{p}licenca/index.md)"]
     if tem_painel:
         llms += [f"- [{L('Em números: votações ao longo do tempo, por assunto, resultado, participação e placar')}]({URL}/{p}em-numeros/index.md)",
                  f"- [{L('Transparência da IA: como a inteligência artificial é usada')}]({URL}/{p}inteligencia-artificial/index.md)"]
@@ -1150,13 +1193,20 @@ def main():
     # perguntas (citando o site), mas pede que o conteúdo não seja usado para treinar modelos.
     g.escrever("robots.txt", f"User-agent: *\nAllow: /\nContent-Signal: search=yes, ai-input=yes, ai-train=no\n\nSitemap: {URL}/sitemap.xml\n")
 
+    # Os textos das licenças, como arquivos (o do código em inglês, o do conteúdo em português), em /LICENSE e /LICENSE-CONTEUDO.md
+    raiz_repo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+    for nome_arq in ("LICENSE", "LICENSE-CONTEUDO.md"):
+        with open(os.path.join(raiz_repo, nome_arq), encoding="utf-8") as f:
+            g.escrever(nome_arq, f.read())
+
     # Descoberta: .well-known/api-catalog (RFC 9727) e .well-known/agent-skills
     caminho_base = urlparse(URL).path.rstrip("/") + "/"
     modelo_skill = os.path.join(args.site, "modelos", "skill.md")
     elos = {"anchor": URL + "/", "describedby": [{"href": URL + "/llms.txt", "type": "text/markdown"}],
             "sitemap": [{"href": URL + "/sitemap.xml", "type": "application/xml"}],
             "service-desc": [{"href": URL + "/openapi.json", "type": "application/vnd.oai.openapi+json"}],
-            "service-doc": [{"href": URL + "/dados/LEIA-ME.md", "type": "text/markdown"}]}
+            "service-doc": [{"href": URL + "/dados/LEIA-ME.md", "type": "text/markdown"}],
+            "license": [{"href": URL + "/licenca/", "type": "text/html"}]}
     if os.path.exists(modelo_skill):
         with open(modelo_skill, encoding="utf-8") as f:
             skill = (f.read().replace("{URL}", URL).replace("{DE}", L_pt.data(meta["de"])).replace("{ATE}", L_pt.data(meta["ate"])))
@@ -1182,6 +1232,8 @@ def main():
     if sem:
         for c, chaves in sem.items():
             print(f"AVISO: {len(chaves)} textos sem tradução para «{c}» (ficam em português). Exemplos: {chaves[:3]}", file=sys.stderr)
+            if os.environ.get("LISTAR_FALTAS"):
+                print(json.dumps(chaves, ensure_ascii=False, indent=1), file=sys.stderr)
     return 0
 
 

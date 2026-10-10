@@ -83,7 +83,7 @@ def estatica():
 
 def paginas(pasta, versao):
     print("Rodapé nas páginas montadas")
-    candidatas = ["index.html", "en/index.html", "404.html", "en/404.html", "sobre/index.html", "en/sobre/index.html"]
+    candidatas = ["index.html", "en/index.html", "404.html", "en/404.html", "sobre/index.html", "en/sobre/index.html", "licenca/index.html", "en/licenca/index.html"]
     for sub in ("projeto", "deputado"):
         base = os.path.join(pasta, sub)
         if os.path.isdir(base):
