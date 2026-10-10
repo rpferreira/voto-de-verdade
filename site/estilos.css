@@ -645,7 +645,7 @@ a.botao, a.botao:hover { text-decoration: none; }
 
 /* ---------- impressão e PDF: só o conteúdo, em preto sobre branco, com o endereço dos links para fora ---------- */
 @media print {
-  @page { margin: 16mm; }
+  @page { margin: 16mm; }  /* espaco-ok: margem física da folha de papel, fora da escala da tela */
   :root, :root[data-theme="dark"] { color-scheme: light; --papel: #fff; --superficie: #fff; --tinta: #000; --tinta-suave: #333; --linha: #999;
     --cobalto: #2341d8; --cobalto-claro: #e8ecfd; --sobre-cobalto: #fff; --cinza-voto: #98a3b8;
     --aviso-fundo: #fff3d1; --aviso-borda: #c98a00; --aviso-texto: #5e3d00; }  /* mesmo no modo escuro, imprime com as cores do modo claro (azul do Sim, cinza da abstenção) */
