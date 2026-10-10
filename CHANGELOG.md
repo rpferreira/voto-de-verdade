@@ -2,6 +2,12 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.7.0 (2026-10-10)
+
+### Novidades
+- **Imagem de compartilhamento própria** ao colar o link no WhatsApp, X, LinkedIn e afins: cada deputado (foto, nome, partido e estado), cada assunto (nome, descrição e quantidade de projetos) e as páginas fixas (Deputados, Em números, Como o site funciona, Transparência da IA, Licença, Apoie) têm a sua, em português e em inglês. Os projetos continuam com a imagem geral do site.
+- As imagens são feitas na hora de montar o site, sem IA e sem ir para o repositório (precisa do Pillow, que já entra nos testes e na publicação). Sem o Pillow, o site usa a imagem geral, como antes. Só mostram nome, partido e estado ou o texto da página: nada de nota, placar ou ranking.
+
 ## 0.6.1 (2026-10-10)
 
 ### Ajustes

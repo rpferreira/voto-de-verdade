@@ -641,5 +641,6 @@
 "projetos de lei": "bills",
 "Congresso Nacional": "National Congress",
 "dados abertos": "open data",
-"resumos em linguagem simples": "plain-language summaries"
+"resumos em linguagem simples": "plain-language summaries",
+"{0} projetos votados na Câmara dos Deputados": "{0} bills voted on in the Chamber of Deputies"
 }

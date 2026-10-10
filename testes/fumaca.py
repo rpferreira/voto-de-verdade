@@ -872,6 +872,30 @@ with sync_playwright() as p:
     m = re.search(rf"<loc>[^<]*/projeto/{com_voto['id']}/</loc><lastmod>(.*?)</lastmod>", mapa)
     confere(m and m.group(1) == com_voto["ultima"], f"sitemap: a data do projeto é a da última votação dele ({m and m.group(1)} / {com_voto['ultima']})")
 
+    print("Imagens de prévia próprias (deputado, assunto, páginas fixas)")
+    from PIL import Image
+    import io
+    def imagem_og(html):
+        url = re.search(r'property="og:image" content="(.*?)"', html).group(1)
+        r = api.get(base + "/" + url.split("/", 3)[3])
+        return url, r
+    para_comparar = {}
+    for caminho, nome in (("/", "PT"), ("/en/", "EN")):
+        for rota, esperado in ((f"deputado/{dep['id']}/", "deputado"), ("assunto/saude/", "assunto-saude"), ("sobre/", "sobre"), ("deputados/", "deputados"), ("em-numeros/", "em-numeros")):
+            html = cabeca_de(base + caminho + rota)
+            url, r = imagem_og(html)
+            conteudo = r.body() if r.ok else b""
+            tipo_ok = r.ok and r.headers.get("content-type", "").startswith(("image/jpeg", "image/png"))
+            dim = Image.open(io.BytesIO(conteudo)).size if conteudo else None
+            confere(tipo_ok and dim == (1200, 630) and 1000 < len(conteudo) < 200_000 and esperado in url, f"{nome} /{rota}: imagem de prévia própria, 1200 x 630, {len(conteudo) // 1024} KB ({url.rsplit('/', 1)[-1]})")
+            confere(f'og:image" content="{url}"' in html and f'twitter:image" content="{url}"' in html, f"{nome} /{rota}: og:image e twitter:image apontam para a mesma imagem")
+            para_comparar.setdefault(rota, {})[nome] = (url, conteudo)
+        proj = cabeca_de(base + caminho + f"projeto/{com_voto['id']}/")
+        confere(re.search(r'property="og:image" content="(.*?)"', proj).group(1).endswith("/og-en.png" if nome == "EN" else "/og.png"), f"{nome}: o projeto continua com a imagem geral do site")
+    dep_rota = f"deputado/{dep['id']}/"
+    confere(para_comparar[dep_rota]["PT"][0] == para_comparar[dep_rota]["EN"][0], "deputado: o mesmo arquivo de imagem serve ao português e ao inglês")
+    confere(para_comparar["assunto/saude/"]["PT"][1] != para_comparar["assunto/saude/"]["EN"][1], "assunto: a imagem em inglês é diferente da em português")
+
     print("Licença publicada")
     raiz_repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     api = navegador.new_context().request
