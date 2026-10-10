@@ -201,6 +201,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `testes/captura_painel.py` | Tira a foto (PNG) da tela Em números; a atualização diária guarda a mais recente em `painel/ultima-geracao.png` |
 | `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404, em português e em inglês (`--idiomas`) |
 | `site/criar_og_en.py` | Cria `site/og-en.png`, a imagem de compartilhamento em inglês |
+| `site/imagens_og.py` | Imagens de prévia de cada deputado, assunto e página fixa, feitas ao montar o site (precisa do Pillow) |
 | `site/idioma.py` | Carrega o dicionário de um idioma para o gerador de páginas |
 | `site/idiomas/en.json` | Dicionário português → inglês dos textos fixos do site |
 | `site/exportar_en.py` | Junta as traduções de projetos e votações em `site/dados/en/` |

@@ -43,6 +43,10 @@ jobs:
         id: config
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
+      # Imagens de prévia (WhatsApp, X…) de cada deputado, assunto e página fixa. Sem o Pillow, o site usa a imagem geral.
+      - name: Instalar o Pillow
+        run: pip install pillow==12.3.0
+
       # Copia o site e cria uma página para cada projeto, deputado e assunto (título e prévia próprios).
       - name: Montar as páginas
         run: python site/gerar_paginas.py --saida _site --url "${{ steps.config.outputs.base_url }}"

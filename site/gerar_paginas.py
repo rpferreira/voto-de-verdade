@@ -31,6 +31,7 @@ from urllib.parse import urlparse
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from idioma import Idioma  # noqa: E402
+import imagens_og as OG  # noqa: E402
 
 FONTE_DADOS = "https://dadosabertos.camara.leg.br/"
 NOME = "Voto de Verdade"
@@ -221,9 +222,11 @@ class Gerador:
         prefixo = "" if idioma == "pt" else idioma + "/"
         return f"{self.url}/{prefixo}{caminho}/" if caminho else f"{self.url}/{prefixo}"
 
-    def cabeca(self, titulo, descricao, canonico, extra="", noindex=False):
+    def cabeca(self, titulo, descricao, canonico, extra="", noindex=False, imagem=None):
         L = self.L
         t, d, c = esc(titulo), esc(descricao), esc(canonico)
+        img = esc(imagem or f'{self.url}/{"og-en.png" if L.en else "og.png"}')
+        alt = t if imagem else esc(L("{0}: como a Câmara dos Deputados votou", NOME))
         robos = "noindex" if noindex else "index, follow, max-image-preview:large, max-snippet:-1"
         linhas = [
             f'<title>{t}</title>',
@@ -238,14 +241,14 @@ class Gerador:
             f'<meta property="og:title" content="{t}">',
             f'<meta property="og:description" content="{d}">',
             f'<meta property="og:url" content="{c}">',
-            f'<meta property="og:image" content="{esc(self.url)}/{"og-en.png" if L.en else "og.png"}">',
+            f'<meta property="og:image" content="{img}">',
             '<meta property="og:image:width" content="1200">',
             '<meta property="og:image:height" content="630">',
-            f'<meta property="og:image:alt" content="{esc(L("{0}: como a Câmara dos Deputados votou", NOME))}">',
+            f'<meta property="og:image:alt" content="{alt}">',
             '<meta name="twitter:card" content="summary_large_image">',
             f'<meta name="twitter:title" content="{t}">',
             f'<meta name="twitter:description" content="{d}">',
-            f'<meta name="twitter:image" content="{esc(self.url)}/{"og-en.png" if L.en else "og.png"}">',
+            f'<meta name="twitter:image" content="{img}">',
             f'<link rel="sitemap" type="application/xml" href="{esc(self.url)}/sitemap.xml">',
             f'<link rel="describedby" type="text/markdown" href="{esc(self.url)}/{L.prefixo}llms.txt">',
             f'<link rel="license" href="{LICENCA_CONTEUDO}">',
@@ -271,10 +274,29 @@ class Gerador:
             return f'<li class="menu-idioma"><span class="menu-idioma__rotulo">{esc(L("Idioma"))}</span><span class="idioma">{miolo}</span></li>'
         return f'<span class="idioma" role="group" aria-label="{esc(L("Idioma"))}">{miolo}</span>'
 
-    def montar(self, caminho, rota, titulo, descricao, corpo, raiz=None, noindex=False, estruturados=None, markdown=None, ativos=None, data=None):
+    def imagem_og(self, og, caminho, descricao):
+        """Cria a imagem de prévia da página e devolve o endereço dela (ou None, sem Pillow: vale a imagem geral do site)."""
+        if not OG.disponivel():
+            return None
+        partes = urlparse(self.url)
+        dominio = partes.netloc + partes.path.rstrip("/")
+        if og[0] == "deputado":
+            _, nome, sigla, id_, foto = og
+            rel = f"og/deputado-{id_}.jpg"
+            destino = os.path.join(self.saida, rel)  # na raiz: o mesmo arquivo serve ao português e ao inglês (só tem nome e sigla)
+            if not os.path.exists(destino):
+                OG.deputado(destino, nome, sigla, foto, dominio)
+            return f"{self.url}/{rel}"
+        _, titulo, destaque, sub = og
+        rel = f"og/{caminho.replace('/', '-')}.png"
+        OG.texto(os.path.join(self.saida, self.L.prefixo, rel), titulo, sub or descricao, destaque, dominio)
+        return f"{self.url}/{self.L.prefixo}{rel}"
+
+    def montar(self, caminho, rota, titulo, descricao, corpo, raiz=None, noindex=False, estruturados=None, markdown=None, ativos=None, data=None, og=None):
         """caminho: pasta de saída ('projeto/123', dentro da pasta do idioma); rota: rota do aplicativo ('projeto/123').
         estruturados: dados schema.org (dict). markdown: texto da versão em Markdown (index.md).
-        data: quando o conteúdo mudou pela última vez (AAAA-MM-DD), para o sitemap."""
+        data: quando o conteúdo mudou pela última vez (AAAA-MM-DD), para o sitemap.
+        og: imagem de prévia própria da página: ("texto", título curto, etiqueta ou None, frase de apoio ou None para usar a descrição da página) ou ("deputado", nome, sigla, id, caminho da foto)."""
         L = self.L
         if raiz is None:
             raiz = "../" * len(caminho.split("/")) if caminho else ""
@@ -296,7 +318,7 @@ class Gerador:
                     extra.append(f'<meta property="og:locale:alternate" content="{Idioma.OPEN_GRAPH[cod]}">')
         if estruturados:
             extra.append(jsonld(estruturados))
-        cab = self.cabeca(titulo, descricao, canonico, "\n  ".join(extra), noindex)
+        cab = self.cabeca(titulo, descricao, canonico, "\n  ".join(extra), noindex, self.imagem_og(og, caminho, descricao) if og and not noindex else None)
         pagina = pagina[:ini] + cab + pagina[fim + len("<!--FIM-CABECA-->"):]
         ini, fim = pagina.index("<!--INICIO-CONTEUDO-->"), pagina.index("<!--FIM-CONTEUDO-->")
         pagina = pagina[:ini] + corpo + pagina[fim + len("<!--FIM-CONTEUDO-->"):]
@@ -613,7 +635,8 @@ def gerar_idioma(site, g, D, L, URL, doacao):
             {"@type": "ProfilePage", "url": f"{URL}/{L.prefixo}deputado/{d['id']}/", "name": d["nome"], "inLanguage": lang_ld, **({"dateModified": ultima_dep} if ultima_dep else {}), "mainEntity": pessoa},
             migalhas_ld([(L("Deputados"), f"{URL}/{L.prefixo}deputados/"), (d["nome"], None)])]}
         g.montar(f'deputado/{d["id"]}', f'deputado/{d["id"]}', titulo_deputado_seo(L, d["nome"], sigla, NOME), descricao, corpo,
-                 estruturados=ld, markdown="\n".join(md) + "\n", data=ultima_dep)
+                 og=("deputado", d["nome"], sigla, d["id"], os.path.join(site, "fotos", f'{d["id"]}.jpg')),
+             estruturados=ld, markdown="\n".join(md) + "\n", data=ultima_dep)
         n_dep += 1
 
     # ---- assuntos
@@ -645,7 +668,8 @@ def gerar_idioma(site, g, D, L, URL, doacao):
                  {"@type": "ListItem", "position": i + 1, "url": f"{URL}/{L.prefixo}projeto/{p['id']}/", "name": p["titulo"]} for i, p in enumerate(meus)]}},
             migalhas_ld([(L("Assuntos"), URL + "/" + L.prefixo), (a["nome"], None)])]}
         g.montar(f'assunto/{a["slug"]}', f'assunto/{a["slug"]}', titulo_assunto_seo(L, a["nome"], NOME), descricao, corpo,
-                 estruturados=ld, markdown="\n".join(md) + "\n", data=max((p["ultima"] for p in todos if p["ultima"]), default=None))
+                 og=("texto", a["nome"], L("{0} projetos votados na Câmara dos Deputados", a["n"]), desc_a + "."),
+             estruturados=ld, markdown="\n".join(md) + "\n", data=max((p["ultima"] for p in todos if p["ultima"]), default=None))
 
     # ---- lista de deputados (todos, por estado) e como funciona
     por_uf = {}
@@ -662,6 +686,7 @@ def gerar_idioma(site, g, D, L, URL, doacao):
     g.montar("deputados", "deputados", L("Deputados federais: {0}", NOME),
              L("Procure um deputado federal pelo nome ou pelo estado e veja como ele votou na Câmara dos Deputados. Sem nota e sem ranking."),
              corpo, markdown="\n".join(md) + "\n",
+             og=("texto", L("Deputados federais"), None, None),
              estruturados={"@context": "https://schema.org", "@type": "CollectionPage", "name": L("Deputados federais"),
                            "url": f"{URL}/{L.prefixo}deputados/", "inLanguage": lang_ld})
 
@@ -742,6 +767,7 @@ def gerar_idioma(site, g, D, L, URL, doacao):
              corpo, markdown=f"# {L('Como o site funciona')}\n\n" + "\n\n".join(
                  f"## {titulo}\n\n" + "\n\n".join(rico_md(par) for par in pars) + (("\n\n" + "\n".join(f"- {rico_md(i)}" for i in resto[0])) if resto else "")
                  for titulo, pars, *resto in sobre) + "\n",
+             og=("texto", L("Como o site funciona"), None, None),
              estruturados={"@context": "https://schema.org", "@type": "AboutPage", "name": L("Como o site funciona"),
                            "url": f"{URL}/{L.prefixo}sobre/", "inLanguage": lang_ld})
 
@@ -775,6 +801,7 @@ def gerar_idioma(site, g, D, L, URL, doacao):
              corpo_lic, markdown=f"# {titulo_lic}\n\n{L('O código e o conteúdo do Voto de Verdade têm licenças diferentes.')}\n\n"
              + "\n\n".join(f"## {t}" + (f"\n\n{x}" if x else "") + (("\n\n" + "\n".join(f"- {i}" for i in it)) if it else "") for t, x, it in lic_secoes)
              + f"\n\n## {L('Textos completos')}\n\n" + "\n".join(f"- [{n}]({h})" for h, n in arq_lic) + "\n",
+             og=("texto", titulo_lic, None, None),
              estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": titulo_lic, "url": f"{URL}/{L.prefixo}licenca/", "inLanguage": lang_ld,
                            "license": LICENCA_CONTEUDO, "isPartOf": {"@id": URL + "/" + L.prefixo + "#site"}})
 
@@ -909,7 +936,8 @@ def gerar_idioma(site, g, D, L, URL, doacao):
         descricao_painel = L("Votações nominais e simbólicas ao longo do tempo, por assunto, resultado, participação e placar. Só números, sem nota e sem ranking.")
         g.montar("em-numeros", "em-numeros", L("Em números: votações da Câmara ao longo do tempo | {0}", NOME), descricao_painel,
                  corpo, markdown="\n".join(md) + "\n",
-                 estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": L("Em números"),
+                 og=("texto", L("Em números"), None, None),
+             estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": L("Em números"),
                                "url": f"{URL}/{L.prefixo}em-numeros/", "inLanguage": lang_ld, "dateModified": pn["gerado_em"]})
 
         # a página Transparência da IA (/inteligencia-artificial/)
@@ -939,7 +967,8 @@ def gerar_idioma(site, g, D, L, URL, doacao):
             g.montar("inteligencia-artificial", "inteligencia-artificial", L("Transparência da IA: como a inteligência artificial é usada | {0}", NOME),
                      L("O que a inteligência artificial faz no site, como o trabalho é conferido, a confiança de cada texto e onde ela pode errar."),
                      corpo_ia, markdown="\n".join(md_ia) + "\n",
-                     estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": L("Transparência da IA"),
+                     og=("texto", L("Transparência da IA"), None, None),
+             estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": L("Transparência da IA"),
                                    "url": f"{URL}/{L.prefixo}inteligencia-artificial/", "inLanguage": lang_ld, "dateModified": pn["gerado_em"]})
 
         # uma página para cada tabela (/em-numeros/por-mes/, /inteligencia-artificial/confianca/ e as outras)
@@ -977,7 +1006,8 @@ def gerar_idioma(site, g, D, L, URL, doacao):
                  f'<p>{L("O site continua neutro e apartidário, sem nota e sem ranking. Quem doa não escolhe o que aparece, não ganha destaque e não influencia os resumos. Não é doação a uma associação ou ONG: o site é mantido por uma pessoa e a doação não dá direito a abatimento de imposto.")}</p>'
                  f'<h2>{L("Para onde vai o dinheiro")}</h2>'
                  f'<p>{L("Primeiro, para cobrir os custos do site: a inteligência artificial (que classifica os projetos por assunto, escreve os títulos e os resumos em linguagem simples, lista os pontos principais e avisa quando tem dúvida) e o endereço do site (domínio). O que sobrar ajuda a pagar o trabalho de desenvolvimento e manutenção, que é feito por uma pessoa só. Doar não muda nada no site: ele continua igual e gratuito para todos.")}</p></div>',
-                 markdown=f"# {L('Apoie o Voto de Verdade')}\n\n{L('Doação única, sem assinatura: {0}', doacao['url'])}\n")
+                 markdown=f"# {L('Apoie o Voto de Verdade')}\n\n{L('Doação única, sem assinatura: {0}', doacao['url'])}\n",
+                 og=("texto", L("Apoie o Voto de Verdade"), None, None))
 
     # ---- página inicial (com o endereço de compartilhamento certo e o conteúdo já escrito)
     recentes = sorted((v for v in votacoes if v["t"] == "nominal"), key=lambda v: v["d"], reverse=True)
