@@ -2,6 +2,13 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.6.1 (2026-10-10)
+
+### Ajustes
+- **Busca (SEO):** título da tela inicial com «como cada deputado federal votou na Câmara»; páginas de assunto com título «Saúde na Câmara: projetos e votos | Voto de Verdade» (o aplicativo usa o mesmo título depois de abrir); `twitter:image` nas páginas.
+- **Dados estruturados:** mais palavras-chave na tela inicial (de 5 para 12) e organização do site; deputados com link para a página oficial da Câmara, foto e data da última votação; projetos com tipo (PL, PEC…) e as tags do projeto como palavras-chave.
+- **Mapa do site (sitemap):** cada página passa a informar a data em que o conteúdo mudou de verdade (a última votação do projeto, do deputado ou do assunto), em vez de a data de hoje em todas. O Google ignora datas que mudam todo dia sem motivo.
+
 ## 0.6.0 (2026-10-10)
 
 ### Novidades

@@ -71,6 +71,14 @@ def titulo_projeto_seo(nome, titulo, marca):
     return base + sufixo if len(base) + len(sufixo) <= 62 else base
 
 
+def titulo_assunto_seo(L, nome, marca):
+    """«Saúde na Câmara: projetos e votos | Voto de Verdade»; sem a marca, e por fim «Saúde: Voto de Verdade», se passar de 62 caracteres."""
+    for t in (L("{0} na Câmara: projetos e votos | {1}", nome, marca), L("{0} na Câmara: projetos e votos", nome)):
+        if len(t) <= 62:
+            return t
+    return f"{nome}: {marca}"
+
+
 def titulo_deputado_seo(L, nome, sigla, marca):
     """«Nome (PARTIDO · UF): votos na Câmara | Voto de Verdade», sem passar de cerca de 60 caracteres (corta o que não couber)."""
     t = nome
@@ -197,6 +205,7 @@ class Gerador:
         self.L = L
         self.idiomas = idiomas
         self.paginas = []  # caminhos das páginas que entram no sitemap (fora a inicial)
+        self.datas = {}  # caminho -> data em que o conteúdo mudou de verdade (lastmod do sitemap)
 
     def versao(self, arquivo):
         v = self.versoes.get(arquivo)
@@ -236,6 +245,7 @@ class Gerador:
             '<meta name="twitter:card" content="summary_large_image">',
             f'<meta name="twitter:title" content="{t}">',
             f'<meta name="twitter:description" content="{d}">',
+            f'<meta name="twitter:image" content="{esc(self.url)}/{"og-en.png" if L.en else "og.png"}">',
             f'<link rel="sitemap" type="application/xml" href="{esc(self.url)}/sitemap.xml">',
             f'<link rel="describedby" type="text/markdown" href="{esc(self.url)}/{L.prefixo}llms.txt">',
             f'<link rel="license" href="{LICENCA_CONTEUDO}">',
@@ -261,9 +271,10 @@ class Gerador:
             return f'<li class="menu-idioma"><span class="menu-idioma__rotulo">{esc(L("Idioma"))}</span><span class="idioma">{miolo}</span></li>'
         return f'<span class="idioma" role="group" aria-label="{esc(L("Idioma"))}">{miolo}</span>'
 
-    def montar(self, caminho, rota, titulo, descricao, corpo, raiz=None, noindex=False, estruturados=None, markdown=None, ativos=None):
+    def montar(self, caminho, rota, titulo, descricao, corpo, raiz=None, noindex=False, estruturados=None, markdown=None, ativos=None, data=None):
         """caminho: pasta de saída ('projeto/123', dentro da pasta do idioma); rota: rota do aplicativo ('projeto/123').
-        estruturados: dados schema.org (dict). markdown: texto da versão em Markdown (index.md)."""
+        estruturados: dados schema.org (dict). markdown: texto da versão em Markdown (index.md).
+        data: quando o conteúdo mudou pela última vez (AAAA-MM-DD), para o sitemap."""
         L = self.L
         if raiz is None:
             raiz = "../" * len(caminho.split("/")) if caminho else ""
@@ -352,6 +363,8 @@ class Gerador:
             self.escrever(os.path.join(caminho, "index.md") if caminho else "index.md", markdown)
         if not noindex and caminho:
             self.paginas.append(caminho)
+            if data:
+                self.datas[caminho] = data
 
 
 PRINCIPIOS = [
@@ -539,10 +552,11 @@ def gerar_idioma(site, g, D, L, URL, doacao):
             {"@type": "Legislation", "name": pr["titulo"], "legislationIdentifier": pr["nome"], "description": curto(resumo, 300),
              "inLanguage": lang_ld, "legislationJurisdiction": "BR", "url": f"{URL}/{L.prefixo}projeto/{pr['id']}/",
              "dateModified": pr["ultima"], **({"sameAs": pr["texto"]} if pr.get("texto") else {}),
+             "legislationType": pr["nome"].split()[0], **({"keywords": pr["tags"]} if pr.get("tags") else {}),
              "about": assunto, "publisher": {"@type": "GovernmentOrganization", "name": camara}},
             migalhas_ld([(L("Assuntos"), URL + "/" + L.prefixo), (assunto, f"{URL}/{L.prefixo}assunto/{pr['a']}/"), (pr["nome"], None)])]}
         g.montar(f'projeto/{pr["id"]}', f'projeto/{pr["id"]}', titulo_projeto_seo(pr["nome"], pr["titulo"], NOME), descricao, corpo,
-                 estruturados=ld, markdown="\n".join(md) + "\n")
+                 estruturados=ld, markdown="\n".join(md) + "\n", data=pr["ultima"])
 
     # ---- deputados
     n_dep = 0
@@ -589,14 +603,17 @@ def gerar_idioma(site, g, D, L, URL, doacao):
         if md_votos:
             md += [f"## {L('Como votou (votações nominais, da mais recente para a mais antiga)')}", ""] + md_votos + [""]
         md += ["---", L("Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto. Sem nota e sem ranking.")]
-        pessoa = {"@type": "Person", "name": d["nome"],
+        ultima_dep = ordenados[0][0]["d"] if ordenados else None
+        foto = os.path.exists(os.path.join(site, "fotos", f'{d["id"]}.jpg'))
+        pessoa = {"@type": "Person", "name": d["nome"], "url": f"{URL}/{L.prefixo}deputado/{d['id']}/",
+                  "sameAs": f"https://www.camara.leg.br/deputados/{d['id']}", **({"image": f"{URL}/fotos/{d['id']}.jpg"} if foto else {}),
                   **({"jobTitle": L("Deputado Federal"), "worksFor": {"@type": "GovernmentOrganization", "name": camara}} if d.get("ex") else {}),
                   **({"memberOf": {"@type": "Organization", "name": d["partido"]}} if d.get("partido") else {})}
         ld = {"@context": "https://schema.org", "@graph": [
-            {"@type": "ProfilePage", "url": f"{URL}/{L.prefixo}deputado/{d['id']}/", "name": d["nome"], "inLanguage": lang_ld, "mainEntity": pessoa},
+            {"@type": "ProfilePage", "url": f"{URL}/{L.prefixo}deputado/{d['id']}/", "name": d["nome"], "inLanguage": lang_ld, **({"dateModified": ultima_dep} if ultima_dep else {}), "mainEntity": pessoa},
             migalhas_ld([(L("Deputados"), f"{URL}/{L.prefixo}deputados/"), (d["nome"], None)])]}
         g.montar(f'deputado/{d["id"]}', f'deputado/{d["id"]}', titulo_deputado_seo(L, d["nome"], sigla, NOME), descricao, corpo,
-                 estruturados=ld, markdown="\n".join(md) + "\n")
+                 estruturados=ld, markdown="\n".join(md) + "\n", data=ultima_dep)
         n_dep += 1
 
     # ---- assuntos
@@ -627,8 +644,8 @@ def gerar_idioma(site, g, D, L, URL, doacao):
              "mainEntity": {"@type": "ItemList", "numberOfItems": len(todos), "itemListElement": [
                  {"@type": "ListItem", "position": i + 1, "url": f"{URL}/{L.prefixo}projeto/{p['id']}/", "name": p["titulo"]} for i, p in enumerate(meus)]}},
             migalhas_ld([(L("Assuntos"), URL + "/" + L.prefixo), (a["nome"], None)])]}
-        g.montar(f'assunto/{a["slug"]}', f'assunto/{a["slug"]}', f'{a["nome"]}: {NOME}', descricao, corpo,
-                 estruturados=ld, markdown="\n".join(md) + "\n")
+        g.montar(f'assunto/{a["slug"]}', f'assunto/{a["slug"]}', titulo_assunto_seo(L, a["nome"], NOME), descricao, corpo,
+                 estruturados=ld, markdown="\n".join(md) + "\n", data=max((p["ultima"] for p in todos if p["ultima"]), default=None))
 
     # ---- lista de deputados (todos, por estado) e como funciona
     por_uf = {}
@@ -988,14 +1005,17 @@ def gerar_idioma(site, g, D, L, URL, doacao):
     dist = [{"@type": "DataDownload", "encodingFormat": "application/json", "name": n, "contentUrl": f"{URL}/dados/{n}"}
             for n in ("meta.json", "assuntos.json", "projetos.json", "votacoes.json", "deputados.json", "painel.json")]
     ld = {"@context": "https://schema.org", "@graph": [
-        {"@type": "WebSite", "@id": URL + "/" + L.prefixo + "#site", "name": NOME, "url": URL + "/" + L.prefixo, "inLanguage": lang_ld, "description": L(LEMA)},
+        {"@type": "WebSite", "@id": URL + "/" + L.prefixo + "#site", "name": NOME, "url": URL + "/" + L.prefixo, "inLanguage": lang_ld, "description": L(LEMA),
+         "publisher": {"@id": URL + "/#organizacao"}},
+        {"@type": "Organization", "@id": URL + "/#organizacao", "name": NOME, "url": URL + "/", "sameAs": [REPOSITORIO]},
         {"@type": "Dataset", "name": L("Votações da Câmara dos Deputados, com assunto e resumo em linguagem simples"),
          "description": L("{0} votações em plenário da Câmara dos Deputados, de {1} a {2}, {3} projetos com assunto e resumo feitos por inteligência artificial, e o voto de cada deputado nas {4} votações nominais. Dados originais: Dados Abertos da Câmara dos Deputados.",
                           meta["votacoes"], L.data(meta["de"]), L.data(meta["ate"]), meta["projetos"], meta["nominais"]),
          "url": URL + "/" + L.prefixo, "inLanguage": lang_ld, "isAccessibleForFree": True, "isBasedOn": FONTE_DADOS,
          "license": LICENCA_CONTEUDO,
          "temporalCoverage": f"{meta['de']}/{meta['ate']}", "spatialCoverage": L("Brasil"), "dateModified": meta["gerado_em"],
-         "keywords": [L("Câmara dos Deputados"), L("votações"), L("deputados federais"), L("transparência"), L("Brasil")],
+         # o que uma pessoa digitaria para achar o site
+         "keywords": [L("Câmara dos Deputados"), L("deputados federais"), L("como o deputado votou"), L("votações nominais"), L("voto de cada deputado"), L("projetos de lei"), L("Congresso Nacional"), L("dados abertos"), L("resumos em linguagem simples"), L("transparência"), L("votações"), L("Brasil")],
          "creator": {"@type": "Organization", "name": NOME, "url": URL + "/"}, "distribution": dist}]}
     md_home = [f"# {NOME}", "", f"> {L(LEMA)}", "", f"## {L('Assuntos')}", ""]
     md_home += [f"- [{a['nome']}]({URL}/{L.prefixo}assunto/{a['slug']}/): {L('{0} projetos', a['n'])}" for a in assuntos]
@@ -1003,8 +1023,8 @@ def gerar_idioma(site, g, D, L, URL, doacao):
     md_home += [f"- [{pr['titulo']}]({URL}/{L.prefixo}projeto/{pr['id']}/) ({L.data(v['d'])})" for pr, v in lista_rec]
     md_home += ["", f"- [{L('Deputados')}]({URL}/{L.prefixo}deputados/)", f"- [{L('Em números')}]({URL}/{L.prefixo}em-numeros/)",
                 f"- [{L('Transparência da IA')}]({URL}/{L.prefixo}inteligencia-artificial/)", f"- [{L('Como o site funciona')}]({URL}/{L.prefixo}sobre/)"]
-    g.montar("", "", L("{0}: como a Câmara dos Deputados votou", NOME),
-             L("Escolha um assunto e veja o que a Câmara dos Deputados votou e como cada deputado federal votou. Sem nota e sem ranking."),
+    g.montar("", "", L("{0}: como cada deputado federal votou na Câmara", NOME),
+             L("Veja como cada deputado federal votou na Câmara dos Deputados, projeto por projeto e por assunto. Resumos em linguagem simples, sem nota e sem ranking."),
              corpo, estruturados=ld, markdown="\n".join(md_home) + "\n")
     return n_dep
 
@@ -1192,12 +1212,24 @@ def main():
     cabeca_xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' + (' xmlns:xhtml="http://www.w3.org/1999/xhtml"' if multi else "") + ">"
     linhas = ['<?xml version="1.0" encoding="UTF-8"?>', cabeca_xml]
 
+    # lastmod honesto: a data em que o conteúdo da página mudou (a última votação dela). Telas que juntam tudo usam a data da
+    # última votação do banco; textos fixos, a da versão mais recente do site. O Google ignora lastmod que muda todo dia sem motivo.
+    versao_data = re.search(r"^## [\d.]+ \((\d{4}-\d{2}-\d{2})\)", open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "CHANGELOG.md"), encoding="utf-8").read(), re.M)
+    data_textos = versao_data.group(1) if versao_data else meta["gerado_em"]
+    datas_g = geradores["pt"].datas
+    TEXTOS_FIXOS = {"sobre", "licenca", "apoie", "inteligencia-artificial"}
+
+    def data_de(caminho):
+        if caminho in datas_g:
+            return datas_g[caminho]
+        return data_textos if caminho in TEXTOS_FIXOS else meta["ate"]
+
     def entrada(caminho):
         alt = ""
         if multi:
             alt = "".join(f'<xhtml:link rel="alternate" hreflang="{Idioma.HTML[c]}" href="{esc(g.endereco(c, caminho))}"/>' for c in idiomas)
             alt += f'<xhtml:link rel="alternate" hreflang="x-default" href="{esc(g.endereco("pt", caminho))}"/>'
-        return [f'<url><loc>{esc(g.endereco(c, caminho))}</loc><lastmod>{meta["gerado_em"]}</lastmod>{alt}</url>' for c in idiomas]
+        return [f'<url><loc>{esc(g.endereco(c, caminho))}</loc><lastmod>{data_de(caminho)}</lastmod>{alt}</url>' for c in idiomas]
     linhas += entrada("")
     for caminho in paginas["pt"]:
         linhas += entrada(caminho)

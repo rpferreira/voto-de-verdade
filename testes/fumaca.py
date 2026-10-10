@@ -834,6 +834,44 @@ with sync_playwright() as p:
         confere(a404 == aass == 40, f"{nome}: botão secundário tem a mesma altura nas telas (40px; página de erro {a404}, assunto {aass})")
         pg.context.close()
 
+    print("SEO: títulos, dados estruturados e sitemap")
+    api = navegador.new_context().request
+    def cabeca_de(url):
+        r = api.get(url)
+        return r.text() if r.ok else ""
+    def jsonld_de(html):
+        return [json.loads(x) for x in re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.S)]
+    for caminho, nome, esperado in (("/", "PT", "deputado federal"), ("/en/", "EN", "federal deputy")):
+        home = cabeca_de(base + caminho)
+        titulo = re.search(r"<title>(.*?)</title>", home).group(1)
+        confere(esperado in titulo and len(titulo) <= 62, f"{nome}: título da home traz «{esperado}» e cabe em 62 caracteres ({titulo})")
+        confere('name="twitter:image"' in home, f"{nome}: home tem twitter:image")
+        grafo = jsonld_de(home)[0]["@graph"]
+        dataset = next(x for x in grafo if x["@type"] == "Dataset")
+        confere(len(dataset["keywords"]) >= 10 and len(set(dataset["keywords"])) == len(dataset["keywords"]), f"{nome}: dataset com pelo menos 10 palavras-chave sem repetir ({len(dataset['keywords'])})")
+        confere(any(x["@type"] == "Organization" and x.get("sameAs") for x in grafo), f"{nome}: dados estruturados da home têm a organização")
+        assunto_html = cabeca_de(base + caminho + "assunto/infraestrutura-e-transporte/")
+        t_ass = re.search(r"<title>(.*?)</title>", assunto_html).group(1)
+        confere(len(t_ass) <= 62 and ("projetos e votos" in t_ass or "bills and votes" in t_ass or ": Voto de Verdade" in t_ass), f"{nome}: título de assunto longo cabe em 62 caracteres ({t_ass})")
+        t_saude = re.search(r"<title>(.*?)</title>", cabeca_de(base + caminho + "assunto/saude/")).group(1)
+        confere(("projetos e votos" in t_saude or "bills and votes" in t_saude) and "Voto de Verdade" in t_saude, f"{nome}: título do assunto Saúde com «projetos e votos» ({t_saude})")
+        pg = nova(1280)
+        pg.goto(base + caminho + "#/assunto/saude")
+        pg.wait_for_selector("ul.projetos a.proj", timeout=15000)
+        pg.wait_for_function(f"document.title === {json.dumps(t_saude)}", timeout=5000, polling=100)
+        confere(pg.title() == t_saude, f"{nome}: o título que o aplicativo põe no assunto é o mesmo da página estática")
+        pg.context.close()
+        pd = jsonld_de(cabeca_de(base + caminho + f"deputado/{dep['id']}/"))[0]["@graph"][0]
+        pessoa = pd["mainEntity"]
+        confere(pessoa["sameAs"] == f"https://www.camara.leg.br/deputados/{dep['id']}" and pessoa["image"].endswith(f"/fotos/{dep['id']}.jpg") and pd.get("dateModified"), f"{nome}: deputado com link oficial da Câmara, foto e data nos dados estruturados")
+        pl = jsonld_de(cabeca_de(base + caminho + f"projeto/{com_voto['id']}/"))[0]["@graph"][0]
+        confere(pl["@type"] == "Legislation" and pl.get("legislationType") and isinstance(pl.get("keywords"), list) and pl["keywords"], f"{nome}: projeto com tipo e palavras-chave (tags) nos dados estruturados")
+    mapa = api.get(base + "/sitemap.xml").text()
+    datas = re.findall(r"<lastmod>(.*?)</lastmod>", mapa)
+    confere(len(set(datas)) > 20, f"sitemap: datas de modificação diferentes por página, e não uma só para tudo ({len(set(datas))} datas)")
+    m = re.search(rf"<loc>[^<]*/projeto/{com_voto['id']}/</loc><lastmod>(.*?)</lastmod>", mapa)
+    confere(m and m.group(1) == com_voto["ultima"], f"sitemap: a data do projeto é a da última votação dele ({m and m.group(1)} / {com_voto['ultima']})")
+
     print("Licença publicada")
     raiz_repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     api = navegador.new_context().request
