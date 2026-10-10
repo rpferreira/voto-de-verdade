@@ -275,7 +275,7 @@ details.ajuda p { margin: var(--perto) 0 0; color: var(--tinta-suave); }
 .filtros__linha { display: grid; gap: var(--item); }
 @media (min-width: 50rem) { .filtros__linha { grid-template-columns: 1fr 1fr 1fr; align-items: end; } }
 .filtros__linha--3 { display: grid; }
-@media (min-width: 50rem) { .filtros__linha--3 { grid-template-columns: 1.4fr 1fr minmax(15rem, 1fr); } }  /* a terceira (Ordem) precisa de 15rem para caber "Mais recentes primeiro" */
+@media (min-width: 50rem) { .filtros__linha--3 { grid-template-columns: 1.4fr minmax(11rem, 1fr) minmax(15rem, 1fr); } }  /* Ano precisa de 11rem e Ordem de 15rem para caber "Todos os anos" e "Mais recentes primeiro" com folga */
 @media (min-width: 50rem) { .filtros__linha--2 { grid-template-columns: repeat(2, minmax(15rem, 18rem)); } }
 /* Filtros da página do deputado (busca, assunto, voto): o assunto mais longo (\"Administração Pública e Congresso\") tem de caber inteiro. */
 .filtros__linha--dep { display: grid; gap: var(--item); }

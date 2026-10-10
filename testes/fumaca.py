@@ -372,16 +372,16 @@ with sync_playwright() as p:
 
     print("Campos com o texto inteiro à vista")
     # O valor escolhido (e o texto de exemplo) de cada campo tem de caber; antes, "Mais recentes primeiro" aparecia cortado.
-    medir = """() => {
+    medir = """async () => {
       const c = document.createElement('canvas').getContext('2d'), cortados = [];
-      const largura = (el, texto) => { const cs = getComputedStyle(el); c.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; return [c.measureText(texto).width, el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)]; };
+      const largura = async (el, texto) => { const cs = getComputedStyle(el); c.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; await document.fonts.load(c.font, texto); return [c.measureText(texto).width, el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)]; };
       for (const s of document.querySelectorAll('select')) {
         if (!s.offsetParent || s.id === 'sel-votacao') continue;   // escondido, ou a lista de votações (rótulo longo, já abreviado com …)
-        const [w, d] = largura(s, s.options[s.selectedIndex].text); if (w > d + 1) cortados.push(s.id + ': ' + s.options[s.selectedIndex].text);
+        const [w, d] = await largura(s, s.options[s.selectedIndex].text); if (w > d + 1) cortados.push(s.id + ': ' + s.options[s.selectedIndex].text);
       }
       for (const i of document.querySelectorAll('input[type=search]')) {
         if (!i.offsetParent || !i.placeholder) continue;
-        const [w, d] = largura(i, i.placeholder); if (w > d + 1) cortados.push(i.id + ' (exemplo): ' + i.placeholder);
+        const [w, d] = await largura(i, i.placeholder); if (w > d + 1) cortados.push(i.id + ' (exemplo): ' + i.placeholder);
       }
       return cortados;
     }"""
