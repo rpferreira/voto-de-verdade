@@ -209,6 +209,8 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `dados/traducoes_en.json` | Tradução em inglês de cada projeto e votação (escrito pela IA) |
 | `site/baixar_fotos.py` | Guarda as fotos dos deputados em `site/fotos/`, reduzidas para 192 px de largura (cerca de 8 KB cada, em vez de 28 KB; usa Pillow). `--reduzir-existentes` reduz as já guardadas |
 | `testes/fumaca.py` | Teste de fumaça do site num navegador de verdade |
+| `VERSION` e `CHANGELOG.md` | A versão do site (mostrada no rodapé) e o histórico de mudanças. Regras em [`docs/versionamento.md`](docs/versionamento.md): `MAJOR.MINOR.PATCH`, `0.x` enquanto for beta, uma versão por pull request que mexe no código do site |
+| `testes/versao.py` | Confere `VERSION`, `CHANGELOG.md`, o rodapé das páginas e, no pull request, se a versão subiu quando o código do site mudou |
 | `testes/espacamento.py` | Confere as regras de espaçamento (grade de 8px) no CSS e nas telas |
 | `testes/idiomas.py` | Confere a versão em inglês: dicionário, dados, páginas e telas |
 | `testes/seguranca.py` | Ataca o site com dados maliciosos e confere a política de segurança (CSP), sem rastreio e sem cookies |

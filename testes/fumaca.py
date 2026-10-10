@@ -653,6 +653,20 @@ with sync_playwright() as p:
     pg.wait_for_selector("ul.projetos .proj", timeout=15000)
     pg.context.close()
 
+    print("Versão no rodapé")
+    versao_site = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "VERSION"), encoding="utf-8").read().strip()
+    for caminho, nome, esperado in (("/", "PT", f"Versão {versao_site} (beta)"), ("/en/", "EN", f"Version {versao_site} (beta)")):
+        for largura in (390, 1280):
+            pg = nova(largura)
+            pg.goto(base + caminho)
+            pg.wait_for_selector(".rodape__versao", state="attached", timeout=15000)
+            texto = pg.locator(".rodape__versao").inner_text()
+            visivel = pg.evaluate("(() => { const e = document.querySelector('.rodape__versao'), r = e.getBoundingClientRect(); return r.width > 0 && r.right <= window.innerWidth && e.scrollWidth <= e.clientWidth + 1; })()")
+            confere(texto.startswith(esperado) and visivel, f"{nome} {largura}px: rodapé mostra «{esperado}», sem passar da tela")
+            link = pg.locator(".rodape__versao a").get_attribute("href")
+            confere(link.startswith("https://github.com/") and link.endswith("/CHANGELOG.md"), f"{nome} {largura}px: versão leva ao histórico de mudanças")
+            pg.context.close()
+
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
     sem_js.goto(base + "/em-numeros/")

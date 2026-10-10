@@ -502,6 +502,7 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 .rodape__miolo { padding-block: var(--bloco); color: var(--tinta-suave); font-size: 0.95rem; display: grid; gap: var(--perto); }
 .rodape p { margin: 0; max-width: 80ch; text-wrap: pretty; }
 .rodape .rodape__apoie { color: var(--tinta); }
+.rodape .rodape__versao { margin-top: var(--perto); font-size: 0.875rem; }
 .rodape .rodape__apoie a { font-weight: 500; }
 .texto-longo .apoie__acao { margin: var(--grupo) 0 var(--item); }
 a.botao, a.botao:hover { text-decoration: none; }
