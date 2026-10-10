@@ -402,7 +402,7 @@
     // Sugestão no próprio campo: os assuntos com mais projetos na base.
     const TERMO_CURTO = { "impostos-e-economia": tx("impostos"), "trabalho-e-direitos": tx("trabalho"), "seguranca-publica": tx("segurança pública"), "administracao-publica-e-congresso": tx("servidores públicos"), "relacoes-internacionais-e-defesa": tx("acordos internacionais") };
     const sugestoes = assuntos.filter((x) => x.slug !== "outros").sort((x, y) => y.n - x.n).slice(0, 3)
-      .map((x) => TERMO_CURTO[x.slug] || x.nome.toLowerCase()).join(", ") + "…";
+      .map((x) => TERMO_CURTO[x.slug] || x.nome.toLowerCase()).slice(0, window.matchMedia("(max-width: 30rem)").matches ? 2 : 3).join(", ") + "…";
     const campoBusca = h("input", {
       id: "busca", type: "search", name: "q", autocomplete: "off", spellcheck: "false",
       placeholder: sugestoes, value: estado.q, enterkeyhint: "search",
@@ -1411,7 +1411,7 @@
 
     const maisOpcoes = h("details", { class: "ajuda mais-filtros" },
       h("summary", {}, tx("Mais opções")),
-      h("div", { class: "filtros__linha" },
+      h("div", { class: "filtros__linha filtros__linha--2" },
         h("div", { class: "campo campo--curto" }, h("label", { for: "dep-ano" }, tx("Ano")), selAnoDep),
         h("div", { class: "campo campo--curto" }, h("label", { for: "dep-ord" }, tx("Ordem")), selOrd)));
     maisOpcoes.open = !!estado.ano;
@@ -1441,8 +1441,8 @@
         h("section", { class: "bloco", "aria-labelledby": "lista-dep" },
           h("h2", { id: "lista-dep" }, tx("Como votou")),
           h("form", { class: "filtros filtros--compacto", role: "search", "aria-label": tx("Filtrar os votos de {0}", dep.nome), onsubmit: (e) => e.preventDefault() },
-            h("div", { class: "filtros__linha filtros__linha--3" },
-              h("div", { class: "campo" }, h("label", { for: "busca-v" }, tx("Procurar nos projetos")), campoQ),
+            h("div", { class: "filtros__linha filtros__linha--dep" },
+              h("div", { class: "campo campo--busca" }, h("label", { for: "busca-v" }, tx("Procurar nos projetos")), campoQ),
               h("div", { class: "campo" }, h("label", { for: "dep-a" }, tx("Assunto")), selA),
               h("div", { class: "campo" }, h("label", { for: "dep-v" }, tx("Voto")), selV)),
             maisOpcoes,

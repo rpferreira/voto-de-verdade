@@ -235,6 +235,15 @@ h3 { font-weight: 500; }
 .tile__num { display: flex; align-items: baseline; gap: var(--junto); margin-top: var(--item); font-variant-numeric: tabular-nums; color: var(--tinta-suave); font-size: 0.95rem; }
 .tile__num b { color: var(--tinta); font-size: 1.6rem; font-weight: 500; line-height: 2rem; letter-spacing: -0.02em; }
 .tile__sub { color: var(--tinta-suave); font-size: 0.875rem; line-height: 1.25rem; }
+/* Celular: o ícone vai para a linha do nome e o cartão fica mais baixo (a lista dos 13 assuntos encurta cerca de um quarto), sem tirar texto. */
+@media (max-width: 37.9375rem) {
+  .tile { grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: var(--item); row-gap: var(--junto); align-items: center; padding: var(--item); }
+  .tile__icone { width: 2.5rem; height: 2.5rem; margin-bottom: 0; }
+  .tile__icone .icone { width: 1.25rem; height: 1.25rem; }
+  .tile__nome { font-size: 1.25rem; }
+  .tile__desc, .tile__num, .tile__sub { grid-column: 1 / -1; }
+  .tile__num { margin-top: var(--perto); }
+}
 
 /* ---------- controles ---------- */
 .campo label { display: block; margin-bottom: var(--junto); font-size: 0.95rem; color: var(--tinta-suave); }
@@ -252,7 +261,7 @@ h3 { font-weight: 500; }
   background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.25rem; /* espaco-ok: posição da seta, alinhada à margem de 16px */
 }
 .marcar { display: flex; gap: var(--item); align-items: flex-start; cursor: pointer; }
-.marcar input { width: 1.5rem; height: 1.5rem; margin: var(--junto) 0 0; flex: none; accent-color: var(--cobalto); cursor: pointer; }
+.marcar input { width: 1.5rem; height: 1.5rem; margin: 0; flex: none; accent-color: var(--cobalto); cursor: pointer; }
 .marcar span { max-width: 62ch; }
 .marcar small { display: block; color: var(--tinta-suave); font-size: 0.95rem; }
 
@@ -266,9 +275,15 @@ details.ajuda p { margin: var(--perto) 0 0; color: var(--tinta-suave); }
 .filtros__linha { display: grid; gap: var(--item); }
 @media (min-width: 50rem) { .filtros__linha { grid-template-columns: 1fr 1fr 1fr; align-items: end; } }
 .filtros__linha--3 { display: grid; }
-@media (min-width: 50rem) { .filtros__linha--3 { grid-template-columns: 1.4fr 1fr 1fr; } }
+@media (min-width: 50rem) { .filtros__linha--3 { grid-template-columns: 1.4fr minmax(11rem, 1fr) minmax(15rem, 1fr); } }  /* Ano precisa de 11rem e Ordem de 15rem para caber "Todos os anos" e "Mais recentes primeiro" com folga */
+@media (min-width: 50rem) { .filtros__linha--2 { grid-template-columns: repeat(2, minmax(15rem, 18rem)); } }
+/* Filtros da página do deputado (busca, assunto, voto): o assunto mais longo (\"Administração Pública e Congresso\") tem de caber inteiro. */
+.filtros__linha--dep { display: grid; gap: var(--item); }
+@media (min-width: 38rem) { .filtros__linha--dep { grid-template-columns: 1.6fr 1fr; align-items: end; } .filtros__linha--dep .campo--busca { grid-column: 1 / -1; } }
+@media (min-width: 62rem) { .filtros__linha--dep { grid-template-columns: 1fr minmax(20rem, 1.3fr) 12rem; } .filtros__linha--dep .campo--busca { grid-column: auto; } }
 .filtros__linha--4 { display: grid; gap: var(--item); grid-template-columns: 1fr 1fr; }
 .filtros__linha--4 .campo--nome { grid-column: 1 / -1; }
+@media (max-width: 30rem) { .filtros__linha--4 { grid-template-columns: 1.6fr 1fr; } }  /* Partido precisa de mais largura que Estado ("SOLIDARIEDADE") */
 @media (min-width: 62rem) { .filtros__linha--4 { grid-template-columns: 1.4fr 1fr 1fr 1fr; } .filtros__linha--4 .campo--nome { grid-column: auto; } }
 .filtros__rodape { display: flex; flex-wrap: wrap; gap: var(--item); align-items: end; justify-content: space-between; }
 .mais-filtros { max-width: none; }
@@ -338,8 +353,8 @@ details.ajuda p { margin: var(--perto) 0 0; color: var(--tinta-suave); }
 .lista-home .proj__titulo { font-size: 1.0625rem; line-height: 1.5rem; }
 
 .selo-aviso { display: inline-flex; align-items: center; height: 1.5rem; background: var(--aviso-fundo); color: var(--aviso-texto); border: 1px solid var(--aviso-borda); border-radius: 99px; padding: 0 var(--perto); font-size: 0.875rem; }
-.rotulo-ia { display: flex; align-items: flex-start; gap: var(--perto); margin: 0 0 var(--perto); font-size: 0.8125rem; line-height: 1.25rem; color: var(--tinta-suave); }
-.rotulo-ia .icone { width: 1rem; height: 1rem; flex: none; margin-top: 0; opacity: 0.8; }
+.rotulo-ia { display: flex; align-items: flex-start; gap: var(--perto); margin: 0 0 var(--item); font-size: 0.6875rem; line-height: 1rem; color: var(--tinta-suave); }
+.rotulo-ia .icone { width: 0.875rem; height: 0.875rem; flex: none; margin-top: 0; opacity: 0.8; }
 .cartao-aviso { background: var(--aviso-fundo); color: var(--aviso-texto); box-shadow: inset 0 0 0 1px var(--aviso-borda); border-radius: var(--raio); padding: var(--item); }
 .cartao-aviso strong { display: block; margin-bottom: var(--junto); font-weight: 600; }
 .cartao-aviso p + p { margin-top: var(--perto); }

@@ -29,6 +29,8 @@ def confere(ok, msg):
     print(("  ok  " if ok else "FALHOU ") + msg)
     if not ok:
         falhas.append(msg)
+        if os.environ.get("GITHUB_ACTIONS"):
+            print("::error::" + msg.replace("\n", " "))  # aparece na aba da verificação, sem precisar abrir o registro
 
 
 class Quieto(http.server.SimpleHTTPRequestHandler):
@@ -367,6 +369,47 @@ with sync_playwright() as p:
     arq, linhas = baixar_csv(pg, ".votos-projeto button:has-text('Baixar CSV')")
     confere(arq.suggested_filename.startswith("voto-de-verdade-votos-") and linhas[0] == "Código do deputado,Deputado,Partido na data,UF,Voto" and len(linhas) > 100, "projeto: o CSV dos votos traz um deputado por linha")
     confere(not pg.erros, "projeto, deputado e deputados sem erros no console " + str(pg.erros))
+
+    print("Campos com o texto inteiro à vista")
+    # O valor escolhido (e o texto de exemplo) de cada campo tem de caber; antes, "Mais recentes primeiro" aparecia cortado.
+    medir = """async () => {
+      const c = document.createElement('canvas').getContext('2d'), cortados = [];
+      const largura = async (el, texto) => { const cs = getComputedStyle(el); c.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; await document.fonts.load(c.font, texto); return [c.measureText(texto).width, el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)]; };
+      for (const s of document.querySelectorAll('select')) {
+        if (!s.offsetParent || s.id === 'sel-votacao') continue;   // escondido, ou a lista de votações (rótulo longo, já abreviado com …)
+        const [w, d] = await largura(s, s.options[s.selectedIndex].text); if (w > d + 1) cortados.push(s.id + ': ' + s.options[s.selectedIndex].text);
+      }
+      for (const i of document.querySelectorAll('input[type=search]')) {
+        if (!i.offsetParent || !i.placeholder) continue;
+        const [w, d] = await largura(i, i.placeholder); if (w > d + 1) cortados.push(i.id + ' (exemplo): ' + i.placeholder);
+      }
+      return cortados;
+    }"""
+    for largura in (390, 1024, 1280):
+        pg = nova(largura)
+        for rota in ["/", "/#/assunto/saude", f"/#/projeto/{com_voto['id']}", f"/#/deputado/{dep['id']}", "/#/deputados"]:
+            pg.goto(base + rota)
+            pg.wait_for_timeout(700)
+            pg.evaluate("document.fonts.ready")
+            pg.evaluate("document.querySelectorAll('details').forEach(d => d.open = true)")
+            if rota.startswith("/#/deputado/"):  # com o assunto de nome mais longo escolhido
+                pg.evaluate("(() => { const s = document.querySelector('#dep-a'); if (s) { s.value = [...s.options].sort((a, b) => b.text.length - a.text.length)[0].value; } })()")
+            corte = pg.evaluate(medir)
+            confere(not corte, f"campos sem texto cortado em {rota} ({largura}px)" + (f" {corte}" if corte else ""))
+
+    print("Caixas de marcar alinhadas com o texto")
+    for largura in (390, 1280):
+        pg = nova(largura)
+        for rota in ["/#/assunto/saude", "/#/deputados"]:
+            pg.goto(base + rota)
+            pg.wait_for_selector(".marcar", state="attached", timeout=15000)
+            pg.evaluate("document.fonts.ready")
+            pg.evaluate("document.querySelectorAll('details').forEach(d => d.open = true)")
+            desvios = pg.evaluate("""() => [...document.querySelectorAll('.marcar')].filter(l => l.offsetParent).map(l => {
+              const i = l.querySelector('input').getBoundingClientRect(), r = document.createRange();
+              r.selectNodeContents(l.querySelector('span')); const t = r.getClientRects()[0];
+              return Math.abs((i.top + i.height / 2) - (t.top + t.height / 2)); })""")
+            confere(bool(desvios) and max(desvios) <= 2, f"caixa de marcar centrada na primeira linha em {rota} ({largura}px) {desvios}")
 
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
