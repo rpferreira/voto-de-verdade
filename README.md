@@ -331,6 +331,6 @@ confere também o site no ar.
 
 Os dados são da Câmara dos Deputados, de acesso aberto.
 
-- **Código:** licença MIT (arquivo [`LICENSE`](LICENSE)).
+- **Código:** licença MIT (arquivo [`LICENSE`](LICENSE)). O site publica esse arquivo em `/LICENSE`, e o do conteúdo em `/LICENSE-CONTEUDO.md`, com uma página explicando tudo em `/licenca/` (gerada por `site/gerar_paginas.py`; se mudar um dos arquivos de licença, confira os textos da página).
 - **Textos do site e resumos feitos por inteligência artificial:** CC BY 4.0, citando o Voto de Verdade e `votodeverdade.com.br` (arquivo [`LICENSE-CONTEUDO.md`](LICENSE-CONTEUDO.md), que também diz o que não está coberto: dados da Câmara, fotos, fonte, nome e logotipo).
 - **Treino de modelos de IA:** o site pede que o conteúdo não seja usado para treinar modelos (`ai-train=no` no `robots.txt`) e aceita consultas para responder perguntas, com link. É um pedido, não uma restrição jurídica. Para mudar essa posição, ajuste `robots.txt` em `site/gerar_paginas.py`, a página "Como o site funciona" (`site/app.js` e `site/gerar_paginas.py`), `LICENSE-CONTEUDO.md` e este texto.
