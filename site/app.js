@@ -1793,6 +1793,25 @@
   window.addEventListener("scroll", () => { clearTimeout(temporizador); temporizador = setTimeout(() => { posicoes[location.hash] = window.scrollY; }, 120); }, { passive: true });
   // O aviso do selo "beta" e o menu do celular são popovers nativos: fecham sozinhos ao tocar fora, mas não ao seguir um link de dentro.
   document.querySelectorAll("[popover]").forEach((pop) => pop.addEventListener("click", (e) => { if (e.target.closest("a")) pop.hidePopover(); }));
+  // Idioma: quem escolhe o português no seletor (nas páginas em inglês) não recebe o aviso de que existe a versão em inglês.
+  const guardado = (chave) => { try { return localStorage.getItem(chave); } catch (e) { return null; } };
+  const guardar = (chave, valor) => { try { localStorage.setItem(chave, valor); } catch (e) { /* sem armazenamento: vale só nesta visita */ } };
+  if (LANG === "en") {
+    document.addEventListener("click", (e) => { if (e.target.closest && e.target.closest('a[data-idioma="pt"]')) guardar("idioma", "pt"); });
+  }
+  // Quem abre o site com o navegador em inglês vê, nas páginas em português, um convite discreto para a versão em inglês.
+  // Ele sai com o botão de dispensar ou ao escolher o português, e não volta. O texto é em inglês de propósito: é para quem lê inglês.
+  if (LANG === "pt" && !EM_404 && /^en\b/i.test((navigator.languages && navigator.languages[0]) || navigator.language || "") && !guardado("idioma") && !guardado("aviso-en")) {
+    const x = svg("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round" });
+    x.append(svg("path", { d: "M6 6l12 12M18 6L6 18" }));
+    const dispensar = h("button", { type: "button", class: "aviso-idioma__fechar", "aria-label": "Dismiss", onclick: () => { guardar("aviso-en", "1"); aviso.remove(); } }, x);
+    const aviso = h("aside", { class: "aviso-idioma", lang: "en", "aria-label": "Language" },
+      h("div", { class: "miolo aviso-idioma__miolo" },
+        h("p", {}, "This site is also available in English. ", h("a", { href: RAIZ + "en/", "data-idioma": "en", hreflang: "en" }, "Read in English")),
+        dispensar));
+    document.querySelector(".topo").after(aviso);
+  }
+
   window.addEventListener("hashchange", () => rotear(true));
   rotear(false);
 })();

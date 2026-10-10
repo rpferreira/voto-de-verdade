@@ -127,6 +127,7 @@ O site inteiro existe também em inglês, em `/en/` (mesmas telas e endereços: 
 - **Ementa oficial**: continua em português (é o texto da Câmara), marcada com `lang="pt-BR"` e uma nota dizendo isso.
 - **Rotina diária**: depois dos resumos, a etapa "Traduzir para o inglês os projetos novos com IA" traduz só o que é novo ou mudou (`limite_traducoes` no Run workflow; use `5` para um teste barato). Sem a chave `ANTHROPIC_API_KEY`, a etapa é pulada. Se algo ficar sem tradução, o site em inglês mostra esse item em português e o monitoramento avisa quando passam de 50.
 - **Testar**: `python3 testes/idiomas.py _site` confere o dicionário, os dados, as páginas e as telas no navegador (nenhum texto faltando nem português solto). Roda em todo pull request.
+- **Convite para o inglês**: quem abre o site em português com o navegador em inglês vê uma faixa fina "Read in English" (leva à mesma tela em inglês). Ela some ao dispensar ou ao escolher PT no seletor, e a escolha fica só no navegador.
 - **Só em português**: os arquivos `.well-known/` (a skill de agentes).
 - **Página de erro (404)**: uma em cada idioma (`404.html` e `en/404.html`), com busca, os caminhos principais e uma mensagem conforme o tipo de endereço (projeto, deputado, assunto). O GitHub Pages só usa a `404.html` da raiz; para endereços que começam por `/en/`, o `app.js` leva à versão em inglês.
 - **Imagem de compartilhamento**: `site/og-en.png` nas páginas em inglês. Para refazer (se a legenda ou o `og.png` mudarem): `python3 site/criar_og_en.py`.
