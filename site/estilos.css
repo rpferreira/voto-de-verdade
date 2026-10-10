@@ -355,6 +355,8 @@ details.ajuda p { margin: var(--perto) 0 0; color: var(--tinta-suave); }
 .lista-home .proj__titulo { font-size: 1.0625rem; line-height: 1.5rem; }
 
 .selo-aviso { display: inline-flex; align-items: center; height: 1.5rem; background: var(--aviso-fundo); color: var(--aviso-texto); border: 1px solid var(--aviso-borda); border-radius: 99px; padding: 0 var(--perto); font-size: 0.875rem; }
+/* Situação que merece destaque (não dá para só ler de passagem): amarelo para atenção (classificação incerta, fora do exercício), cinza para um fato neutro (votação simbólica ou secreta). */
+.selo-info { display: inline-flex; align-items: center; height: 1.5rem; background: color-mix(in srgb, var(--tinta) 6%, transparent); color: var(--tinta); border: 1px solid var(--linha); border-radius: 99px; padding: 0 var(--perto); font-size: 0.875rem; }
 .rotulo-ia, .resumo-projeto .rotulo-ia { display: flex; align-items: flex-start; gap: var(--perto); margin: 0 0 var(--perto); font-size: 0.75rem; line-height: 1rem; color: var(--tinta-suave); }
 .rotulo-ia .icone { width: 0.875rem; height: 0.875rem; flex: none; margin-top: 0; opacity: 0.8; }
 .cartao-aviso { background: var(--aviso-fundo); color: var(--aviso-texto); box-shadow: inset 0 0 0 1px var(--aviso-borda); border-radius: var(--raio); padding: var(--item); }
@@ -457,7 +459,7 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 /* Cada deputado da busca é um cartão com seta à direita: assim se vê que dá para tocar (antes era só texto solto). */
 .linha-dep { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--item); row-gap: var(--junto); align-items: center; padding: var(--item); border-radius: var(--raio); background: var(--superficie); box-shadow: inset 0 0 0 1px var(--linha); color: var(--tinta); text-decoration: none; transition: background 140ms, box-shadow 140ms; }
 .linha-dep__nome { grid-column: 1; font-weight: 500; font-size: 1.0625rem; }
-.linha-dep__sub { grid-column: 1; color: var(--tinta-suave); font-size: 0.925rem; }
+.linha-dep__sub { grid-column: 1; display: flex; flex-wrap: wrap; align-items: center; gap: var(--junto) var(--perto); color: var(--tinta-suave); font-size: 0.925rem; line-height: 1.5rem; }
 .linha-dep::after { content: ""; grid-column: 2; grid-row: 1 / span 2; width: 1.25rem; height: 1.25rem; background: var(--tinta-suave); transition: transform 140ms, background 140ms;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat; }
@@ -469,7 +471,7 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 
 .cabeca-dep { display: flex; gap: var(--grupo); align-items: flex-start; padding-block: var(--grupo); }
 .cabeca-dep h1 { margin: 0; font-size: clamp(1.9rem, 5.4vw, 3rem); line-height: 1.05; line-height: round(up, 1.05em, 4px); }
-.cabeca-dep__sub { margin: var(--perto) 0 0; font-size: 1.15rem; line-height: 1.75rem; color: var(--tinta-suave); }
+.cabeca-dep__sub { display: flex; flex-wrap: wrap; align-items: center; gap: var(--junto) var(--perto); margin: var(--perto) 0 0; font-size: 1.15rem; line-height: 1.75rem; color: var(--tinta-suave); }
 .foto-dep { width: 6rem; height: 8rem; object-fit: cover; border-radius: var(--raio-grande); background: var(--linha); flex: none; box-shadow: var(--sombra); }
 .votos-dep { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
 .votos-dep > li { box-shadow: inset 0 -1px 0 var(--linha); }

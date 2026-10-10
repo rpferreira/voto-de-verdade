@@ -309,7 +309,7 @@
     return h("li", {}, h("a", { class: "proj", href },
       h("span", { class: "proj__titulo" }, pr.titulo),
       h("span", { class: "proj__meta" },
-        h("span", {}, data(v ? v.d : pr.ultima)), h("span", {}, resultado), sem && h("span", {}, sem),
+        h("span", {}, data(v ? v.d : pr.ultima)), h("span", {}, resultado), sem && h("span", { class: "selo-info" }, sem),
         opc.assunto && h("span", {}, opc.assunto),
         incerto && h("span", { class: "selo-aviso" }, tx("Classificação incerta"))),
       placar));
@@ -1316,7 +1316,7 @@
       const mostrados = r.slice(0, limite);
       lista.replaceChildren(...mostrados.map((d) => h("li", {}, h("a", { class: "linha-dep", href: "#/deputado/" + d.id },
         h("span", { class: "linha-dep__nome" }, d.nome),
-        h("span", { class: "linha-dep__sub" }, [d.partido, d.uf].filter(Boolean).join(" · ") + (d.ex ? "" : tx(" · fora do exercício agora")))))));
+        h("span", { class: "linha-dep__sub" }, h("span", {}, [d.partido, d.uf].filter(Boolean).join(" · ")), d.ex ? null : h("span", { class: "selo-aviso" }, tx("Fora do exercício agora")))))));
       anunciar(estadoTxt, r.length ? `${plural(r.length, tx("deputado"), tx("deputados"))}${r.length !== deputados.length ? tx(" de {0}", num(deputados.length)) : ""}`
         : tx("Nenhum deputado com esses filtros. Confira a grafia do nome ou tire algum filtro."));
       vazio.replaceChildren(...(r.length ? [] : [estadoVazio({
@@ -1406,7 +1406,7 @@
         fotoDeputado(dep.id),
         h("div", {},
           h("h1", { id: "titulo-deputado", tabindex: "-1" }, dep.nome),
-          h("p", { class: "cabeca-dep__sub" }, partidoAgora, dep.ex ? "" : tx(" · não está em exercício agora")),
+          h("p", { class: "cabeca-dep__sub" }, h("span", {}, partidoAgora), dep.ex ? null : h("span", { class: "selo-aviso" }, tx("Fora do exercício agora"))),
           historico ? h("p", { class: "nota" }, historico) : null,
           h("p", { class: "cabeca-projeto__acoes", style: "margin-top:1rem" }, botaoCompartilhar("deputado/" + dep.id, tx("{0}: Voto de Verdade", dep.nome))))),
       temVotos
