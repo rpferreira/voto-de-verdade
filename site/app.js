@@ -157,7 +157,7 @@
   function botaoCompartilhar(caminho, titulo) {
     if (!/^https?:$/.test(location.protocol)) return null;
     const url = new URL(PAGINAS + caminho + "/", location.href).href;
-    const botao = h("button", { type: "button", class: "botao botao--leve botao--pequeno" }, tx("Compartilhar"));
+    const botao = h("button", { type: "button", class: "botao botao--leve" }, tx("Compartilhar"));
     const aviso = h("span", { class: "so-leitor", role: "status" });
     botao.addEventListener("click", async () => {
       try {
@@ -323,7 +323,7 @@
     const resultado = (v ? v.ap : pr.aprovada) ? tx("Votação aprovada") : tx("Votação rejeitada");
     const sem = !v ? TIPO_SEM[pr.tipo] || TIPO_SEM.simbolica : null;
     const href = "#/projeto/" + pr.id + (opc.votacao ? "?votacao=" + encodeURIComponent(opc.votacao.id) : "");
-    return h("li", {}, h("a", { class: "proj", href },
+    return h("li", {}, h("a", { class: "proj", href }, h("span", { class: "proj__corpo" },
       h("span", { class: "proj__id" }, pr.nome),
       h("span", { class: "proj__titulo" }, pr.titulo),
       h("span", { class: "proj__meta" },
@@ -331,7 +331,7 @@
         opc.novo ? h("span", { class: "selo-novo" }, tx("Novo")) : null, h("span", {}, resultado), sem && h("span", { class: "selo-info" }, sem),
         opc.assunto && h("span", {}, opc.assunto),
         incerto && h("span", { class: "selo-aviso" }, tx("Classificação incerta"))),
-      placar));
+      placar)));
   }
 
   const descCurta = (t, max) => {
@@ -1197,13 +1197,7 @@
       const selUf = h("select", { id: id("uf") }, h("option", { value: "" }, tx("Todos")), ufs.map((x) => h("option", { value: x }, x)));
       const selV = h("select", { id: id("v") }, h("option", { value: "" }, tx("Todos")), ORDEM_VOTO.filter((c) => total[c]).map((c) => h("option", { value: c }, VOTO[c].nome)));
       selPt.value = estado.pt; selUf.value = estado.uf; selV.value = estado.v;
-      // Ordem da lista: sempre alfabética por nome dentro de cada grupo (o site não ordena pessoas por mérito nem por tamanho).
-      const ORDENS = ["nome", "partido", "uf", "voto"];
-      const selOrd = h("select", { id: id("ord") },
-        h("option", { value: "nome" }, tx("Nome (A a Z)")), h("option", { value: "partido" }, tx("Partido")),
-        h("option", { value: "uf" }, tx("Estado")), h("option", { value: "voto" }, tx("Voto")));
-      selOrd.value = ORDENS.includes(p.get("o")) ? p.get("o") : "nome";
-      const limpar = h("button", { type: "button", class: "botao botao--leve botao--pequeno" }, tx("Limpar filtros"));
+      const limpar = h("button", { type: "button", class: "botao botao--leve" }, tx("Limpar filtros"));
       const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
       const lista = h("ul", { class: "deputados" });
       const vazioLista = h("div", {});
@@ -1215,8 +1209,7 @@
           h("div", { class: "campo campo--nome" }, h("label", { for: id("q") }, tx("Deputado")), campoQ),
           h("div", { class: "campo" }, h("label", { for: id("pt") }, tx("Partido")), selPt),
           h("div", { class: "campo" }, h("label", { for: id("uf") }, tx("Estado")), selUf),
-          h("div", { class: "campo campo--so-desktop" }, h("label", { for: id("v") }, tx("Voto")), selV),
-          h("div", { class: "campo campo--ord" }, h("label", { for: id("ord") }, tx("Ordem")), selOrd)),
+          h("div", { class: "campo campo--so-desktop" }, h("label", { for: id("v") }, tx("Voto")), selV)),
         h("div", { class: "filtros__rodape" }, limpar));
 
       const ajudaVotos = h("details", { class: "ajuda ajuda--solta" },
@@ -1243,13 +1236,11 @@
 
       function atualizar(reiniciar) {
         if (reiniciar) limite = 60;
-        estado.q = campoQ.value.trim(); estado.pt = selPt.value; estado.uf = selUf.value; estado.v = selV.value; estado.o = selOrd.value;
-        if (opc.gravar) opc.gravar(limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, v: estado.v, o: estado.o === "nome" ? "" : estado.o }));
+        estado.q = campoQ.value.trim(); estado.pt = selPt.value; estado.uf = selUf.value; estado.v = selV.value;
+        if (opc.gravar) opc.gravar(limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, v: estado.v }));
         const filtrando = !!(estado.q || estado.pt || estado.uf || estado.v);
         const porNome = (a, b) => a.nome.localeCompare(b.nome, LOCALE);
-        const texto = (c) => (a, b) => (!a[c]) - (!b[c]) || (a[c] || "").localeCompare(b[c] || "", LOCALE) || porNome(a, b);
-        const comparar = { nome: porNome, partido: texto("partido"), uf: texto("uf"), voto: (a, b) => ORDEM_VOTO.indexOf(a.cod) - ORDEM_VOTO.indexOf(b.cod) || porNome(a, b) }[estado.o];
-        const r = filtrar().sort(comparar);
+        const r = filtrar().sort(porNome);  // sempre alfabética por nome: o site não ordena pessoas por mérito nem por tamanho
         linhasAtuais = r;
         const mostrados = r.slice(0, limite);
         placar.marcar(estado.v);
@@ -1272,7 +1263,7 @@
         }
       }
       comEspera(campoQ, () => atualizar(true));
-      for (const el of [selPt, selUf, selV, selOrd]) el.addEventListener("change", () => atualizar(true));
+      for (const el of [selPt, selUf, selV]) el.addEventListener("change", () => atualizar(true));
       limpar.addEventListener("click", () => { campoQ.value = ""; selPt.value = ""; selUf.value = ""; selV.value = ""; atualizar(true); campoQ.focus(); });
       atualizar(true);
     }
@@ -1483,7 +1474,7 @@
       colunas: [["data", tx("Data")], ["votacao", tx("Código da votação")], ["projeto", tx("Projeto")], ["titulo", tx("Título")], ["assunto", tx("Assunto")], ["voto", tx("Voto")], ["resultado_da_votacao", tx("Resultado da votação")]],
       registros: votosAtuais.map(({ v, pr, cod }) => ({ data: v.d, votacao: v.id, projeto: pr.nome, titulo: pr.titulo, assunto: nomeAssunto[pr.a] || null, voto: VOTO[cod].nome, resultado_da_votacao: v.ap ? tx("aprovada") : tx("rejeitada") })),
     }), tx("dos votos desta lista"));
-    const limpar = h("button", { type: "button", class: "botao botao--leve botao--pequeno", id: "limpar-d" }, tx("Limpar filtros"));
+    const limpar = h("button", { type: "button", class: "botao botao--leve", id: "limpar-d" }, tx("Limpar filtros"));
     const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
     const tabelaBox = h("div", { class: "tabela-rolavel", tabindex: "0", role: "region", "aria-label": tx("Votos por assunto") });
     const lista = h("ul", { class: "votos-dep" });
@@ -1578,9 +1569,9 @@
       r.sort((x, y) => (estado.ord === "recente" ? (y.v.d > x.v.d ? 1 : y.v.d < x.v.d ? -1 : 0) : (x.v.d > y.v.d ? 1 : x.v.d < y.v.d ? -1 : 0)) || (x.v.id < y.v.id ? -1 : 1));
       const mostrados = r.slice(0, limite);
       lista.replaceChildren(...mostrados.map(({ v, pr, cod }) => h("li", {},
-        h("a", { class: "voto-dep", href: "#/projeto/" + pr.id + "?votacao=" + encodeURIComponent(v.id) },
-          h("span", { class: "voto-dep__titulo" }, pr.titulo),
-          h("span", { class: "voto-dep__meta" }, `${pr.nome} · ${data(v.d)} · ${nomeAssunto[pr.a] || ""}`),
+        h("a", { class: "linha-dep linha-dep--voto", href: "#/projeto/" + pr.id + "?votacao=" + encodeURIComponent(v.id) },
+          h("span", { class: "linha-dep__nome" }, pr.titulo),
+          h("span", { class: "linha-dep__sub" }, `${pr.nome} · ${data(v.d)} · ${nomeAssunto[pr.a] || ""}`),
           fichaVoto(cod)))));
       anunciar(estadoTxt, r.length ? `${plural(r.length, tx("votação"), tx("votações"))}${r.length !== votos.length ? tx(" de {0}", num(votos.length)) : ""}`
         : tx("Nenhuma votação com esses filtros. Tire algum filtro ou use outra palavra."));

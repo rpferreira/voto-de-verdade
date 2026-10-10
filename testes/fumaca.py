@@ -754,20 +754,11 @@ with sync_playwright() as p:
           return { sombra: c.boxShadow !== 'none', seta: d.content !== 'none' && d.content !== 'normal', voto: a.querySelector('.voto')?.innerText, sub: a.querySelector('.linha-dep__sub').innerText,
                    estoura: document.documentElement.scrollWidth > window.innerWidth + 1, nomeCortado: a.querySelector('.linha-dep__nome').scrollWidth > a.querySelector('.linha-dep__nome').clientWidth + 1 }; }""")
         confere(cartao["sombra"] and cartao["seta"] and bool(cartao["voto"]) and not cartao["estoura"] and not cartao["nomeCortado"], f"{nome} 390px: deputado da votação em cartão, com seta e voto «{cartao['voto']}», sem cortar nem rolar para o lado")
-        # ordenação: partido (alfabética) e voto (sim primeiro)
-        pg.select_option('select[id^="ord-"]', "partido")
-        pg.wait_for_timeout(400)
-        partidos_ord = [t.split(" · ")[0] for t in pg.locator(".deputados a.linha-dep .linha-dep__sub").all_inner_texts()[:40]]
-        confere(partidos_ord == sorted(partidos_ord, key=lambda x: (x == "", x.casefold())) and re.search(r"[?&]o=partido", pg.url), f"{nome}: ordenar por partido (A a Z) e guardar no endereço")
-        pg.select_option('select[id^="ord-"]', "voto")
-        pg.wait_for_timeout(400)
-        votos_ord = pg.locator(".deputados a.linha-dep .voto").all_inner_texts()[:200]
-        primeiros = [v for v in votos_ord]
-        confere(len(set(primeiros)) >= 1 and primeiros == sorted(primeiros, key=lambda v: primeiros.index(v)) and re.search(r"[?&]o=voto", pg.url), f"{nome}: ordenar por voto agrupa os votos iguais ({sorted(set(primeiros), key=primeiros.index)})")
-        pg.select_option('select[id^="ord-"]', "nome")
-        pg.wait_for_timeout(300)
-        confere(not re.search(r"[?&]o=", pg.url), f"{nome}: ordem por nome é a padrão e não vai para o endereço")
+        # sem filtro de ordem: a lista de votos é sempre alfabética por nome
+        confere(pg.locator('select[id^="ord-"]').count() == 0, f"{nome}: lista de votos sem filtro de ordem")
+        confere(not re.search(r"[?&]o=", pg.url), f"{nome}: endereço da votação sem parâmetro de ordem")
         # voltar ao topo
+        pg.wait_for_timeout(400)
         botao = pg.locator(".voltar-topo")
         confere(botao.is_hidden(), f"{nome}: «voltar ao topo» escondido no começo da página")
         pg.evaluate("window.scrollTo(0, window.innerHeight * 2.6)")
@@ -800,6 +791,48 @@ with sync_playwright() as p:
               return { titulo: t && t.innerText, primeiro: primeiro === t, peso: t && getComputedStyle(t).fontWeight }; })""")
             confere(all(i["titulo"] == titulo and i["primeiro"] and i["peso"] == "600" for i in info), f"{nome} {rota}: a caixa de filtros começa com «{titulo}» em semibold")
             pg.context.close()
+
+    print("Visual padronizado entre telas")
+    for caminho, nome in (("/", "PT"), ("/en/", "EN")):
+        pg = nova(1280)
+        medidas = {}
+        for chave, rota in (("assunto", "#/assunto/saude"), ("deputados", "#/deputados"), ("deputado", f"#/deputado/{dep['id']}"), ("numeros", "#/em-numeros"),
+                            ("sobre", "#/sobre"), ("apoie", "#/apoie"), ("ia", "#/inteligencia-artificial")):
+            pg.goto(base + caminho + rota)
+            pg.wait_for_selector("main h1", timeout=15000)
+            pg.wait_for_function("!document.querySelector('.heroi') && document.querySelector('main h1')", timeout=15000, polling=100)
+            medidas[chave] = pg.evaluate("() => { const e = getComputedStyle(document.querySelector('main h1')); return e.fontSize + '/' + e.lineHeight + '/' + e.fontWeight; }")
+        confere(len(set(medidas.values())) == 1, f"{nome}: o título de página (h1) tem o mesmo tamanho em todas as telas ({medidas})")
+        pg.goto(base + caminho + "#/sobre")
+        pg.wait_for_selector("main h2", timeout=15000)
+        h2s = pg.evaluate("[...document.querySelectorAll('main h2')].map((e) => getComputedStyle(e).fontSize)")
+        confere(len(set(h2s)) == 1, f"{nome}: os títulos de seção (h2) do Sobre têm o mesmo tamanho ({sorted(set(h2s))})")
+        pg.goto(base + caminho + "#/assunto/saude")
+        pg.wait_for_selector("ul.projetos a.proj", timeout=15000)
+        cartao = pg.evaluate("""() => { const a = document.querySelector('ul.projetos a.proj'), c = getComputedStyle(a), d = getComputedStyle(a, '::after'), li = getComputedStyle(a.parentElement);
+          return { sombra: c.boxShadow !== 'none', raio: c.borderRadius, seta: d.content !== 'none' && d.content !== 'normal', fundo: c.backgroundColor, divisor: li.boxShadow !== 'none' }; }""")
+        confere(cartao["sombra"] and cartao["seta"] and not cartao["divisor"] and cartao["raio"] != "0px", f"{nome}: projeto da lista é um cartão com borda, cantos arredondados e seta (sem divisor entre linhas)")
+        pg.goto(base + caminho + "#/deputados")
+        pg.wait_for_selector("a.linha-dep", timeout=15000)
+        ref = pg.evaluate("""() => { const c = getComputedStyle(document.querySelector('a.linha-dep')); return { raio: c.borderRadius, fundo: c.backgroundColor, pad: c.padding }; }""")
+        pg.goto(base + caminho + "#/assunto/saude")
+        pg.wait_for_selector("ul.projetos a.proj", timeout=15000)
+        proj = pg.evaluate("""() => { const c = getComputedStyle(document.querySelector('ul.projetos a.proj')); return { raio: c.borderRadius, fundo: c.backgroundColor, pad: c.padding }; }""")
+        confere(proj == ref, f"{nome}: cartão do projeto tem o mesmo raio, fundo e recuo do cartão do deputado ({proj})")
+        pg.goto(base + caminho + f"#/deputado/{dep['id']}")
+        pg.wait_for_selector(".votos-dep a.linha-dep--voto .voto", timeout=15000)
+        confere(pg.locator(".votos-dep a.linha-dep--voto").count() > 0, f"{nome}: votos na página do deputado em cartão com o voto antes da seta")
+        pg.context.close()
+        pg = nova(1280)
+        pg.goto(base + caminho + "#/nada-aqui")
+        pg.wait_for_selector(".naoachou .botao--leve", timeout=15000)
+        a404 = pg.evaluate("document.querySelector('.naoachou .botao--leve').getBoundingClientRect().height")
+        pg.goto(base + caminho + "#/assunto/saude")
+        pg.wait_for_selector("form.filtros", timeout=15000)
+        pg.wait_for_selector("main .botao--leve", state="attached", timeout=15000)
+        aass = pg.evaluate("document.querySelector('main .botao--leve').getBoundingClientRect().height")
+        confere(a404 == aass == 40, f"{nome}: botão secundário tem a mesma altura nas telas (40px; página de erro {a404}, assunto {aass})")
+        pg.context.close()
 
     print("Licença publicada")
     raiz_repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
