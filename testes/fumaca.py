@@ -105,7 +105,7 @@ with sync_playwright() as p:
     confere(primeiro.get_attribute("aria-pressed") == "true", "botão do placar fica marcado")
     confere(pg.locator(".painel .estado").inner_text().startswith(f"{n_primeiro:,}".replace(",", ".")), "contagem da lista bate com o número clicado")
     confere(not pg.erros, "projeto sem erros no console " + str(pg.erros))
-    pg.locator("a.deputado__nome").first.click()
+    pg.locator(".deputados a.linha-dep").first.click()
     pg.wait_for_selector(".cabeca-dep h1", timeout=15000)
     confere(pg.locator(".placar__item").count() > 0, "página do deputado mostra o placar")
     pg.go_back()
@@ -373,7 +373,7 @@ with sync_playwright() as p:
     # projeto: exportar os votos de cada deputado
     pg = nova(1280, "light")
     pg.goto(base + f"/#/projeto/{com_voto['id']}")
-    pg.wait_for_selector(".deputados .deputado", timeout=15000)
+    pg.wait_for_selector(".deputados li", timeout=15000)
     arq, linhas = baixar_csv(pg, ".votos-projeto button:has-text('Baixar CSV')")
     confere(arq.suggested_filename.startswith("voto-de-verdade-votos-") and linhas[0] == "Código do deputado,Deputado,Partido na data,UF,Voto" and len(linhas) > 100, "projeto: o CSV dos votos traz um deputado por linha")
     confere(not pg.erros, "projeto, deputado e deputados sem erros no console " + str(pg.erros))
@@ -698,7 +698,7 @@ with sync_playwright() as p:
 
     print("Home: temas de exemplo e atalho para as últimas votações; Deputados: nome antes dos estados")
     for caminho, nome in (("/", "PT"), ("/en/", "EN")):
-        for largura, esperados_chips in ((390, 3), (1280, 4)):
+        for largura, esperados_chips in ((390, 2), (1280, 3)):
             pg = nova(largura)
             pg.goto(base + caminho)
             pg.wait_for_selector(".chip-exemplo", timeout=15000)
@@ -735,6 +735,71 @@ with sync_playwright() as p:
         pg.wait_for_selector(".filtro-uf", timeout=15000)
         confere(pg.evaluate("document.querySelector('.filtro-uf').open"), f"{nome} 1280px: estados abertos no desktop")
         pg.context.close()
+
+    print("Lote 3: número nas listas, cartões de voto, ordenação, voltar ao topo e impressão")
+    for caminho, nome in (("/", "PT"), ("/en/", "EN")):
+        pg = nova(390)
+        pg.goto(base + caminho)
+        pg.wait_for_selector("#t-recentes ~ ul a.proj", timeout=15000)
+        ids = pg.locator("#t-recentes ~ ul a.proj .proj__id").all_inner_texts()
+        confere(len(ids) >= 5 and all(re.match(r"^[A-Z]{2,5} \d+/\d{4}$", i) for i in ids), f"{nome}: cada projeto das últimas votações começa com o número oficial ({ids[:3]})")
+        pg.goto(base + caminho + "#/assunto/saude")
+        pg.wait_for_selector("ul.projetos a.proj .proj__id", timeout=15000)
+        confere(pg.locator("ul.projetos a.proj").count() == pg.locator("ul.projetos a.proj .proj__id").count(), f"{nome}: todos os projetos da lista de um assunto têm o número oficial")
+        pg.context.close()
+        pg = nova(390)
+        pg.goto(f"{base}{caminho}#/projeto/{com_voto['id']}")
+        pg.wait_for_selector(".deputados a.linha-dep", timeout=15000)
+        cartao = pg.evaluate("""() => { const a = document.querySelector('.deputados a.linha-dep'), c = getComputedStyle(a), d = getComputedStyle(a, '::after');
+          return { sombra: c.boxShadow !== 'none', seta: d.content !== 'none' && d.content !== 'normal', voto: a.querySelector('.voto')?.innerText, sub: a.querySelector('.linha-dep__sub').innerText,
+                   estoura: document.documentElement.scrollWidth > window.innerWidth + 1, nomeCortado: a.querySelector('.linha-dep__nome').scrollWidth > a.querySelector('.linha-dep__nome').clientWidth + 1 }; }""")
+        confere(cartao["sombra"] and cartao["seta"] and bool(cartao["voto"]) and not cartao["estoura"] and not cartao["nomeCortado"], f"{nome} 390px: deputado da votação em cartão, com seta e voto «{cartao['voto']}», sem cortar nem rolar para o lado")
+        # ordenação: partido (alfabética) e voto (sim primeiro)
+        pg.select_option('select[id^="ord-"]', "partido")
+        pg.wait_for_timeout(400)
+        partidos_ord = [t.split(" · ")[0] for t in pg.locator(".deputados a.linha-dep .linha-dep__sub").all_inner_texts()[:40]]
+        confere(partidos_ord == sorted(partidos_ord, key=lambda x: (x == "", x.casefold())) and re.search(r"[?&]o=partido", pg.url), f"{nome}: ordenar por partido (A a Z) e guardar no endereço")
+        pg.select_option('select[id^="ord-"]', "voto")
+        pg.wait_for_timeout(400)
+        votos_ord = pg.locator(".deputados a.linha-dep .voto").all_inner_texts()[:200]
+        primeiros = [v for v in votos_ord]
+        confere(len(set(primeiros)) >= 1 and primeiros == sorted(primeiros, key=lambda v: primeiros.index(v)) and re.search(r"[?&]o=voto", pg.url), f"{nome}: ordenar por voto agrupa os votos iguais ({sorted(set(primeiros), key=primeiros.index)})")
+        pg.select_option('select[id^="ord-"]', "nome")
+        pg.wait_for_timeout(300)
+        confere(not re.search(r"[?&]o=", pg.url), f"{nome}: ordem por nome é a padrão e não vai para o endereço")
+        # voltar ao topo
+        botao = pg.locator(".voltar-topo")
+        confere(botao.is_hidden(), f"{nome}: «voltar ao topo» escondido no começo da página")
+        pg.evaluate("window.scrollTo(0, window.innerHeight * 2.6)")
+        pg.wait_for_function("!document.querySelector('.voltar-topo').hidden", timeout=5000, polling=100)
+        confere(botao.is_visible() and botao.get_attribute("aria-label") in ("Voltar ao topo", "Back to top"), f"{nome}: depois de duas telas o botão «voltar ao topo» aparece")
+        pg.emulate_media(reduced_motion="reduce")  # sem animação: a rolagem suave não anda em página de fundo do teste
+        botao.click()
+        pg.wait_for_function("window.scrollY < 5", timeout=5000, polling=100)
+        confere(pg.evaluate("document.activeElement.tagName") == "H1", f"{nome}: «voltar ao topo» leva ao começo e põe o foco no título")
+        # impressão
+        pg.emulate_media(media="print")
+        imp = pg.evaluate("""() => { const d = (s) => { const e = document.querySelector(s); return e ? getComputedStyle(e).display : 'ausente'; };
+          return { topo: d('.topo'), filtros: d('.filtros'), compartilhar: d('.cabeca-projeto__acoes'), baixar: d('.lista-acoes'), voltar: d('.voltar-topo'), fundo: getComputedStyle(document.body).backgroundColor, cor: getComputedStyle(document.body).color }; }""")
+        confere(imp["topo"] == "none" and imp["filtros"] == "none" and imp["compartilhar"] == "none" and imp["baixar"] == "none" and imp["fundo"] == "rgb(255, 255, 255)" and imp["cor"] == "rgb(0, 0, 0)", f"{nome}: ao imprimir, some o menu, os filtros e os botões, em preto sobre branco ({imp})")
+        pg.evaluate("window.dispatchEvent(new Event('beforeprint'))")
+        confere(pg.evaluate("[...document.querySelectorAll('details')].every((d) => d.open)"), f"{nome}: ao imprimir, os blocos recolhidos (pontos e texto oficial) abrem")
+        pg.evaluate("window.dispatchEvent(new Event('afterprint'))")
+        confere(pg.evaluate("document.querySelectorAll('details:not([open])').length") > 0, f"{nome}: depois de imprimir, os blocos voltam a ficar recolhidos")
+        pdf = pg.pdf(format="A4")
+        confere(len(pdf) > 10000 and pdf[:4] == b"%PDF", f"{nome}: o navegador gera o PDF da página do projeto ({len(pdf) // 1024} KB)")
+        pg.context.close()
+
+    print("Caixas de filtros com título («Filtrar por»)")
+    for caminho, nome, titulo in (("/", "PT", "Filtrar por"), ("/en/", "EN", "Filter by")):
+        for rota in (f"#/projeto/{com_voto['id']}", "#/deputados", "#/assunto/saude", f"#/deputado/{dep['id']}"):
+            pg = nova(390)
+            pg.goto(base + caminho + rota)
+            pg.wait_for_selector("form.filtros .filtros__titulo", timeout=15000)
+            info = pg.evaluate("""() => [...document.querySelectorAll('form.filtros')].map((f) => { const t = f.querySelector('.filtros__titulo'), primeiro = f.firstElementChild;
+              return { titulo: t && t.innerText, primeiro: primeiro === t, peso: t && getComputedStyle(t).fontWeight }; })""")
+            confere(all(i["titulo"] == titulo and i["primeiro"] and i["peso"] == "600" for i in info), f"{nome} {rota}: a caixa de filtros começa com «{titulo}» em semibold")
+            pg.context.close()
 
     print("Licença publicada")
     raiz_repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -789,7 +854,7 @@ with sync_playwright() as p:
                   return { fortes: fortes.length, pesos: [...new Set(fortes.map((e) => getComputedStyle(e).fontWeight))], corpo: getComputedStyle(m.querySelector('p')).fontWeight,
                            hrefs: links.map((a) => a.href), seguros: links.every((a) => a.target === '_blank' && /noopener/.test(a.rel)),
                            internos: [...m.querySelectorAll('a[href]:not([href^="https://"])')].map((a) => a.getAttribute('href')),
-                           estoura: document.documentElement.scrollWidth > window.innerWidth + 1, texto: m.innerText.replace(/\s+/g, ' ').trim() };
+                           estoura: document.documentElement.scrollWidth > window.innerWidth + 1, texto: m.innerText.replace(/\\s+/g, ' ').trim() };
                 }""")
                 confere(info["fortes"] >= 15 and info["pesos"] == ["600"] and info["corpo"] != "600", f"{nome} {modo} {largura}px: pontos importantes em semibold ({info['fortes']} destaques, peso {info['pesos']})")
                 faltam = [e for e in EXTERNOS if not any(e in u for u in info["hrefs"])]
