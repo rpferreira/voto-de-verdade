@@ -334,6 +334,12 @@
       placar)));
   }
 
+  // Título da página de um assunto (igual ao das páginas estáticas): «Saúde na Câmara: projetos e votos | Voto de Verdade», ou mais curto se passar de 62 caracteres.
+  function tituloAssunto(nome) {
+    for (const t of [tx("{0} na Câmara: projetos e votos | {1}", nome, "Voto de Verdade"), tx("{0} na Câmara: projetos e votos", nome)]) if (t.length <= 62) return t;
+    return tx("{0}: Voto de Verdade", nome);
+  }
+
   const descCurta = (t, max) => {
     t = (t || "").replace(/\s+/g, " ");
     max = max || 80;
@@ -453,7 +459,7 @@
       h("p", { class: "confianca" },
         tx("Dados oficiais da Câmara dos Deputados, de {0} a {1}. Assunto e resumo são feitos por inteligência artificial e podem errar; avisamos quando há dúvida. ", data(meta.de), data(meta.ate)),
         h("a", { href: "#/sobre" }, tx("Como o site funciona")), " · ", h("a", { href: "#/inteligencia-artificial" }, tx("Transparência da IA")))));
-    document.title = tx("Voto de Verdade: como a Câmara dos Deputados votou");
+    document.title = tx("{0}: como cada deputado federal votou na Câmara", "Voto de Verdade");
 
     let versao = 0;
     async function atualizar(reiniciar) {
@@ -1097,7 +1103,7 @@
       ),
       estadoTxt, h("div", { class: "lista-acoes" }, exportarLista), lista, vazio, maisBox,
       h("div", { class: "mais" }, botaoCompartilhar("assunto/" + slug, tx("{0}: Voto de Verdade", a.nome)))));
-    document.title = tx("{0}: Voto de Verdade", a.nome);
+    document.title = tituloAssunto(a.nome);
 
     function atualizar(reiniciar) {
       if (reiniciar) limite = POR_PAGINA;
@@ -1396,7 +1402,7 @@
         h("label", { class: "marcar", for: "dep-ex" }, caixaEx, h("span", {}, tx("Só quem está em exercício agora"),
           h("small", {}, tx("Deixe desligado para ver também quem já deixou o cargo ou foi suplente no período."))))),
       estadoTxt, h("div", { class: "lista-acoes" }, exportarDeps), lista, vazio, maisBox));
-    document.title = tx("Deputados: Voto de Verdade");
+    document.title = tx("Deputados federais: {0}", "Voto de Verdade");
 
     function atualizar(reiniciar) {
       if (reiniciar) limite = 60;
