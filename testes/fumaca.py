@@ -29,6 +29,8 @@ def confere(ok, msg):
     print(("  ok  " if ok else "FALHOU ") + msg)
     if not ok:
         falhas.append(msg)
+        if os.environ.get("GITHUB_ACTIONS"):
+            print("::error::" + msg.replace("\n", " "))  # aparece na aba da verificação, sem precisar abrir o registro
 
 
 class Quieto(http.server.SimpleHTTPRequestHandler):
@@ -388,6 +390,7 @@ with sync_playwright() as p:
         for rota in ["/", "/#/assunto/saude", f"/#/projeto/{com_voto['id']}", f"/#/deputado/{dep['id']}", "/#/deputados"]:
             pg.goto(base + rota)
             pg.wait_for_timeout(700)
+            pg.evaluate("document.fonts.ready")
             pg.evaluate("document.querySelectorAll('details').forEach(d => d.open = true)")
             if rota.startswith("/#/deputado/"):  # com o assunto de nome mais longo escolhido
                 pg.evaluate("(() => { const s = document.querySelector('#dep-a'); if (s) { s.value = [...s.options].sort((a, b) => b.text.length - a.text.length)[0].value; } })()")
@@ -399,7 +402,8 @@ with sync_playwright() as p:
         pg = nova(largura)
         for rota in ["/#/assunto/saude", "/#/deputados"]:
             pg.goto(base + rota)
-            pg.wait_for_timeout(700)
+            pg.wait_for_selector(".marcar", state="attached", timeout=15000)
+            pg.evaluate("document.fonts.ready")
             pg.evaluate("document.querySelectorAll('details').forEach(d => d.open = true)")
             desvios = pg.evaluate("""() => [...document.querySelectorAll('.marcar')].filter(l => l.offsetParent).map(l => {
               const i = l.querySelector('input').getBoundingClientRect(), r = document.createRange();
