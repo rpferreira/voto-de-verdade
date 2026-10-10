@@ -947,11 +947,46 @@
       h("p", {}, tx("Quem conduz a sessão só vota em situações previstas no regimento (artigo 17). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não.")),
       h("h2", {}, tx("Licença e uso do conteúdo")),
       h("p", {}, tx("O código do site é aberto, com licença MIT. Os textos do site e os resumos feitos por inteligência artificial podem ser copiados e usados por qualquer pessoa, inclusive em matérias, desde que citem o Voto de Verdade e o endereço votodeverdade.com.br (licença CC BY 4.0). Os dados originais são da Câmara dos Deputados, que tem as próprias regras. Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultá-lo para responder perguntas, citando o site, é bem-vindo.")),
+      h("p", {}, h("a", { href: "#/licenca" }, tx("Ler a licença completa"))),
       h("h2", {}, tx("Quem faz e privacidade")),
       h("p", {}, tx("O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita. Se você escolher o modo escuro, só o seu navegador guarda essa escolha.")),
       h("p", {}, h("a", { href: "#/" }, tx("Voltar ao início")))));
     document.title = tx("Como o site funciona: Voto de Verdade");
     return document.getElementById("titulo-sobre");
+  }
+
+  // ------------------------------------------------------------------ licença (mesmos textos da página pronta licenca/, feita por gerar_paginas.py)
+  function telaLicenca() {
+    const titulo = tx("Licença e uso do conteúdo");
+    const arquivo = (nome) => new URL(RAIZ + nome, location.href).href;
+    const nao = [
+      tx("Dados originais da Câmara dos Deputados (votações, projetos, ementas, nomes de deputados): vêm do portal de Dados Abertos da Câmara e seguem as regras dele. Cite a Câmara como fonte."),
+      tx("Fotos dos deputados: são da Câmara e seguem as regras dela."),
+      tx("Fonte Atkinson Hyperlegible Next: licença OFL, de seus autores."),
+      tx("Nome e logotipo «Voto de Verdade»: não são licenciados. Pode citar o nome para atribuir a fonte, mas não use o logotipo de modo que sugira que o seu site é o Voto de Verdade ou é apoiado por ele."),
+    ];
+    const arquivos = [
+      [arquivo("LICENSE"), tx("Licença do código (MIT)")],
+      ["https://creativecommons.org/licenses/by/4.0/legalcode", tx("Texto legal da CC BY 4.0")],
+      [arquivo("LICENSE-CONTEUDO.md"), tx("Licença do conteúdo, em português, com o que não está coberto")],
+    ];
+    principal.replaceChildren(h("div", { class: "miolo texto-longo" },
+      h("nav", { class: "migalhas", "aria-label": tx("Você está em") }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, tx("Início"))), h("li", { "aria-current": "page" }, titulo))),
+      h("h1", { id: "titulo-licenca", tabindex: "-1" }, titulo),
+      h("p", {}, tx("O código e o conteúdo do Voto de Verdade têm licenças diferentes.")),
+      h("h2", {}, tx("Código do site")),
+      h("p", {}, tx("O código é aberto, com licença MIT: pode usar, copiar e adaptar, mantendo o aviso de direitos. O texto da licença está em {0}.", arquivo("LICENSE"))),
+      h("h2", {}, tx("Textos do site e resumos feitos por inteligência artificial")),
+      h("p", {}, tx("Estão sob a licença Creative Commons Atribuição 4.0 Internacional (CC BY 4.0). Você pode copiar, redistribuir e adaptar esse conteúdo para qualquer finalidade, inclusive em matérias e em outros sites, desde que cite o Voto de Verdade, com o endereço votodeverdade.com.br, e indique se fez alterações. Ao reutilizar os resumos, diga que foram feitos por inteligência artificial e podem conter erros. O texto oficial de cada projeto está sempre no site da Câmara.")),
+      h("h2", {}, tx("O que não está coberto")),
+      h("ul", {}, ...nao.map((t) => h("li", {}, t))),
+      h("h2", {}, tx("Treino de modelos de inteligência artificial")),
+      h("p", {}, tx("Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultar o site para responder perguntas de pessoas, citando a fonte com link, é bem-vindo. Esse pedido está no robots.txt do site (Content-Signal: ai-train=no). É um sinal de preferência, que nem todo rastreador respeita, e não uma restrição jurídica: a licença CC BY 4.0, por si só, não proíbe esse uso.")),
+      h("h2", {}, tx("Textos completos")),
+      h("ul", {}, ...arquivos.map(([href, nome]) => h("li", {}, h("a", { href }, nome)))),
+      h("p", {}, h("a", { href: "#/" }, tx("Voltar ao início")))));
+    document.title = tx("Licença e uso do conteúdo: {0}", "Voto de Verdade");
+    return document.getElementById("titulo-licenca");
   }
 
   // ------------------------------------------------------------------ página do assunto
@@ -1590,6 +1625,7 @@
       else if (partes[0] === "projeto" && partes[1]) titulo = await telaProjeto(partes[1], p);
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
       else if (partes[0] === "sobre") titulo = await telaSobre();
+      else if (partes[0] === "licenca") titulo = telaLicenca();
       else if (partes[0] === "em-numeros") titulo = partes[1] ? await telaTabelaNumeros(partes[1], "numeros", p) : await telaPainel(p);
       else if (partes[0] === "inteligencia-artificial") titulo = partes[1] ? await telaTabelaNumeros(partes[1], "ia", p) : await telaIA();
       else if (partes[0] === "apoie" && soHttps(CONFIG.doacao)) titulo = telaApoie();
