@@ -197,6 +197,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `site/exportar_dados.py` | Passa o banco para os JSON que o site lê (`site/dados/`) |
 | `site/painel.py` | Faz `site/dados/painel.json`, os números da tela **Em números** (simbólicas × nominais ao longo do tempo, por assunto e resultado, participação, placar e transparência da IA). Roda junto com o `exportar_dados.py` |
 | `site/destaques.py` | Faz `site/dados/destaques.json` (e `en/destaques.json`): as 10 votações em destaque da tela inicial, já escolhidas. Assim a primeira visita não baixa `projetos.json` e `votacoes.json` (cerca de 156 KB comprimidos); eles só são baixados quando alguém busca. Roda junto com `exportar_dados.py` |
+| `site/novos.py` | Guarda em `dados/primeira_vez.json` a data em que cada projeto entrou no site, para a etiqueta **Novo** de «Últimas votações» na tela inicial (só projetos que chegam depois de 10/10/2026; a etiqueta some depois de 7 dias, `DIAS_COMO_NOVO`, conferido por teste). A rotina diária atualiza e guarda o arquivo |
 | `testes/captura_painel.py` | Tira a foto (PNG) da tela Em números; a atualização diária guarda a mais recente em `painel/ultima-geracao.png` |
 | `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404, em português e em inglês (`--idiomas`) |
 | `site/criar_og_en.py` | Cria `site/og-en.png`, a imagem de compartilhamento em inglês |

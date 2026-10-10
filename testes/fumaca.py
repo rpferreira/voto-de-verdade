@@ -11,10 +11,12 @@ prontas (título, prévia de compartilhamento), buscadores e agentes de IA (cont
 llms.txt, ferramentas WebMCP), tela estreita sem rolagem para o lado e modo escuro.
 Sai com código 1 se algo falhar.
 """
+import datetime
 import functools
 import http.server
 import json
 import os
+import re
 import socketserver
 import sys
 import threading
@@ -61,6 +63,12 @@ with sync_playwright() as p:
         pg.erros = []
         pg.on("pageerror", lambda e: pg.erros.append(str(e)))
         pg.on("console", lambda m: pg.erros.append(m.text) if m.type == "error" and "Failed to load resource" not in m.text else None)
+        return pg
+
+    def com_tema(pg, tema):
+        """O site abre sempre no modo claro (mesmo com o aparelho no escuro); o escuro vem da escolha guardada de quem visita."""
+        if tema == "dark":
+            pg.add_init_script("try { localStorage.setItem('tema', 'dark'); } catch (e) {}")
         return pg
 
     def sem_rolagem_lateral(pg):
@@ -469,7 +477,7 @@ with sync_playwright() as p:
     }"""
     for caminho, nome in (("/", "PT"), ("/en/", "EN")):
         for tema in ("light", "dark"):
-            pg = nova(1280, tema)
+            pg = com_tema(nova(1280, tema), tema)
             pg.goto(base + caminho)
             pg.wait_for_selector(".topo nav a", timeout=15000)
             m = pg.evaluate(cabecalho_js)
@@ -479,7 +487,7 @@ with sync_playwright() as p:
             confere(m["topoAltura"] <= 80 and m["rolagem"] <= 1, f"{rot}: topo em uma linha, sem rolagem lateral (altura {m['topoAltura']}px)")
             confere(m["contrasteAtualTopo"] is not None and m["contrasteAtualTopo"] >= 4.5, f"{rot}: item atual legível, contraste {m['contrasteAtualTopo'] and round(m['contrasteAtualTopo'], 1)}")
             pg.context.close()
-            pg = nova(390, tema)
+            pg = com_tema(nova(390, tema), tema)
             pg.goto(base + caminho)
             pg.wait_for_selector(".menu-botao", state="visible", timeout=15000)
             pg.click(".menu-botao")
@@ -498,8 +506,9 @@ with sync_playwright() as p:
     # O arquivo dos destaques é feito pelo mesmo script da exportação diária; se ficar velho, a tela inicial mostraria votações erradas.
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "site"))
     import destaques as destaques_inicio
+    import novos
     with open(os.path.join(pasta, "dados", "destaques.json"), encoding="utf-8") as f:
-        confere(json.load(f) == json.loads(json.dumps(destaques_inicio.montar_destaques(json.load(open(os.path.join(pasta, "dados", "votacoes.json"), encoding="utf-8")), projetos))), "destaques.json confere com projetos.json e votacoes.json (não está velho)")
+        confere(json.load(f) == json.loads(json.dumps(destaques_inicio.montar_destaques(json.load(open(os.path.join(pasta, "dados", "votacoes.json"), encoding="utf-8")), projetos, novos.datas(novos.carregar())))), "destaques.json confere com projetos.json, votacoes.json e primeira_vez.json (não está velho)")
     # A tela inicial mostra 10 votações em destaque e não pode baixar projetos.json e votacoes.json (cerca de 156 KB
     # comprimidos) antes de a pessoa buscar: os destaques vêm prontos em dados/destaques.json.
     for caminho, nome in (("/", "PT"), ("/en/", "EN")):
@@ -526,7 +535,7 @@ with sync_playwright() as p:
     # Cada deputado da busca tem de parecer um link: cartão com borda e seta à direita (antes era só texto solto, sem pista de clique).
     for largura in (390, 1280):
         for tema in ("light", "dark"):
-            pg = nova(largura, tema)
+            pg = com_tema(nova(largura, tema), tema)
             pg.goto(base + "/#/deputados")
             pg.wait_for_selector(".linha-dep", timeout=15000)
             m = pg.evaluate("""() => { const a = document.querySelector('.linha-dep'), cs = getComputedStyle(a), seta = getComputedStyle(a, '::after'), r = a.getBoundingClientRect();
@@ -592,6 +601,52 @@ with sync_playwright() as p:
     pg.wait_for_selector("ul.projetos .proj", timeout=15000)
     simbolicas = pg.locator(".proj__meta .selo-info")
     confere(simbolicas.count() > 0 and simbolicas.first.evaluate("e => getComputedStyle(e).borderRadius") != "0px", "votação simbólica ou secreta aparece em pílula nas listas de projetos")
+    pg.context.close()
+
+    print("Etiqueta «Novo» nas últimas votações")
+    # Regras: só vale para projetos que entraram no site depois de o registro começar, só em «Últimas votações» da tela inicial,
+    # e some depois de DIAS_COMO_NOVO dias. O registro (site/novos.py) começa com todos os projetos de hoje como «já existia».
+    reg = novos.atualizar(None, [1, 2], "2026-01-01")
+    confere(reg == {"desde": "2026-01-01", "projetos": {"1": None, "2": None}} and novos.datas(reg) == {}, "registro novo: todos os projetos existentes valem «já existia» (nada vira Novo de uma vez)")
+    reg2 = novos.atualizar(reg, [1, 2, 3], "2026-01-05")
+    confere(novos.datas(reg2) == {"3": "2026-01-05"} and novos.atualizar(reg2, [1, 2, 3], "2026-02-01") == reg2, "projeto que chega depois recebe a data de entrada, e só na primeira vez")
+    prazo_js = re.search(r"const DIAS_COMO_NOVO = (\d+);", open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "site", "app.js"), encoding="utf-8").read())
+    confere(prazo_js and int(prazo_js.group(1)) == novos.DIAS_COMO_NOVO, f"prazo da etiqueta igual no aplicativo e em site/novos.py ({novos.DIAS_COMO_NOVO} dias)")
+    hoje_utc = datetime.datetime.now(datetime.timezone.utc).date()
+
+    def dias_atras(n):
+        return (hoje_utc - datetime.timedelta(days=n)).isoformat()
+
+    for caminho, nome, esperado in (("/", "PT", "novo"), ("/en/", "EN", "new")):
+        for tema in ("light", "dark"):
+            pg = com_tema(nova(390, tema), tema)
+            def adulterar(rota):
+                resp = rota.fetch()
+                d = json.loads(resp.text())
+                for lista, datas_ in ((d["recentes"], [dias_atras(0), dias_atras(6), dias_atras(8), None, dias_atras(1)]), (d["apertadas"], [dias_atras(0)] * 5)):
+                    for it, quando in zip(lista, datas_):
+                        if quando:
+                            it["p"]["inc"] = quando
+                        else:
+                            it["p"].pop("inc", None)
+                rota.fulfill(response=resp, body=json.dumps(d))
+            pg.route("**/dados/destaques.json", adulterar)
+            pg.goto(base + caminho)
+            pg.wait_for_selector("#t-recentes ~ ul > li", timeout=15000)
+            etiquetas = pg.locator("#t-recentes ~ ul > li .selo-novo")
+            confere(etiquetas.count() == 3 and etiquetas.first.inner_text().lower() == esperado, f"{nome} {tema}: 3 de 5 últimas votações com «Novo» (hoje, 6 dias e 1 dia); 8 dias e sem data ficam sem")
+            confere(pg.locator("#t-apertadas ~ ul .selo-novo").count() == 0, f"{nome} {tema}: «Decididas por pouco» nunca mostra «Novo»")
+            contraste = pg.evaluate("""() => { const e = document.querySelector('.selo-novo'), cs = getComputedStyle(e);
+              const rgb = (c) => c.match(/[\\d.]+/g).slice(0, 3).map(Number); const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+              const a = lum(rgb(cs.color)), b = lum(rgb(cs.backgroundColor)); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); }""")
+            confere(contraste >= 4.5, f"{nome} {tema}: «Novo» legível, contraste {contraste:.1f}")
+            pg.context.close()
+    pg = nova(390)
+    pg.goto(base + "/")
+    pg.wait_for_selector("#t-recentes ~ ul > li", timeout=15000)
+    confere(pg.locator(".selo-novo").count() == 0, "com os dados de hoje (nenhum projeto entrou depois do registro começar) não há «Novo»")
+    pg.goto(base + "/#/assunto/saude?todos=1")
+    pg.wait_for_selector("ul.projetos .proj", timeout=15000)
     pg.context.close()
 
     print("Em números sem JavaScript (páginas prontas)")

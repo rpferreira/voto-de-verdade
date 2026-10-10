@@ -291,6 +291,15 @@
   }
 
   // Uma linha da lista de projetos: leva à página do projeto, que já mostra os votos.
+  // Etiqueta «Novo»: só em «Últimas votações» da tela inicial, para projetos que entraram no site há menos de DIAS_COMO_NOVO dias
+  // (a data de entrada vem de dados/destaques.json, veja site/novos.py; o mesmo prazo está lá). Conta pelo relógio de quem visita,
+  // então a etiqueta sai sozinha mesmo se a atualização diária atrasar.
+  const DIAS_COMO_NOVO = 7;
+  const ehNovo = (entrou) => {
+    const dias = entrou ? (Date.now() - Date.parse(entrou + "T00:00:00Z")) / 864e5 : NaN;  // a data é do dia em que a atualização rodou (UTC)
+    return dias > -1 && dias < DIAS_COMO_NOVO;  // tolera até 1 dia de diferença de fuso para trás
+  };
+
   function linhaProjeto(pr, votacoes, opc) {
     opc = opc || {};
     const incerto = (pr.ca && pr.ca !== "alta") || (pr.cr && pr.cr !== "alta");
@@ -309,6 +318,7 @@
     return h("li", {}, h("a", { class: "proj", href },
       h("span", { class: "proj__titulo" }, pr.titulo),
       h("span", { class: "proj__meta" },
+        opc.novo ? h("span", { class: "selo-novo" }, tx("Novo")) : null,
         h("span", {}, data(v ? v.d : pr.ultima)), h("span", {}, resultado), sem && h("span", { class: "selo-info" }, sem),
         opc.assunto && h("span", {}, opc.assunto),
         incerto && h("span", { class: "selo-aviso" }, tx("Classificação incerta"))),
@@ -496,12 +506,12 @@
       try {
         const { recentes, apertadas } = await dados("destaques");
         if (!recentes.length) return;
-        const lista = (itens) => h("ul", { class: "projetos lista-home" }, itens.map((x) => linhaProjeto(x.p, null, { votacao: x.v })));
+        const lista = (itens, comNovo) => h("ul", { class: "projetos lista-home" }, itens.map((x) => linhaProjeto(x.p, null, { votacao: x.v, novo: comNovo && ehNovo(x.p.inc) })));
         destaques.replaceChildren(h("div", { class: "duas-colunas" },
           h("section", { class: "secao", "aria-labelledby": "t-recentes" },
             h("h2", { id: "t-recentes" }, tx("Últimas votações")),
             h("p", { class: "secao__intro" }, tx("As mais recentes em que cada deputado votou.")),
-            lista(recentes)),
+            lista(recentes, true)),
           apertadas.length
             ? h("section", { class: "secao", "aria-labelledby": "t-apertadas" },
                 h("h2", { id: "t-apertadas" }, tx("Decididas por pouco")),

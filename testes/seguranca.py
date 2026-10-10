@@ -118,6 +118,7 @@ def envenenar(site):
             for x in lista:
                 x["p"]["titulo"] += HTML + SCRIPT
                 x["p"]["ca"] = "<img src=x onerror=window.__pwn=6>"
+                x["p"]["inc"] = "<img src=x onerror=window.__pwn=8>"  # a data da etiqueta «Novo» também vem dos dados
                 x["v"]["id"] += HTML
 
     mexer("destaques.json", destaques)

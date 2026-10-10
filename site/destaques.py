@@ -13,6 +13,9 @@ Regras (as mesmas que a tela inicial sempre usou):
   - «Decididas por pouco»: as 5 de menor diferença entre sim e não, entre as que tiveram 100 votos de sim e não ou mais
     e diferença menor que 15%; mostradas da mais recente para a mais antiga.
 
+Cada projeto leva "inc" (a data em que entrou no site, de dados/primeira_vez.json, veja site/novos.py) quando entrou depois de o
+registro começar; a tela inicial usa isso para a etiqueta «Novo» em «Últimas votações».
+
 Arquivos gerados:
     destaques.json      {"recentes": [{"v": votação, "p": projeto}], "apertadas": [...]}
     en/destaques.json   {id do projeto: {"titulo": título em inglês}}, só dos projetos que aparecem e já têm tradução
@@ -47,7 +50,9 @@ def _unicas(lista, n=QUANTOS):
     return saida
 
 
-def montar_destaques(votacoes, projetos):
+def montar_destaques(votacoes, projetos, incluidos=None):
+    """`incluidos` = {id do projeto: data em que entrou no site} (site/novos.py): vai como "inc" no projeto, para a etiqueta «Novo»."""
+    incluidos = incluidos or {}
     por_id = {p["id"]: p for p in projetos}
     nominais = [v for v in votacoes if v["t"] == "nominal" and v.get("s") and v["p"] in por_id]
 
@@ -60,8 +65,10 @@ def montar_destaques(votacoes, projetos):
 
     def item(v):
         p = por_id[v["p"]]
-        return {"v": {"id": v["id"], "p": v["p"], "d": v["d"], "ap": v["ap"], "s": v["s"]},
-                "p": {"id": p["id"], "titulo": p["titulo"], "ca": p.get("ca"), "cr": p.get("cr")}}
+        proj = {"id": p["id"], "titulo": p["titulo"], "ca": p.get("ca"), "cr": p.get("cr")}
+        if str(p["id"]) in incluidos:
+            proj["inc"] = incluidos[str(p["id"])]
+        return {"v": {"id": v["id"], "p": v["p"], "d": v["d"], "ap": v["ap"], "s": v["s"]}, "p": proj}
 
     return {"recentes": [item(v) for v in recentes], "apertadas": [item(v) for v in apertadas]}
 
@@ -100,7 +107,8 @@ def main():
         with open(os.path.join(pasta, nome), encoding="utf-8") as f:
             return json.load(f)
 
-    gravar(pasta, montar_destaques(ler("votacoes.json"), ler("projetos.json")))
+    import novos
+    gravar(pasta, montar_destaques(ler("votacoes.json"), ler("projetos.json"), novos.datas(novos.carregar())))
     return 0
 
 
