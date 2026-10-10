@@ -436,6 +436,64 @@ with sync_playwright() as p:
             confere(bool(dist) and max(dist) <= 4, f"contagem a no máximo 4px da caixa de filtros em {rota} ({largura}px) {dist}")
             pg.context.close()  # páginas abertas em segundo plano ficam lentas para montar a tela
 
+    print("Cabeçalho e menu (aparência)")
+    # Mede o que já saiu torto: links colados no computador, itens do menu sem divisória ou com cantos que não acompanham a caixa,
+    # texto ilegível no item da página atual.
+    cabecalho_js = """() => {
+      const cx = document.createElement('canvas').getContext('2d');
+      const rgb = (cor) => { cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillStyle = cor; cx.fillRect(0, 0, 1, 1); const d = cx.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2], d[3] / 255]; };
+      const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+      const fundo = (el) => { let e = el; while (e) { const c = rgb(getComputedStyle(e).backgroundColor); if (c[3] > 0.9) return c; e = e.parentElement; } return [255, 255, 255, 1]; };
+      const mistura = (topo, base) => topo[3] >= 1 ? topo : [0, 1, 2].map((i) => topo[i] * topo[3] + base[i] * (1 - topo[3]));
+      const contraste = (el) => { const base = fundo(el.parentElement), c = rgb(getComputedStyle(el).backgroundColor), f = c[3] > 0 ? mistura(c, base) : base;
+        const t = rgb(getComputedStyle(el).color), a = lum(f), b = lum(t); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); };
+      const r = (el) => el.getBoundingClientRect();
+      const topo = document.querySelector('.topo'), saida = { topoAltura: Math.round(r(topo).height), rolagem: document.documentElement.scrollWidth - window.innerWidth };
+      const links = [...document.querySelectorAll('.topo__acoes > nav a')].filter((a) => a.offsetParent);
+      saida.nav = links.length;
+      saida.espacoEntreLinks = links.slice(1).map((a, i) => Math.round(r(a).left - r(links[i]).right));
+      saida.paddingLinks = links.map((a) => parseFloat(getComputedStyle(a).paddingLeft));
+      const atual = links.find((a) => a.getAttribute('aria-current') === 'page'); saida.contrasteAtualTopo = atual ? contraste(atual) : null;
+      const menu = document.querySelector('#menu-topo');
+      if (menu && menu.matches(':popover-open')) {
+        const itens = [...menu.querySelectorAll('li > a')], cm = getComputedStyle(menu);
+        saida.menuItens = itens.length;
+        saida.alturaItens = itens.map((a) => Math.round(r(a).height));
+        saida.divisorias = [...menu.querySelectorAll('ul > li + li')].map((li) => getComputedStyle(li).boxShadow !== 'none');
+        saida.raioCaixa = parseFloat(cm.borderTopLeftRadius); saida.respiroCaixa = parseFloat(cm.paddingLeft);
+        saida.raioItens = itens.map((a) => parseFloat(getComputedStyle(a).borderTopLeftRadius));
+        saida.dentro = r(menu).left >= 0 && r(menu).right <= window.innerWidth;
+        const cur = itens.find((a) => a.getAttribute('aria-current') === 'page'); saida.contrasteAtualMenu = cur ? contraste(cur) : null;
+      }
+      return saida;
+    }"""
+    for caminho, nome in (("/", "PT"), ("/en/", "EN")):
+        for tema in ("light", "dark"):
+            pg = nova(1280, tema)
+            pg.goto(base + caminho)
+            pg.wait_for_selector(".topo nav a", timeout=15000)
+            m = pg.evaluate(cabecalho_js)
+            rot = f"{nome} computador {tema}"
+            confere(m["nav"] >= 4 and all(e >= 8 for e in m["espacoEntreLinks"]), f"{rot}: links do topo com respiro entre si {m['espacoEntreLinks']}")
+            confere(all(x >= 16 for x in m["paddingLinks"]), f"{rot}: links do topo com 16px de folga lateral {sorted(set(m['paddingLinks']))}")
+            confere(m["topoAltura"] <= 80 and m["rolagem"] <= 1, f"{rot}: topo em uma linha, sem rolagem lateral (altura {m['topoAltura']}px)")
+            confere(m["contrasteAtualTopo"] is not None and m["contrasteAtualTopo"] >= 4.5, f"{rot}: item atual legível, contraste {m['contrasteAtualTopo'] and round(m['contrasteAtualTopo'], 1)}")
+            pg.context.close()
+            pg = nova(390, tema)
+            pg.goto(base + caminho)
+            pg.wait_for_selector(".menu-botao", state="visible", timeout=15000)
+            pg.click(".menu-botao")
+            pg.wait_for_function("document.querySelector('#menu-topo').matches(':popover-open')", polling=100, timeout=15000)
+            m = pg.evaluate(cabecalho_js)
+            rot = f"{nome} celular {tema}"
+            confere(m["nav"] == 0 and m["rolagem"] <= 1, f"{rot}: links saem do topo e vão para o menu, sem rolagem lateral")
+            confere(m["menuItens"] >= 4 and all(h >= 48 for h in m["alturaItens"]), f"{rot}: itens do menu com 48px ou mais {m['alturaItens']}")
+            confere(m["divisorias"] and all(m["divisorias"]), f"{rot}: divisória discreta entre os itens do menu")
+            confere(all(abs(x - (m["raioCaixa"] - m["respiroCaixa"])) <= 1 for x in m["raioItens"]), f"{rot}: cantos dos itens acompanham a caixa (caixa {m['raioCaixa']}px, respiro {m['respiroCaixa']}px, itens {sorted(set(m['raioItens']))})")
+            confere(m["dentro"], f"{rot}: menu cabe na tela")
+            confere(m["contrasteAtualMenu"] is not None and m["contrasteAtualMenu"] >= 4.5, f"{rot}: item atual do menu legível, contraste {m['contrasteAtualMenu'] and round(m['contrasteAtualMenu'], 1)}")
+            pg.context.close()
+
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
     sem_js.goto(base + "/em-numeros/")
