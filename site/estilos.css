@@ -429,6 +429,12 @@ button.placar__item[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--tin
 .cabeca-projeto { padding-block: var(--grupo) var(--perto); display: grid; gap: var(--item); }
 .cabeca-projeto h1 { margin: 0; max-width: 34ch; font-size: clamp(1.55rem, 4.4vw, 2.3rem); line-height: 1.15; line-height: round(up, 1.15em, 4px); letter-spacing: -0.03em; }
 .cabeca-projeto__meta { margin: 0; color: var(--tinta-suave); }
+.cabeca-projeto__id { display: flex; flex-wrap: wrap; align-items: center; gap: var(--perto) var(--item); margin: 0; font-size: 1.0625rem; line-height: 1.5rem; }
+.cabeca-projeto__id strong { font-weight: 600; letter-spacing: 0.01em; }
+.selo-resultado { display: inline-flex; align-items: center; height: 1.5rem; padding: 0 var(--perto); border-radius: 99px; background: color-mix(in srgb, var(--tinta) 6%, transparent); border: 1px solid var(--linha); color: var(--tinta); font-size: 0.875rem; font-weight: 600; line-height: 1.25rem; }
+.resultado-linha { display: flex; flex-wrap: wrap; align-items: center; gap: var(--perto); margin: var(--perto) 0 0; color: var(--tinta-suave); }
+.resultado-barra { max-width: 36rem; margin-bottom: var(--item); }
+.resultado-barra .barra-voto { display: flex; margin-top: var(--perto); }
 .cabeca-projeto__acoes { display: flex; flex-wrap: wrap; gap: var(--perto); align-items: center; }
 .resumo-projeto { display: grid; gap: var(--item); margin-top: var(--item); max-width: 66ch; }
 .resumo-projeto p { margin: 0; font-size: 1.125rem; line-height: 1.75rem; }
@@ -620,7 +626,7 @@ a.botao, a.botao:hover { text-decoration: none; }
 .aviso-idioma { background: color-mix(in srgb, var(--tinta) 6%, transparent); box-shadow: inset 0 -1px 0 var(--linha); color: var(--tinta); font-size: 0.875rem; line-height: 1.5rem; }
 .aviso-idioma__miolo { display: flex; align-items: center; justify-content: space-between; gap: var(--item); padding-block: var(--junto); }
 .aviso-idioma p { margin: 0; }
-.aviso-idioma a { font-weight: 600; color: var(--cobalto); white-space: nowrap; }
+.aviso-idioma a { font-weight: 600; color: var(--cobalto); }
 .aviso-idioma__fechar { display: inline-grid; place-items: center; flex: none; width: 2rem; height: 2rem; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--tinta); cursor: pointer; }
 .aviso-idioma__fechar:hover { background: color-mix(in srgb, var(--tinta) 8%, transparent); }
 .aviso-idioma__fechar svg { width: 1.25rem; height: 1.25rem; }

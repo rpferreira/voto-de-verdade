@@ -252,10 +252,10 @@ class Gerador:
         partes = []
         for cod, rotulo, nome_idioma, lang in (("pt", "PT", "Português", "pt-BR"), ("en", "EN", "English", "en")):
             if cod == L.codigo:
-                partes.append(f'<span class="idioma__atual" lang="{lang}" aria-current="true" aria-label="{nome_idioma} ({rotulo})">{rotulo}</span>')
+                partes.append(f'<span class="idioma__atual" lang="{lang}" aria-current="true" aria-label="{rotulo}: {nome_idioma}">{rotulo}</span>')
             else:
                 alvo = f"{ativos}{'en/' if cod == 'en' else ''}{caminho + '/' if caminho else ''}"
-                partes.append(f'<a class="idioma__outro" lang="{lang}" hreflang="{lang}" data-idioma="{cod}" href="{alvo or "./"}" aria-label="{nome_idioma} ({rotulo})">{rotulo}</a>')
+                partes.append(f'<a class="idioma__outro" lang="{lang}" hreflang="{lang}" data-idioma="{cod}" href="{alvo or "./"}" aria-label="{rotulo}: {nome_idioma}">{rotulo}</a>')
         miolo = '<span class="idioma__sep" aria-hidden="true">|</span>'.join(partes)
         if menu:
             return f'<li class="menu-idioma"><span class="menu-idioma__rotulo">{esc(L("Idioma"))}</span><span class="idioma">{miolo}</span></li>'
@@ -505,8 +505,9 @@ def gerar_idioma(site, g, D, L, URL, doacao):
             '<div class="miolo pagina-projeto">'
             f'<nav class="migalhas" aria-label="{migalha_voce}"><ol><li><a href="{raiz}">{L("Assuntos")}</a></li>'
             f'<li><a href="{raiz}assunto/{pr["a"]}/">{esc(assunto)}</a></li><li aria-current="page">{esc(pr["nome"])}</li></ol></nav>'
-            f'<header class="cabeca-projeto"><h1>{esc(titulo_completo(L, pr))}</h1>'
-            f'<p class="cabeca-projeto__meta">{esc(pr["nome"])} · {L("última votação em {0}", L.data(pr["ultima"]))}</p></header>'
+            f'<header class="cabeca-projeto"><p class="cabeca-projeto__id"><strong>{esc(pr["nome"])}</strong><span class="selo-resultado">{L("Aprovada") if pr.get("aprovada") else L("Rejeitada")}</span></p>'
+            f'<h1>{esc(titulo_completo(L, pr))}</h1>'
+            f'<p class="cabeca-projeto__meta">{L("Última votação em {0}", L.data(pr["ultima"]))}</p></header>'
             f'<div class="resumo-projeto"><p>{esc(resumo)}</p></div>'
             + "".join(f'<p class="nota">{esc(a)}</p>' for a in avisos)
             + detalhes_html

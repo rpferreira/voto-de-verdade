@@ -48,7 +48,6 @@
 "Não usamos ferramentas que rastreiam quem visita.": "We use no tools that track visitors.",
 "Sobre o projeto": "About the project",
 "Versão Beta. ": "Beta version. ",
-"Site em constante desenvolvimento. Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. ": "A site under constant development. We want to bring society closer to Congress, with transparency and visibility into what legislators do, in a simple and practical way. ",
 "Ver objetivos": "See our goals",
 "Atualizado em ": "Updated on ",
 "Veja como a Câmara votou, assunto por assunto": "See how the Chamber voted, subject by subject",
@@ -302,7 +301,6 @@
 "Nenhum deputado com esses filtros": "No deputies match these filters",
 "Nesta votação, ninguém combina com a busca, o partido, o estado e o voto escolhidos. Tire algum filtro ou escreva outro nome.": "In this vote, nobody matches the search, party, state and vote you chose. Remove a filter or type another name.",
 "Mostrar mais {0} deputados": "Show {0} more deputies",
-"{0} · Resultado: {1}": "{0} · Result: {1}",
 "Votos de cada deputado em {0} (votação de {1})": "Each deputy's votes on {0} (vote of {1})",
 "Registro oficial da votação: {0}": "Official record of the vote: {0}",
 "Como cada deputado votou": "How each deputy voted",
@@ -312,7 +310,6 @@
 "Votação simbólica: os partidos chegaram a um acordo e o resultado foi anunciado sem registrar o voto de cada deputado. Por isso não há como mostrar como cada um votou.": "Symbolic vote: the parties reached an agreement and the result was announced without recording each deputy's vote. That is why there is no way to show how each one voted.",
 "Aprovada": "Approved",
 "Rejeitada": "Rejected",
-"{0} · última votação em {1}": "{0} · latest vote on {1}",
 "{0} | Voto de Verdade": "{0} | Voto de Verdade",
 "Pontos principais e texto oficial": "Key points and official text",
 "Este projeto também teve {0}, sem o voto de cada deputado.": "This bill also had {0}, with no vote recorded for each deputy.",
@@ -587,7 +584,6 @@
 "{0}: tabela | {1}": "{0}: table | {1}",
 "Última votação": "Latest vote",
 "Últimas votações com o voto de cada deputado": "Latest votes with each deputy's vote",
-"última votação em {0}": "latest vote on {0}",
 "Erro 404": "Error 404",
 "O endereço pode estar errado ou a página não existe mais. Procure o que você queria ou escolha um dos caminhos abaixo.": "The address may be wrong or the page may no longer exist. Search for what you were looking for, or pick one of the paths below.",
 "Licença": "License",
@@ -628,5 +624,8 @@
 "Mostrar o que cada deputado votou, em linguagem simples, **sem nota e sem ranking**.": "Show what each deputy voted, in plain language, **with no grades and no rankings**.",
 "Ser **neutro e apartidário**, sem dizer quem votou certo ou errado.": "Be **neutral and nonpartisan**, without saying who voted right or wrong.",
 "Deixar sempre o **texto oficial** ao lado do resumo, e avisar quando a inteligência artificial tem dúvida.": "Always keep the **official text** next to the summary, and warn when the artificial intelligence is in doubt.",
-"Ser **gratuito, sem anúncios e sem rastrear** quem visita, com código aberto.": "Be **free, with no ads and no tracking** of visitors, with open code."
+"Ser **gratuito, sem anúncios e sem rastrear** quem visita, com código aberto.": "Be **free, with no ads and no tracking** of visitors, with open code.",
+"Em desenvolvimento, para aproximar a sociedade do Congresso. ": "In development, to bring society closer to Congress. ",
+"Votação de {0}": "Vote on {0}",
+"Última votação em {0}": "Latest vote on {0}"
 }
