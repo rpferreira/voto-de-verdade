@@ -648,72 +648,85 @@ def gerar_idioma(site, g, D, L, URL, doacao):
                            "url": f"{URL}/{L.prefixo}deputados/", "inLanguage": lang_ld})
 
     pct_simbolicas_int = round(100 * meta["simbolicas"] / meta["votacoes"])
+    # Marcas nos textos: **semibold** e [texto](endereço). Endereço «#/rota» é uma tela do site; https:// abre em outra aba. A tradução em en.json leva as mesmas marcas.
     objetivos = [
-        L("Mostrar o que cada deputado votou, em linguagem simples, sem nota e sem ranking."),
+        L("Mostrar o que cada deputado votou, em linguagem simples, **sem nota e sem ranking**."),
         L("Organizar os projetos por assunto, para você achar o que importa para a sua vida."),
-        L("Ser neutro e apartidário, sem dizer quem votou certo ou errado."),
-        L("Deixar sempre o texto oficial ao lado do resumo, e avisar quando a inteligência artificial tem dúvida."),
-        L("Ser gratuito, sem anúncios e sem rastrear quem visita, com código aberto."),
+        L("Ser **neutro e apartidário**, sem dizer quem votou certo ou errado."),
+        L("Deixar sempre o **texto oficial** ao lado do resumo, e avisar quando a inteligência artificial tem dúvida."),
+        L("Ser **gratuito, sem anúncios e sem rastrear** quem visita, com código aberto."),
     ]
     sobre = [
-        (L("Versão Beta, em constante desenvolvimento"),
-         L("O Voto de Verdade é uma versão beta e está em constante desenvolvimento. Pode ter erros, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no texto oficial da Câmara. "
-           "Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. Para isso, o site busca:"), objetivos),
-        (L("Neutro e apartidário, sem nota e sem ranking"),
-         L("O Voto de Verdade não dá nota, não faz ranking e não diz quem votou certo ou errado. Mostra o que cada deputado votou. "
-           "Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto.")),
-        (L("De onde vêm os dados"),
-         L("Do portal de Dados Abertos da Câmara dos Deputados. O site mostra {0} votações em plenário, de {1} a {2}, e é atualizado todos os dias.",
-           meta["votacoes"], L.data(meta["de"]), L.data(meta["ate"]))),
-        (L("Só a Câmara dos Deputados, por enquanto"),
-         L("O site cobre os deputados federais. O Senado, as assembleias estaduais e as câmaras de vereadores não estão aqui.")),
-        (L("Quais votações o site mostra"),
-         L("Um projeto costuma passar por várias votações no plenário. Aqui entram só as que decidem sobre o projeto em si, isto é, aprovar ou rejeitar. "
-           "Ficam de fora as votações de urgência (que só decidem se o projeto anda mais rápido), de requerimentos, de emendas ou destaques isolados (que votam a mudança de um trecho) e de procedimento. "
-           "Por isso um projeto que foi votado muitas vezes pode aparecer com uma só votação. "
-           "Às vezes a Câmara vota um substitutivo, um texto novo que troca o original. Essa votação aparece, com um aviso: o resumo foi feito a partir da ementa do projeto original, e o texto votado pode ser diferente.")),
-        (L("Números e dados para baixar"),
-         L("A tela Em números mostra as votações ao longo do tempo, por assunto e por resultado, quantos deputados votaram e o placar das votações nominais, com filtro por ano. "
-           "Cada bloco de números e as listas de projetos, deputados e votos têm botões para baixar o que está na tela em CSV (que abre em planilha) ou em JSON, já com o filtro aplicado. "
-           "Ao usar os dados, cite o Voto de Verdade e a Câmara dos Deputados.")),
-        (L("Assunto e resumo são feitos por inteligência artificial"),
-         L("Uma inteligência artificial lê o texto oficial de cada projeto, escolhe o assunto e escreve um resumo em linguagem simples. Ela pode errar. Quando há dúvida, o projeto mostra um aviso. "
-           "Ninguém revisa os resumos antes de irem ao ar, e por enquanto o site não tem um canal para pedir correções. Se algo parecer estranho, confira no texto oficial."), None, True),
-        (L("Por que nem todo projeto mostra o voto de cada deputado"),
-         L("{0} das {1} votações ({2}%) foram simbólicas: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado.",
-           meta["simbolicas"], meta["votacoes"], pct_simbolicas_int)),
-        (L("Licença e uso do conteúdo"),
-         L("O código do site é aberto, com licença MIT. Os textos do site e os resumos feitos por inteligência artificial podem ser copiados e usados por qualquer pessoa, inclusive em matérias, desde que citem o Voto de Verdade e o endereço votodeverdade.com.br (licença CC BY 4.0). Os dados originais são da Câmara dos Deputados, que tem as próprias regras. "
-           "Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultá-lo para responder perguntas, citando o site, é bem-vindo."), None, False, True),
-        (L("Quem faz e privacidade"),
-         L("O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita.")),
+        (L("Versão Beta, em constante desenvolvimento"), [
+            L("O Voto de Verdade é uma **versão beta** e está em constante desenvolvimento. **Pode ter erros**, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no [texto oficial da Câmara](https://www.camara.leg.br)."),
+            L("Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. Para isso, o site busca:"),
+        ], objetivos),
+        (L("Neutro e apartidário, sem nota e sem ranking"), [
+            L("O Voto de Verdade **não dá nota, não faz ranking e não diz quem votou certo ou errado**. Mostra o que cada deputado votou. Votar sim ou não numa votação **não diz, sozinho, se o deputado apoia o assunto** do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto."),
+        ]),
+        (L("De onde vêm os dados"), [
+            L("Do portal de [Dados Abertos da Câmara dos Deputados](https://dadosabertos.camara.leg.br). O site mostra {0} votações em plenário, de {1} a {2}, e é **atualizado todos os dias**. Quando a Câmara não vota (recesso, período de eleições), não há novidades.", meta["votacoes"], L.data(meta["de"]), L.data(meta["ate"])),
+        ]),
+        (L("Só a Câmara dos Deputados, por enquanto"), [
+            L("O site cobre **só os deputados federais**. O Senado, as assembleias estaduais e as câmaras de vereadores não estão aqui."),
+        ]),
+        (L("Quais votações o site mostra"), [
+            L("Um projeto costuma passar por várias votações no plenário. Aqui entram **só as que decidem sobre o projeto em si**, isto é, aprovar ou rejeitar. Ficam de fora as votações de urgência (que só decidem se o projeto anda mais rápido), de requerimentos, de emendas ou destaques isolados (que votam a mudança de um trecho) e de procedimento. Por isso um projeto que foi votado muitas vezes pode aparecer com **uma só votação**."),
+            L("Às vezes a Câmara vota um substitutivo, um texto novo que troca o original. Essa votação aparece, com um aviso: o resumo foi feito a partir da ementa do projeto original, e **o texto votado pode ser diferente**."),
+        ]),
+        (L("Números e dados para baixar"), [
+            L("A tela [Em números](#/em-numeros) mostra as votações ao longo do tempo, por assunto e por resultado, quantos deputados votaram e o placar das votações nominais, com filtro por ano. Cada bloco de números e as listas de projetos, deputados e votos têm botões para baixar o que está na tela em CSV (que abre em planilha) ou em JSON, já com o filtro aplicado. Ao usar os dados, **cite o Voto de Verdade e a Câmara dos Deputados**."),
+        ]),
+        (L("Assunto e resumo são feitos por inteligência artificial"), [
+            L("Uma inteligência artificial lê o texto oficial de cada projeto, escolhe o assunto e escreve um resumo em linguagem simples. **Ela pode errar.** Quando a classificação ou o resumo têm dúvida, o projeto mostra um aviso. O texto oficial fica sempre ao lado."),
+            L("**Ninguém revisa os resumos antes de irem ao ar**, e por enquanto o site não tem um canal para pedir correções. Se algo parecer estranho, confira no texto oficial."),
+            L("[Veja como a inteligência artificial é usada, com os números](#/inteligencia-artificial)"),
+        ]),
+        (L("Por que nem todo projeto mostra o voto de cada deputado"), [
+            L("**{0} das {1} votações ({2}%) foram simbólicas**: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Nesses casos **não há como saber como cada um votou**. Só as {3} votações nominais têm o voto de cada deputado.", meta["simbolicas"], meta["votacoes"], pct_simbolicas_int, meta["nominais"]),
+        ]),
+        (L("O que significa “presidia a sessão”"), [
+            L("Quem conduz a sessão **só vota em situações previstas** no Regimento Interno da Câmara ([artigo 17](https://www2.camara.leg.br/legin/fed/rescad/1989/resolucaodacamaradosdeputados-17-21-setembro-1989-320110-normaatualizada-pl.html)). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não."),
+        ]),
+        (L("Licença e uso do conteúdo"), [
+            L("O código do site é aberto, com licença [MIT](https://opensource.org/license/mit). Os textos do site e os resumos feitos por inteligência artificial podem ser copiados e usados por qualquer pessoa, inclusive em matérias, desde que **citem o Voto de Verdade e o endereço votodeverdade.com.br** (licença [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br)). Os dados originais são da Câmara dos Deputados, que tem as [próprias regras](https://dadosabertos.camara.leg.br)."),
+            L("**Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial.** Consultá-lo para responder perguntas, citando o site, é bem-vindo."),
+            L("[Ler a licença completa](#/licenca)"),
+        ]),
+        (L("Quem faz e privacidade"), [
+            L("O Voto de Verdade é um **site independente, sem ligação com a Câmara dos Deputados**, com partidos ou com candidatos. **Não usa cookies** nem ferramentas que rastreiam quem visita. Se você escolher o modo escuro, só o seu navegador guarda essa escolha."),
+        ]),
     ]
 
-    def itens_sobre(s):
-        return s[2] if len(s) > 2 else None
+    def rico_html(texto, raiz_rotas="../"):
+        """Marcas do texto para HTML: **semibold** vira <strong>; [texto](endereço) vira link («#/rota» é uma tela do site)."""
+        def link(m):
+            alvo = m.group(2)
+            if alvo.startswith("#/"):
+                return f'<a href="{raiz_rotas}{alvo[2:]}/">{m.group(1)}</a>'
+            return f'<a href="{alvo}" target="_blank" rel="noopener noreferrer">{m.group(1)}</a>'
+        t = esc(texto)
+        t = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", link, t)
+        return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
 
-    def com_link_ia(s):
-        return len(s) > 3 and s[3]
+    def rico_md(texto):
+        """O mesmo texto em Markdown: as marcas já são Markdown; só os endereços «#/rota» viram endereços completos."""
+        return re.sub(r"\]\(#/([^)\s]+)\)", lambda m: f"]({URL}/{L.prefixo}{m.group(1)}/)", texto)
 
-    def com_link_licenca(s):
-        return len(s) > 4 and s[4]
-
-    link_ia = L("Veja como a inteligência artificial é usada, com os números")
-    link_licenca = L("Ler a licença completa")
     corpo = (f'<div class="miolo texto-longo"><nav class="migalhas" aria-label="{migalha_voce}"><ol><li><a href="../">{L("Início")}</a></li><li aria-current="page">{L("Como o site funciona")}</li></ol></nav>'
              f'<h1>{L("Como o site funciona")}</h1>'
-             + "".join(f"<h2>{esc(s[0])}</h2><p>{esc(s[1])}</p>" + (("<ul>" + "".join(f"<li>{esc(i)}</li>" for i in itens_sobre(s)) + "</ul>") if itens_sobre(s) else "")
-                       + (f'<p><a href="../inteligencia-artificial/">{link_ia}</a></p>' if com_link_ia(s) else "")
-                       + (f'<p><a href="../licenca/">{link_licenca}</a></p>' if com_link_licenca(s) else "")
-                       for s in sobre)
+             + "".join(f"<h2>{esc(titulo)}</h2>" + "".join(f"<p>{rico_html(par)}</p>" for par in pars)
+                       + (("<ul>" + "".join(f"<li>{rico_html(i)}</li>" for i in itens) + "</ul>") if itens else "")
+                       for titulo, pars, *resto in sobre for itens in [resto[0] if resto else None])
              + "</div>")
     g.montar("sobre", "sobre", L("Como o site funciona: {0}", NOME),
              L("Neutro e apartidário, sem nota e sem ranking. De onde vêm os dados, como a inteligência artificial é usada e o que o site não faz."),
-             corpo, markdown=f"# {L('Como o site funciona')}\n\n" + "\n\n".join(f"## {s[0]}\n\n{s[1]}" + (("\n\n" + "\n".join(f"- {i}" for i in itens_sobre(s))) if itens_sobre(s) else "")
-                                                   + (f"\n\n[{link_ia}]({URL}/{L.prefixo}inteligencia-artificial/)" if com_link_ia(s) else "")
-                                                   + (f"\n\n[{link_licenca}]({URL}/{L.prefixo}licenca/)" if com_link_licenca(s) else "") for s in sobre) + "\n",
+             corpo, markdown=f"# {L('Como o site funciona')}\n\n" + "\n\n".join(
+                 f"## {titulo}\n\n" + "\n\n".join(rico_md(par) for par in pars) + (("\n\n" + "\n".join(f"- {rico_md(i)}" for i in resto[0])) if resto else "")
+                 for titulo, pars, *resto in sobre) + "\n",
              estruturados={"@context": "https://schema.org", "@type": "AboutPage", "name": L("Como o site funciona"),
                            "url": f"{URL}/{L.prefixo}sobre/", "inLanguage": lang_ld})
+
 
     # ---- Licença (o que está sob MIT, o que está sob CC BY 4.0 e o que não está coberto); os textos completos ficam em /LICENSE e /LICENSE-CONTEUDO.md
     lic_nao = [L("Dados originais da Câmara dos Deputados (votações, projetos, ementas, nomes de deputados): vêm do portal de Dados Abertos da Câmara e seguem as regras dele. Cite a Câmara como fonte."),

@@ -705,6 +705,42 @@ with sync_playwright() as p:
         confere(pg.locator('main a[href="#/licenca"]').count() == 1, f"{nome}: «Como o site funciona» leva à licença completa")
         pg.context.close()
 
+    print("Como o site funciona: destaques em semibold e links para as fontes")
+    EXTERNOS = ["https://dadosabertos.camara.leg.br", "https://www.camara.leg.br", "resolucaodacamaradosdeputados-17-21-setembro-1989", "opensource.org/license/mit", "creativecommons.org/licenses/by/4.0/deed"]
+    for caminho, nome in (("/", "PT"), ("/en/", "EN")):
+        textos = {}
+        for modo, url in (("aplicativo", caminho + "#/sobre"), ("página pronta", caminho + "sobre/")):
+            for largura in (390, 1280):
+                pg = nova(largura)
+                pg.goto(base + url)
+                pg.wait_for_selector("#titulo-sobre", timeout=15000)
+                info = pg.evaluate("""() => {
+                  const m = document.querySelector('main'), fortes = [...m.querySelectorAll('strong')];
+                  const links = [...m.querySelectorAll('a[href^="https://"]')];
+                  return { fortes: fortes.length, pesos: [...new Set(fortes.map((e) => getComputedStyle(e).fontWeight))], corpo: getComputedStyle(m.querySelector('p')).fontWeight,
+                           hrefs: links.map((a) => a.href), seguros: links.every((a) => a.target === '_blank' && /noopener/.test(a.rel)),
+                           internos: [...m.querySelectorAll('a[href]:not([href^="https://"])')].map((a) => a.getAttribute('href')),
+                           estoura: document.documentElement.scrollWidth > window.innerWidth + 1, texto: m.innerText.replace(/\s+/g, ' ').trim() };
+                }""")
+                confere(info["fortes"] >= 15 and info["pesos"] == ["600"] and info["corpo"] != "600", f"{nome} {modo} {largura}px: pontos importantes em semibold ({info['fortes']} destaques, peso {info['pesos']})")
+                faltam = [e for e in EXTERNOS if not any(e in u for u in info["hrefs"])]
+                confere(not faltam and info["seguros"], f"{nome} {modo} {largura}px: links para as fontes abrem em outra aba, com noopener" + (f" (faltam {faltam})" if faltam else ""))
+                confere(not info["estoura"], f"{nome} {modo} {largura}px: sem rolagem para o lado")
+                if largura == 1280:
+                    textos[modo] = info["texto"]
+                    internos = info["internos"]
+                    confere(any("em-numeros" in u for u in internos) and any("licenca" in u for u in internos) and any("inteligencia-artificial" in u for u in internos),
+                            f"{nome} {modo}: links para Em números, Transparência da IA e licença")
+                pg.context.close()
+        # o texto aparece igual sem JavaScript (buscadores) e com o aplicativo aberto
+        sem = navegador.new_context(java_script_enabled=False).new_page()
+        sem.goto(base + caminho + "sobre/")
+        bruto = sem.locator("main").inner_text()
+        confere("**" not in bruto and "](" not in bruto, f"{nome}: sem as marcas ** e [](), nem na página pronta sem JavaScript")
+        sem.context.close()
+        confere(textos["aplicativo"].replace("Voltar ao início", "").strip() == textos["página pronta"].replace("Voltar ao início", "").strip(),
+                f"{nome}: «Como o site funciona» tem o mesmo texto no aplicativo e na página pronta")
+
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
     sem_js.goto(base + "/em-numeros/")

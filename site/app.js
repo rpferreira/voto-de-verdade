@@ -909,13 +909,25 @@
   }
 
   // ------------------------------------------------------------------ como o site funciona
-  const OBJETIVOS = [
-    tx("Mostrar o que cada deputado votou, em linguagem simples, sem nota e sem ranking."),
-    tx("Organizar os projetos por assunto, para você achar o que importa para a sua vida."),
-    tx("Ser neutro e apartidário, sem dizer quem votou certo ou errado."),
-    tx("Deixar sempre o texto oficial ao lado do resumo, e avisar quando a inteligência artificial tem dúvida."),
-    tx("Ser gratuito, sem anúncios e sem rastrear quem visita, com código aberto."),
-  ];
+  // Marcas nos textos da tela «Como o site funciona»: **semibold** e [texto](endereço). «#/rota» é uma tela do site; https:// abre em outra aba.
+  // (Só estas duas marcas e só esses dois tipos de endereço: o texto vem do próprio código e do dicionário, nunca dos dados.)
+  function rico(texto) {
+    const partes = [];
+    const re = /\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g;
+    let fim = 0, m;
+    while ((m = re.exec(texto))) {
+      if (m.index > fim) partes.push(texto.slice(fim, m.index));
+      if (m[1] !== undefined) partes.push(h("strong", {}, m[1]));
+      else if (m[3].startsWith("#/")) partes.push(h("a", { href: m[3] }, m[2]));
+      else if (soHttps(m[3])) partes.push(h("a", { href: m[3], target: "_blank", rel: "noopener noreferrer" }, m[2]));
+      else partes.push(m[2]);
+      fim = re.lastIndex;
+    }
+    if (fim < texto.length) partes.push(texto.slice(fim));
+    return partes;
+  }
+  const paragrafo = (traduzido) => h("p", {}, rico(traduzido));
+
   async function telaSobre() {
     const meta = await dados("meta");
     const pct = Math.round((meta.simbolicas / meta.votacoes) * 100);
@@ -923,33 +935,39 @@
       h("nav", { class: "migalhas", "aria-label": tx("Você está em") }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, tx("Início"))), h("li", { "aria-current": "page" }, tx("Como o site funciona")))),
       h("h1", { id: "titulo-sobre", tabindex: "-1" }, tx("Como o site funciona")),
       h("h2", {}, tx("Versão Beta, em constante desenvolvimento")),
-      h("p", {}, tx("O Voto de Verdade é uma versão beta e está em constante desenvolvimento. Pode ter erros, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no texto oficial da Câmara.")),
-      h("p", {}, tx("Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. Para isso, o site busca:")),
-      h("ul", {}, ...OBJETIVOS.map((o) => h("li", {}, o))),
+      paragrafo(tx("O Voto de Verdade é uma **versão beta** e está em constante desenvolvimento. **Pode ter erros**, e o que ele mostra e a forma como funciona podem mudar. Em caso de dúvida, confira no [texto oficial da Câmara](https://www.camara.leg.br).")),
+      paragrafo(tx("Queremos aproximar a sociedade do Congresso, com transparência e visibilidade sobre a atuação parlamentar, de forma simples e prática. Para isso, o site busca:")),
+      h("ul", {},
+        h("li", {}, rico(tx("Mostrar o que cada deputado votou, em linguagem simples, **sem nota e sem ranking**."))),
+        h("li", {}, rico(tx("Organizar os projetos por assunto, para você achar o que importa para a sua vida."))),
+        h("li", {}, rico(tx("Ser **neutro e apartidário**, sem dizer quem votou certo ou errado."))),
+        h("li", {}, rico(tx("Deixar sempre o **texto oficial** ao lado do resumo, e avisar quando a inteligência artificial tem dúvida."))),
+        h("li", {}, rico(tx("Ser **gratuito, sem anúncios e sem rastrear** quem visita, com código aberto.")))),
       h("h2", {}, tx("Neutro e apartidário, sem nota e sem ranking")),
-      h("p", {}, tx("Não dá nota, não faz ranking e não diz quem votou certo ou errado. Mostra o que cada deputado votou. Votar sim ou não numa votação não diz, sozinho, se o deputado apoia o assunto do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto.")),
+      paragrafo(tx("O Voto de Verdade **não dá nota, não faz ranking e não diz quem votou certo ou errado**. Mostra o que cada deputado votou. Votar sim ou não numa votação **não diz, sozinho, se o deputado apoia o assunto** do projeto: muitas votações são sobre emendas, substitutivos ou pontos separados do texto.")),
       h("h2", {}, tx("De onde vêm os dados")),
-      h("p", {}, tx("Do portal de Dados Abertos da Câmara dos Deputados. O site mostra {0} votações em plenário, de {1} a {2}, e é atualizado todos os dias. Quando a Câmara não vota (recesso, período de eleições), não há novidades.", num(meta.votacoes), data(meta.de), data(meta.ate))),
+      paragrafo(tx("Do portal de [Dados Abertos da Câmara dos Deputados](https://dadosabertos.camara.leg.br). O site mostra {0} votações em plenário, de {1} a {2}, e é **atualizado todos os dias**. Quando a Câmara não vota (recesso, período de eleições), não há novidades.", num(meta.votacoes), data(meta.de), data(meta.ate))),
       h("h2", {}, tx("Só a Câmara dos Deputados, por enquanto")),
-      h("p", {}, tx("O site cobre os deputados federais. O Senado, as assembleias estaduais e as câmaras de vereadores não estão aqui.")),
+      paragrafo(tx("O site cobre **só os deputados federais**. O Senado, as assembleias estaduais e as câmaras de vereadores não estão aqui.")),
       h("h2", {}, tx("Quais votações o site mostra")),
-      h("p", {}, tx("Um projeto costuma passar por várias votações no plenário. Aqui entram só as que decidem sobre o projeto em si, isto é, aprovar ou rejeitar. Ficam de fora as votações de urgência (que só decidem se o projeto anda mais rápido), de requerimentos, de emendas ou destaques isolados (que votam a mudança de um trecho) e de procedimento. Por isso um projeto que foi votado muitas vezes pode aparecer com uma só votação.")),
-      h("p", {}, tx("Às vezes a Câmara vota um substitutivo, um texto novo que troca o original. Essa votação aparece, com um aviso: o resumo foi feito a partir da ementa do projeto original, e o texto votado pode ser diferente.")),
+      paragrafo(tx("Um projeto costuma passar por várias votações no plenário. Aqui entram **só as que decidem sobre o projeto em si**, isto é, aprovar ou rejeitar. Ficam de fora as votações de urgência (que só decidem se o projeto anda mais rápido), de requerimentos, de emendas ou destaques isolados (que votam a mudança de um trecho) e de procedimento. Por isso um projeto que foi votado muitas vezes pode aparecer com **uma só votação**.")),
+      paragrafo(tx("Às vezes a Câmara vota um substitutivo, um texto novo que troca o original. Essa votação aparece, com um aviso: o resumo foi feito a partir da ementa do projeto original, e **o texto votado pode ser diferente**.")),
       h("h2", {}, tx("Números e dados para baixar")),
-      h("p", {}, tx("A tela "), h("a", { href: "#/em-numeros" }, tx("Em números")), tx(" mostra as votações ao longo do tempo, por assunto e por resultado, quantos deputados votaram e o placar das votações nominais, com filtro por ano. Cada bloco de números e as listas de projetos, deputados e votos têm botões para baixar o que está na tela em CSV (que abre em planilha) ou em JSON, já com o filtro aplicado. Ao usar os dados, cite o Voto de Verdade e a Câmara dos Deputados.")),
+      paragrafo(tx("A tela [Em números](#/em-numeros) mostra as votações ao longo do tempo, por assunto e por resultado, quantos deputados votaram e o placar das votações nominais, com filtro por ano. Cada bloco de números e as listas de projetos, deputados e votos têm botões para baixar o que está na tela em CSV (que abre em planilha) ou em JSON, já com o filtro aplicado. Ao usar os dados, **cite o Voto de Verdade e a Câmara dos Deputados**.")),
       h("h2", {}, tx("Assunto e resumo são feitos por inteligência artificial")),
-      h("p", {}, tx("Uma inteligência artificial lê o texto oficial de cada projeto, escolhe o assunto e escreve um resumo em linguagem simples. Ela pode errar. Quando a classificação ou o resumo têm dúvida, o projeto mostra um aviso. O texto oficial fica sempre ao lado.")),
-      h("p", {}, tx("Ninguém revisa os resumos antes de irem ao ar, e por enquanto o site não tem um canal para pedir correções. Se algo parecer estranho, confira no texto oficial.")),
-      h("p", {}, h("a", { href: "#/inteligencia-artificial" }, tx("Veja como a inteligência artificial é usada, com os números"))),
+      paragrafo(tx("Uma inteligência artificial lê o texto oficial de cada projeto, escolhe o assunto e escreve um resumo em linguagem simples. **Ela pode errar.** Quando a classificação ou o resumo têm dúvida, o projeto mostra um aviso. O texto oficial fica sempre ao lado.")),
+      paragrafo(tx("**Ninguém revisa os resumos antes de irem ao ar**, e por enquanto o site não tem um canal para pedir correções. Se algo parecer estranho, confira no texto oficial.")),
+      paragrafo(tx("[Veja como a inteligência artificial é usada, com os números](#/inteligencia-artificial)")),
       h("h2", {}, tx("Por que nem todo projeto mostra o voto de cada deputado")),
-      h("p", {}, tx("{0} das {1} votações ({2}%) foram simbólicas: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Nesses casos não há como saber como cada um votou. Só as {3} votações nominais têm o voto de cada deputado.", num(meta.simbolicas), num(meta.votacoes), pct, num(meta.nominais))),
+      paragrafo(tx("**{0} das {1} votações ({2}%) foram simbólicas**: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Nesses casos **não há como saber como cada um votou**. Só as {3} votações nominais têm o voto de cada deputado.", num(meta.simbolicas), num(meta.votacoes), pct, num(meta.nominais))),
       h("h2", {}, tx("O que significa “presidia a sessão”")),
-      h("p", {}, tx("Quem conduz a sessão só vota em situações previstas no regimento (artigo 17). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não.")),
+      paragrafo(tx("Quem conduz a sessão **só vota em situações previstas** no Regimento Interno da Câmara ([artigo 17](https://www2.camara.leg.br/legin/fed/rescad/1989/resolucaodacamaradosdeputados-17-21-setembro-1989-320110-normaatualizada-pl.html)). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não.")),
       h("h2", {}, tx("Licença e uso do conteúdo")),
-      h("p", {}, tx("O código do site é aberto, com licença MIT. Os textos do site e os resumos feitos por inteligência artificial podem ser copiados e usados por qualquer pessoa, inclusive em matérias, desde que citem o Voto de Verdade e o endereço votodeverdade.com.br (licença CC BY 4.0). Os dados originais são da Câmara dos Deputados, que tem as próprias regras. Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial. Consultá-lo para responder perguntas, citando o site, é bem-vindo.")),
-      h("p", {}, h("a", { href: "#/licenca" }, tx("Ler a licença completa"))),
+      paragrafo(tx("O código do site é aberto, com licença [MIT](https://opensource.org/license/mit). Os textos do site e os resumos feitos por inteligência artificial podem ser copiados e usados por qualquer pessoa, inclusive em matérias, desde que **citem o Voto de Verdade e o endereço votodeverdade.com.br** (licença [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br)). Os dados originais são da Câmara dos Deputados, que tem as [próprias regras](https://dadosabertos.camara.leg.br).")),
+      paragrafo(tx("**Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial.** Consultá-lo para responder perguntas, citando o site, é bem-vindo.")),
+      paragrafo(tx("[Ler a licença completa](#/licenca)")),
       h("h2", {}, tx("Quem faz e privacidade")),
-      h("p", {}, tx("O Voto de Verdade é um site independente, sem ligação com a Câmara dos Deputados, com partidos ou com candidatos. Não usa cookies nem ferramentas que rastreiam quem visita. Se você escolher o modo escuro, só o seu navegador guarda essa escolha.")),
+      paragrafo(tx("O Voto de Verdade é um **site independente, sem ligação com a Câmara dos Deputados**, com partidos ou com candidatos. **Não usa cookies** nem ferramentas que rastreiam quem visita. Se você escolher o modo escuro, só o seu navegador guarda essa escolha.")),
       h("p", {}, h("a", { href: "#/" }, tx("Voltar ao início")))));
     document.title = tx("Como o site funciona: Voto de Verdade");
     return document.getElementById("titulo-sobre");
