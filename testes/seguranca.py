@@ -111,9 +111,20 @@ def envenenar(site):
 
     mexer("projetos.json", projetos)
     mexer("painel.json", painel)
+
+    def destaques(d):
+        """A tela inicial lê as 10 votações em destaque deste arquivo (título e código de cada projeto)."""
+        for lista in (d["recentes"], d["apertadas"]):
+            for x in lista:
+                x["p"]["titulo"] += HTML + SCRIPT
+                x["p"]["ca"] = "<img src=x onerror=window.__pwn=6>"
+                x["v"]["id"] += HTML
+
+    mexer("destaques.json", destaques)
     if os.path.isdir(os.path.join(site, "dados", "en")):
         for nome in ("projetos.json", "votacoes.json", "assuntos.json"):
             mexer(os.path.join("en", nome), en_texto)
+        mexer(os.path.join("en", "destaques.json"), en_texto)
         mexer(os.path.join("en", "painel.json"), lambda d: d.update(assuntos={k: v + HTML + SCRIPT for k, v in d["assuntos"].items()}))
         for arq in os.listdir(os.path.join(site, "dados", "en", "projetos")):
             mexer(os.path.join("en", "projetos", arq), lambda d: d.update(pontos=list(d.get("pontos") or []) + [HTML + SCRIPT, "javascript:window.__pwn=5"]))

@@ -494,6 +494,34 @@ with sync_playwright() as p:
             confere(m["contrasteAtualMenu"] is not None and m["contrasteAtualMenu"] >= 4.5, f"{rot}: item atual do menu legível, contraste {m['contrasteAtualMenu'] and round(m['contrasteAtualMenu'], 1)}")
             pg.context.close()
 
+    print("Primeira visita leve (tela inicial)")
+    # O arquivo dos destaques é feito pelo mesmo script da exportação diária; se ficar velho, a tela inicial mostraria votações erradas.
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "site"))
+    import destaques as destaques_inicio
+    with open(os.path.join(pasta, "dados", "destaques.json"), encoding="utf-8") as f:
+        confere(json.load(f) == json.loads(json.dumps(destaques_inicio.montar_destaques(json.load(open(os.path.join(pasta, "dados", "votacoes.json"), encoding="utf-8")), projetos))), "destaques.json confere com projetos.json e votacoes.json (não está velho)")
+    # A tela inicial mostra 10 votações em destaque e não pode baixar projetos.json e votacoes.json (cerca de 156 KB
+    # comprimidos) antes de a pessoa buscar: os destaques vêm prontos em dados/destaques.json.
+    for caminho, nome in (("/", "PT"), ("/en/", "EN")):
+        pg = nova(390)
+        baixados = []
+        pg.on("request", lambda r: baixados.append(r.url.split("?")[0].split("/dados/")[-1]) if "/dados/" in r.url else None)
+        pg.goto(base + caminho)
+        pg.wait_for_selector("#t-recentes", timeout=15000)
+        pg.wait_for_selector("#t-apertadas", timeout=15000)
+        pg.wait_for_timeout(500)
+        confere(pg.locator("#t-recentes ~ ul > li").count() == 5 and pg.locator("#t-apertadas ~ ul > li").count() == 5, f"{nome}: tela inicial mostra 5 últimas votações e 5 decididas por pouco")
+        confere("projetos.json" not in baixados and "votacoes.json" not in baixados, f"{nome}: tela inicial sem baixar projetos.json nem votacoes.json {baixados}")
+        confere("destaques.json" in baixados, f"{nome}: destaques vêm de dados/destaques.json")
+        if nome == "EN":
+            confere("en/destaques.json" in baixados, "EN: títulos em inglês dos destaques vêm de dados/en/destaques.json")
+            primeiro = pg.locator("#t-recentes ~ ul > li .proj__titulo").first.inner_text()
+            confere(not primeiro.startswith("O projeto") and not primeiro.startswith("Muda "), f"EN: título do primeiro destaque em inglês ({primeiro[:50]})")
+        pg.fill("#busca", "vacina" if nome == "PT" else "treaty")
+        pg.wait_for_selector("#t-projetos", timeout=15000)
+        confere("projetos.json" in baixados and "votacoes.json" in baixados, f"{nome}: a busca baixa projetos.json e votacoes.json só quando é usada")
+        pg.context.close()
+
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
     sem_js.goto(base + "/em-numeros/")
