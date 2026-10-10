@@ -411,6 +411,16 @@ with sync_playwright() as p:
               return Math.abs((i.top + i.height / 2) - (t.top + t.height / 2)); })""")
             confere(bool(desvios) and max(desvios) <= 2, f"caixa de marcar centrada na primeira linha em {rota} ({largura}px) {desvios}")
 
+    print("Faixa de uso de IA discreta")
+    # Já aconteceu de outra regra (".resumo-projeto p") anular o estilo da faixa: ela voltava a 18px, colada no resumo.
+    for largura in (390, 1280):
+        pg = nova(largura)
+        pg.goto(base + f"/#/projeto/{com_voto['id']}")
+        pg.wait_for_selector(".rotulo-ia", timeout=15000)
+        info = pg.evaluate("""() => [...document.querySelectorAll('.rotulo-ia')].map(e => { const n = e.nextElementSibling;
+          return [parseFloat(getComputedStyle(e).fontSize), n ? Math.round(n.getBoundingClientRect().top - e.getBoundingClientRect().bottom) : 99]; })""")
+        confere(bool(info) and all(f == 11 and g >= 16 for f, g in info), f"faixa de IA com fonte 11px e 16px de respiro do resumo ({largura}px) {info}")
+
     print("Em números sem JavaScript (páginas prontas)")
     sem_js = navegador.new_context(java_script_enabled=False).new_page()
     sem_js.goto(base + "/em-numeros/")
