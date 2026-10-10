@@ -104,6 +104,11 @@ def dicionario():
             ruins.append(("marcadores", k))
         if (k[:1].isspace(), k[-1:].isspace()) != (v[:1].isspace(), v[-1:].isspace()):
             ruins.append(("espaços nas pontas", k))
+        # marcas dos textos longos: **semibold** e [texto](endereço). A tradução leva as mesmas marcas e os mesmos destinos internos (#/rota)
+        if k.count("**") != v.count("**") or len(re.findall(r"\]\(", k)) != len(re.findall(r"\]\(", v)) \
+                or sorted(re.findall(r"\]\((#/[^)\s]+)\)", k)) != sorted(re.findall(r"\]\((#/[^)\s]+)\)", v)) \
+                or not all(u.startswith(("https://", "#/", "{")) for u in re.findall(r"\]\(([^)\s]+)\)", v)):
+            ruins.append(("marcas de negrito/links", k))
     confere(not ruins, "marcadores e espaços das pontas batem com o português" + (f" ({ruins[:2]})" if ruins else ""))
     return dic
 
