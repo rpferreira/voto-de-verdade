@@ -34,6 +34,9 @@ from idioma import Idioma  # noqa: E402
 
 FONTE_DADOS = "https://dadosabertos.camara.leg.br/"
 NOME = "Voto de Verdade"
+REPOSITORIO = "https://github.com/rpferreira/voto-de-verdade"
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "VERSION"), encoding="utf-8") as _f:
+    VERSAO_DO_SITE = _f.read().strip()  # a versão do site (regras em docs/versionamento.md); não é o ?v= dos arquivos
 LEMA = ("Site independente, neutro e apartidário: mostra o que a Câmara dos Deputados votou e como cada "
         "deputado federal votou, sem nota e sem ranking.")
 IDIOMAS = ("pt", "en")
@@ -217,6 +220,7 @@ class Gerador:
             f'<meta name="robots" content="{robos}">',
             f'<link rel="canonical" href="{c}">',
             '<meta name="theme-color" content="#f5f6fa">',
+            f'<meta name="generator" content="{NOME} {VERSAO_DO_SITE}">',
             '<meta property="og:type" content="website">',
             f'<meta property="og:locale" content="{L.og}">',
             f'<meta property="og:site_name" content="{NOME}">',
@@ -300,7 +304,9 @@ class Gerador:
         if len(self.idiomas) > 1 and not noindex:
             seletor_topo = self.seletor_idioma(caminho)
             seletor_menu = self.seletor_idioma(caminho, menu=True)
-        for marca, conteudo in (("APOIO-MENU", item_menu + seletor_menu), ("APOIO-TOPO", botao), ("IDIOMA-TOPO", seletor_topo), ("APOIO", apoio)):
+        versao_do_site = (f'<p class="rodape__versao">{L("Versão {0} (beta)", VERSAO_DO_SITE)} · '
+                          f'<a href="{REPOSITORIO}/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">{L("Histórico de mudanças")}</a></p>')
+        for marca, conteudo in (("APOIO-MENU", item_menu + seletor_menu), ("APOIO-TOPO", botao), ("IDIOMA-TOPO", seletor_topo), ("APOIO", apoio), ("VERSAO", versao_do_site)):
             ini, fim = pagina.index(f"<!--INICIO-{marca}-->"), pagina.index(f"<!--FIM-{marca}-->")
             pagina = pagina[:ini] + conteudo + pagina[fim + len(f"<!--FIM-{marca}-->"):]
         trocas = [
