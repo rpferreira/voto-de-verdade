@@ -69,7 +69,7 @@
   // Em inglês, o texto vem de dados/en/<mesmo nome>.json, só com os campos traduzidos. O que ainda não foi traduzido fica em português.
   // Só pedimos o que existe: meta, deputados e votos de cada votação não têm texto traduzido, e um projeto só tem
   // arquivo de pontos em inglês quando tem pontos e já foi traduzido (a lista dados/en/projetos.json diz quais).
-  const COM_TRADUCAO = new Set(["assuntos", "projetos", "votacoes", "painel"]);
+  const COM_TRADUCAO = new Set(["assuntos", "projetos", "votacoes", "painel", "destaques"]);
   const traduzidos = {};
   const temTraducao = (nome, dado) => {
     if (COM_TRADUCAO.has(nome)) return true;
@@ -92,6 +92,7 @@
     else if (nome === "projetos") for (const p of dado) sobrepor(p, en[p.id], ["titulo", "resumo", "tags", "aa", "ar"]);
     else if (nome === "votacoes") for (const v of dado) sobrepor(v, en[v.id], ["desc", "av"]);
     else if (nome.startsWith("projetos/")) sobrepor(dado, en, ["pontos"]);
+    else if (nome === "destaques") { for (const lista of [dado.recentes, dado.apertadas]) for (const it of lista) sobrepor(it.p, en[it.p.id], ["titulo"]); }
     else if (nome === "painel") {
       const trocar = (lista) => { for (const a of lista || []) if (en.assuntos && en.assuntos[a.slug]) a.nome = en.assuntos[a.slug]; };
       trocar(dado.assuntos);
@@ -366,22 +367,6 @@
   }
 
   // ------------------------------------------------------------------ tela inicial
-  function destaquesInicio(projetos, vots) {
-    const existe = new Set(projetos.map((p) => p.id));
-    const nominais = vots.lista.filter((v) => v.t === "nominal" && v.s && existe.has(v.p));
-    const unicos = (lista, n) => {
-      const vistos = new Set(), saida = [];
-      for (const v of lista) { if (vistos.has(v.p)) continue; vistos.add(v.p); saida.push(v); if (saida.length === n) break; }
-      return saida;
-    };
-    const margem = (v) => Math.abs(v.s[0] - v.s[1]) / (v.s[0] + v.s[1]);
-    const maisRecente = (a, b) => (a.d < b.d ? 1 : a.d > b.d ? -1 : a.id < b.id ? 1 : -1);
-    const recentes = unicos(nominais.slice().sort(maisRecente), 5);
-    // As cinco mais apertadas, mostradas da mais recente para a mais antiga.
-    const apertadas = unicos(nominais.filter((v) => v.s[0] + v.s[1] >= 100 && margem(v) < 0.15).sort((a, b) => margem(a) - margem(b)), 5).sort(maisRecente);
-    return { recentes, apertadas };
-  }
-
   function cartaoTile(a, n, rotulo, q) {
     return h("li", {}, h("a", { class: "tile", style: estiloAssunto(a.slug), href: "#/assunto/" + a.slug + q },
       h("span", { class: "tile__icone" }, icone(a.slug)),
@@ -505,14 +490,13 @@
     comEspera(campoBusca, () => atualizar(true));
     await atualizar(true);
 
-    // Últimas votações e votações apertadas: chegam depois, sem atrasar o resto.
+    // Últimas votações e votações apertadas: chegam depois, sem atrasar o resto. Vêm já escolhidas (dados/destaques.json,
+    // feito por site/destaques.py), então a tela inicial não baixa projetos.json nem votacoes.json antes de alguém buscar.
     (async () => {
       try {
-        const [projetos, vots] = await Promise.all([projetosComTexto(), indiceVotacoes()]);
-        const porId = Object.fromEntries(projetos.map((x) => [x.id, x]));
-        const { recentes, apertadas } = destaquesInicio(projetos, vots);
+        const { recentes, apertadas } = await dados("destaques");
         if (!recentes.length) return;
-        const lista = (vs) => h("ul", { class: "projetos lista-home" }, vs.map((v) => linhaProjeto(porId[v.p], vots, { votacao: v })));
+        const lista = (itens) => h("ul", { class: "projetos lista-home" }, itens.map((x) => linhaProjeto(x.p, null, { votacao: x.v })));
         destaques.replaceChildren(h("div", { class: "duas-colunas" },
           h("section", { class: "secao", "aria-labelledby": "t-recentes" },
             h("h2", { id: "t-recentes" }, tx("Últimas votações")),

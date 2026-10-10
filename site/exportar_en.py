@@ -10,6 +10,7 @@ tradução) não entra: aparece em português, nunca errado.
     en/projetos/<id>.json    {pontos}
     en/votacoes.json         {id: {desc, av}}
     en/painel.json           {assuntos: {slug: nome}}
+    en/destaques.json        {id do projeto: {titulo}}, só dos projetos em destaque na tela inicial (site/destaques.py)
 
 A fonte é dados/traducoes_en.json (feito por coleta/traduzir_projetos.py).
 
@@ -116,6 +117,12 @@ def exportar(pasta_dados, arquivo_traducoes):
         if t.get("pontos"):
             gravar(os.path.join(saida, "projetos", f"{pid}.json"), {"pontos": t["pontos"]})
     gravar(os.path.join(saida, "projetos.json"), projetos)
+    # os destaques da tela inicial (site/destaques.py) levam só o título em inglês; esta pasta é refeita do zero, então recriamos aqui
+    arq_destaques = os.path.join(pasta_dados, "destaques.json")
+    if os.path.exists(arq_destaques):
+        import destaques
+        with open(arq_destaques, encoding="utf-8") as f:
+            gravar(os.path.join(saida, "destaques.json"), destaques.traduzir_titulos(json.load(f), projetos))
 
     votacoes, n_vot = {}, 0
     for vid, item in origem["votacoes"].items():

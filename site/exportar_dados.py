@@ -11,6 +11,7 @@ Só usa a biblioteca padrão do Python. Arquivos gerados:
     projetos/<id>.json   a ementa (texto oficial) e os pontos principais de um projeto (página do projeto)
     meta.json       totais e período dos dados (rodapé e textos de ajuda)
     painel.json     números da tela Painel (feitos por site/painel.py)
+    destaques.json  as 10 votações da tela inicial, já escolhidas (site/destaques.py), para ela não baixar projetos.json e votacoes.json
     votacoes.json   uma linha por votação (lista de votações de cada projeto e tela de votação)
     deputados.json  nome, partido e estado de cada deputado
     en/              o texto em inglês por cima do português (feito por site/exportar_en.py a partir de dados/traducoes_en.json)
@@ -31,6 +32,7 @@ from construir_banco import ASSUNTOS  # noqa: E402  (a lista de assuntos fica em
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from painel import montar_painel  # noqa: E402
 import exportar_en  # noqa: E402  (os dados em inglês, por cima do português)
+import destaques as destaques_inicio  # noqa: E402  (as duas listas curtas da tela inicial)
 
 # O que cada assunto inclui, em linguagem de quem não conhece o Congresso. Mantenha curto.
 DESCRICOES = {
@@ -281,6 +283,8 @@ def main():
     if os.path.exists(arquivo_en):
         n_p, n_v, f_p, f_v = exportar_en.exportar(args.saida, arquivo_en)
         print(f"   {args.saida}/en/: {n_p} projetos e {n_v} votações em inglês (sem tradução, em português: {f_p} e {f_v})")
+    # depois do inglês: o título traduzido dos destaques sai de en/projetos.json
+    destaques_inicio.gravar(args.saida, destaques_inicio.montar_destaques(votacoes, projetos))
     print(f"Pronto: {len(assuntos)} assuntos, {len(projetos)} projetos, {meta['votacoes']} votações.")
     return 0
 
