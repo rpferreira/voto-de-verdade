@@ -127,7 +127,9 @@ O site inteiro existe também em inglês, em `/en/` (mesmas telas e endereços: 
 - **Ementa oficial**: continua em português (é o texto da Câmara), marcada com `lang="pt-BR"` e uma nota dizendo isso.
 - **Rotina diária**: depois dos resumos, a etapa "Traduzir para o inglês os projetos novos com IA" traduz só o que é novo ou mudou (`limite_traducoes` no Run workflow; use `5` para um teste barato). Sem a chave `ANTHROPIC_API_KEY`, a etapa é pulada. Se algo ficar sem tradução, o site em inglês mostra esse item em português e o monitoramento avisa quando passam de 50.
 - **Testar**: `python3 testes/idiomas.py _site` confere o dicionário, os dados, as páginas e as telas no navegador (nenhum texto faltando nem português solto). Roda em todo pull request.
-- **Só em português**: a página 404 e os arquivos `.well-known/` (a skill de agentes).
+- **Só em português**: os arquivos `.well-known/` (a skill de agentes).
+- **Página de erro (404)**: uma em cada idioma (`404.html` e `en/404.html`), com busca, os caminhos principais e uma mensagem conforme o tipo de endereço (projeto, deputado, assunto). O GitHub Pages só usa a `404.html` da raiz; para endereços que começam por `/en/`, o `app.js` leva à versão em inglês.
+- **Imagem de compartilhamento**: `site/og-en.png` nas páginas em inglês. Para refazer (se a legenda ou o `og.png` mudarem): `python3 site/criar_og_en.py`.
 - **Montar só um idioma**: `python3 site/gerar_paginas.py --saida _site --idiomas pt` (ou `en`).
 
 ## Telas e filtros planejados
@@ -157,9 +159,11 @@ A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Tel
 - **Deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, com filtros por assunto e voto. Sem nota e sem ranking.
 - **Como o site funciona** (`#/sobre`): de onde vêm os dados, o que a IA faz, por que nem toda votação mostra o voto de cada deputado, quem faz o site e privacidade (sem cookies, sem rastreamento).
 
-**Páginas para compartilhar.** `site/gerar_paginas.py` cria uma página para cada projeto (`projeto/<id>/`), deputado (`deputado/<id>/`) e assunto (`assunto/<slug>/`), com título, descrição e imagem de prévia próprios (WhatsApp, Google), mais `sitemap.xml`, `robots.txt` e `404.html`. As páginas abrem o mesmo aplicativo. O botão "Compartilhar" copia o endereço dessa página.
+**Páginas para compartilhar.** `site/gerar_paginas.py` cria uma página para cada projeto (`projeto/<id>/`), deputado (`deputado/<id>/`) e assunto (`assunto/<slug>/`), com título, descrição e imagem de prévia próprios (WhatsApp, Google), mais `sitemap.xml`, `robots.txt` e a página de erro (`404.html`). As páginas abrem o mesmo aplicativo. O botão "Compartilhar" copia o endereço dessa página.
 
 **Visual.** Uma fonte só, sem serifa: Atkinson Hyperlegible Next (livre, licença OFL, servida pelo próprio site). Uma cor de destaque (azul), âmbar só para avisos de incerteza, pesos leves, modo claro e escuro, menos movimento se o sistema pedir.
+
+**Versão dos arquivos.** O navegador guarda cópia do `app.js`, do `estilos.css`, do `tema.js` e do dicionário (`idiomas/en.json`) por alguns minutos. O gerador de páginas põe no endereço uma impressão do conteúdo (`app.js?v=…`), então uma versão nova nunca se mistura com a velha.
 
 Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. As fotos dos deputados ficam em `site/fotos/` (`python3 site/baixar_fotos.py` baixa só as que faltam). A atualização diária faz tudo isso e publica no GitHub Pages. Mudanças em `site/` publicadas no ramo principal também vão ao ar sozinhas (fluxo **Publicar o site**), sem precisar rodar a atualização diária.
 
@@ -193,6 +197,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `site/painel.py` | Faz `site/dados/painel.json`, os números da tela **Em números** (simbólicas × nominais ao longo do tempo, por assunto e resultado, participação, placar e transparência da IA). Roda junto com o `exportar_dados.py` |
 | `testes/captura_painel.py` | Tira a foto (PNG) da tela Em números; a atualização diária guarda a mais recente em `painel/ultima-geracao.png` |
 | `site/gerar_paginas.py` | Cria as páginas de cada projeto, deputado e assunto, o sitemap e o 404, em português e em inglês (`--idiomas`) |
+| `site/criar_og_en.py` | Cria `site/og-en.png`, a imagem de compartilhamento em inglês |
 | `site/idioma.py` | Carrega o dicionário de um idioma para o gerador de páginas |
 | `site/idiomas/en.json` | Dicionário português → inglês dos textos fixos do site |
 | `site/exportar_en.py` | Junta as traduções de projetos e votações em `site/dados/en/` |

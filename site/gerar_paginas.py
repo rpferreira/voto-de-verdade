@@ -182,7 +182,8 @@ TEXTOS_DO_MODELO = [
 class Gerador:
     """As páginas de um idioma. caminho e rota são sempre os do idioma (en/ é só a pasta onde o inglês é gravado)."""
 
-    def __init__(self, modelo, url, saida, L, doacao="", servico="", idiomas=("pt",)):
+    def __init__(self, modelo, url, saida, L, doacao="", servico="", idiomas=("pt",), versoes=None):
+        self.versoes = versoes or {}  # arquivo do site -> impressão do conteúdo (vira ?v=... no endereço, para o navegador não usar cópia velha)
         self.doacao = doacao
         self.servico = servico
         self.modelo = modelo
@@ -191,6 +192,10 @@ class Gerador:
         self.L = L
         self.idiomas = idiomas
         self.paginas = []  # caminhos das páginas que entram no sitemap (fora a inicial)
+
+    def versao(self, arquivo):
+        v = self.versoes.get(arquivo)
+        return f"?v={v}" if v else ""
 
     def escrever(self, caminho, texto):
         destino = os.path.join(self.saida, self.L.prefixo + caminho)
@@ -218,7 +223,7 @@ class Gerador:
             f'<meta property="og:title" content="{t}">',
             f'<meta property="og:description" content="{d}">',
             f'<meta property="og:url" content="{c}">',
-            f'<meta property="og:image" content="{esc(self.url)}/og.png">',
+            f'<meta property="og:image" content="{esc(self.url)}/{"og-en.png" if L.en else "og.png"}">',
             '<meta property="og:image:width" content="1200">',
             '<meta property="og:image:height" content="630">',
             f'<meta property="og:image:alt" content="{esc(L("{0}: como a Câmara dos Deputados votou", NOME))}">',
@@ -249,14 +254,14 @@ class Gerador:
             return f'<li class="menu-idioma"><span class="menu-idioma__rotulo">{esc(L("Idioma"))}</span><span class="idioma">{miolo}</span></li>'
         return f'<span class="idioma" role="group" aria-label="{esc(L("Idioma"))}">{miolo}</span>'
 
-    def montar(self, caminho, rota, titulo, descricao, corpo, raiz=None, noindex=False, estruturados=None, markdown=None):
+    def montar(self, caminho, rota, titulo, descricao, corpo, raiz=None, noindex=False, estruturados=None, markdown=None, ativos=None):
         """caminho: pasta de saída ('projeto/123', dentro da pasta do idioma); rota: rota do aplicativo ('projeto/123').
         estruturados: dados schema.org (dict). markdown: texto da versão em Markdown (index.md)."""
         L = self.L
         if raiz is None:
             raiz = "../" * len(caminho.split("/")) if caminho else ""
             ativos = ("../" if L.en else "") + raiz  # fontes, estilos e scripts ficam na raiz do site
-        else:
+        elif ativos is None:
             ativos = raiz
         pagina = self.modelo
         ini, fim = pagina.index("<!--INICIO-CABECA-->"), pagina.index("<!--FIM-CABECA-->")
@@ -300,9 +305,9 @@ class Gerador:
             pagina = pagina[:ini] + conteudo + pagina[fim + len(f"<!--FIM-{marca}-->"):]
         trocas = [
             ('href="fontes/', f'href="{ativos}fontes/'),
-            ('href="estilos.css"', f'href="{ativos}estilos.css"'),
-            ('src="app.js"', f'src="{ativos}app.js"'),
-            ('src="tema.js"', f'src="{ativos}tema.js"'),
+            ('href="estilos.css"', f'href="{ativos}estilos.css{self.versao("estilos.css")}"'),
+            ('src="app.js"', f'src="{ativos}app.js{self.versao("app.js")}"'),
+            ('src="tema.js"', f'src="{ativos}tema.js{self.versao("tema.js")}"'),
             ('class="marca" href="#/"', f'class="marca" href="{raiz or "./"}"'),
             ('id="nav-assuntos" href="#/"', f'id="nav-assuntos" href="{raiz or "./"}"'),
             ('id="nav-deputados" href="#/deputados"', f'id="nav-deputados" href="{raiz}deputados/"'),
@@ -316,7 +321,7 @@ class Gerador:
             ('<a href="#/inteligencia-artificial">', f'<a href="{raiz}inteligencia-artificial/">'),
             ('<script type="application/json" id="config">{"raiz":""}</script>',
              '<script type="application/json" id="config">'
-             + json.dumps({"raiz": ativos, "rota": rota, "doacao": self.doacao, "servico": self.servico, **({"lang": L.codigo} if L.en else {})},
+             + json.dumps({"raiz": ativos, "rota": rota, "doacao": self.doacao, "servico": self.servico, **({"lang": L.codigo, "dic": self.versoes.get("idiomas/en.json", "")} if L.en else {})},
                           ensure_ascii=False).replace("</", "<\\/")
              + "</script>"),
         ]
@@ -1035,6 +1040,17 @@ def arquivos_de_dados(g, L, URL, meta, site, tem_painel):
     return arquivos_dados, llms
 
 
+def corpo_404(L, pasta):
+    """O que a página de erro mostra sem JavaScript (com JavaScript, o app.js refaz a tela e acrescenta a busca)."""
+    botoes = "".join(f'<a class="botao botao--leve" href="{pasta}{href}">{esc(rotulo)}</a>' for rotulo, href in (
+        (L("Ver todos os assuntos"), ""), (L("Procurar um deputado"), "deputados/"), (L("Em números"), "em-numeros/"), (L("Como o site funciona"), "sobre/")))
+    return ('<div class="miolo naoachou">'
+            f'<p class="naoachou__codigo">{esc(L("Erro 404"))}</p>'
+            f'<h1>{esc(L("Não achamos esta página"))}</h1>'
+            f'<p class="naoachou__texto">{esc(L("O endereço pode estar errado ou a página não existe mais. Procure o que você queria ou escolha um dos caminhos abaixo."))}</p>'
+            f'<div class="vazio__acoes">{botoes}</div></div>')
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--site", default=os.path.dirname(os.path.abspath(__file__)))
@@ -1061,13 +1077,21 @@ def main():
         config = {}
     doacao = config.get("doacao") or {}
     meta = D.meta
+    # O navegador guarda cópia dos arquivos por alguns minutos. Com ?v=<impressão do conteúdo> no endereço, uma versão nova
+    # do app.js, do estilo ou do dicionário nunca é misturada com a antiga.
+    versoes = {}
+    for arq in ("app.js", "estilos.css", "tema.js", "idiomas/en.json"):
+        caminho_arq = os.path.join(args.site, arq)
+        if os.path.exists(caminho_arq):
+            with open(caminho_arq, "rb") as f:
+                versoes[arq] = hashlib.sha256(f.read()).hexdigest()[:10]
     paginas = {}
     faltam = {}
     n_dep = 0
     geradores = {}
     for cod in idiomas:
         L = Idioma(cod, args.site)
-        g = Gerador(modelo, URL, args.saida, L, so_https(doacao.get("url")), (doacao.get("servico") or "").strip(), idiomas)
+        g = Gerador(modelo, URL, args.saida, L, so_https(doacao.get("url")), (doacao.get("servico") or "").strip(), idiomas, versoes)
         Dl = traduzir_dados(args.site, D, L)
         n_dep = gerar_idioma(args.site, g, Dl, L, URL, doacao)
         arquivos_dados, llms = arquivos_de_dados(g, L, URL, meta, args.site, bool(D.painel))
@@ -1088,16 +1112,17 @@ def main():
     g = geradores["pt"]
     base = urlparse(URL).path.rstrip("/") + "/"
     L_pt = g.L
-    g.montar("404", "nao-encontrada", f"Página não encontrada: {NOME}", "Página não encontrada.",
-             '<div class="miolo"><div class="vazio vazio--pagina"><div class="vazio__corpo">'
-             '<h1 class="vazio__titulo">Não achamos esta página</h1>'
-             '<p class="vazio__texto">O endereço pode ter mudado ou estar escrito errado. Comece por um destes caminhos.</p>'
-             f'<div class="vazio__acoes"><a class="botao botao--leve" href="{base}">Ver todos os assuntos</a>'
-             f'<a class="botao botao--leve" href="{base}deputados/">Procurar um deputado</a>'
-             f'<a class="botao botao--leve" href="{base}sobre/">Como o site funciona</a></div></div></div></div>',
-             raiz=base, noindex=True)
-    os.replace(os.path.join(args.saida, "404", "index.html"), os.path.join(args.saida, "404.html"))
-    os.rmdir(os.path.join(args.saida, "404"))
+    # Página de erro (404): uma por idioma. O GitHub Pages só usa a 404.html da raiz; para endereços que começam por /en/,
+    # o app.js leva a pessoa para en/404.html (mesma página, em inglês). Os endereços são absolutos, pois a página abre em qualquer caminho.
+    for cod, ger in geradores.items():
+        Lx = ger.L
+        pasta = base + ("en/" if Lx.en else "")
+        ger.montar("404", "nao-encontrada", Lx("{0}: Voto de Verdade", Lx("Não achamos esta página")),
+                   Lx("O endereço pode estar errado ou a página não existe mais. Procure o que você queria ou escolha um dos caminhos abaixo."),
+                   corpo_404(Lx, pasta), raiz=pasta, ativos=base, noindex=True)
+        destino = os.path.join(args.saida, Lx.prefixo + "404")
+        os.replace(os.path.join(destino, "index.html"), destino + ".html")
+        os.rmdir(destino)
 
     # ---- sitemap (com as versões em cada idioma), robots e descoberta por agentes
     multi = len(idiomas) > 1
@@ -1144,7 +1169,9 @@ def main():
     g.escrever(".well-known/api-catalog.json", catalogo)
 
     total = sum(len(p) for p in paginas.values()) + len(paginas)
-    print(f"Pronto: {total} páginas em {args.saida}/ ({', '.join(idiomas)}; {len(D.projetos)} projetos, {n_dep} deputados, {len(D.assuntos)} assuntos).")
+    por_idioma = len(paginas["pt"]) + 1
+    print(f"Pronto em {args.saida}/: {total} páginas no mapa do site ({por_idioma} em cada um dos {len(idiomas)} idiomas: {', '.join(idiomas)}), "
+          f"com {len(D.projetos)} projetos, {n_dep} deputados e {len(D.assuntos)} assuntos.")
     sem = {c: sorted(f) for c, f in faltam.items() if f}
     if sem:
         for c, chaves in sem.items():

@@ -20,6 +20,7 @@ Sai com código 1 se algo falhar.
 """
 import ast
 import functools
+import io
 import http.server
 import json
 import os
@@ -160,7 +161,16 @@ def paginas(saida):
     confere('data-idioma="pt"' in en and f'href="../../../projeto/{pid}/"' in en, "seletor no inglês leva à página em português")
     confere('class="menu-idioma"' in pt and 'class="menu-idioma"' in en, "seletor também está dentro do menu (celular)")
     confere('"lang": "en"' in en and '"lang"' not in pt, "o aplicativo sabe o idioma da página (config)")
-    confere('src="../../../app.js"' in en and 'href="../../../estilos.css"' in en, "arquivos do site em inglês apontam para a raiz")
+    confere(re.search(r'src="\.\./\.\./\.\./app\.js\?v=\w+"', en) and re.search(r'href="\.\./\.\./\.\./estilos\.css\?v=\w+"', en),
+            "arquivos do site em inglês apontam para a raiz, com versão no endereço (o navegador não usa cópia velha)")
+    confere(re.search(r'"dic": "\w+"', en), "o aplicativo em inglês sabe a versão do dicionário")
+    confere('content="https://votodeverdade.com.br/og-en.png"' in en and 'content="https://votodeverdade.com.br/og.png"' in pt
+            and os.path.exists(os.path.join(saida, "og-en.png")), "prévia de compartilhamento: imagem em inglês nas páginas em inglês")
+    pt404, en404 = ler("404.html"), ler("en", "404.html")
+    confere('<html lang="pt-BR">' in pt404 and '<html lang="en">' in en404 and "noindex" in pt404 and "noindex" in en404,
+            "página de erro (404) existe em português e em inglês, sem entrar nos buscadores")
+    confere('href="/en/deputados/"' in en404 and 'href="/deputados/"' in pt404 and 'src="/app.js?v=' in en404, "página de erro usa endereços absolutos (abre em qualquer caminho)")
+    confere("We could not find this page" in en404 and "Não achamos esta página" in pt404 and "Erro 404" in pt404 and "Error 404" in en404, "página de erro tem texto em cada idioma")
     confere('lang="pt-BR"' in en.split('class="oficial"')[1][:30], "a ementa oficial fica em português e marcada com lang=pt-BR")
     confere("The official text is in Portuguese" in en, "aviso de que o texto oficial está em português")
     sitemap = ler("sitemap.xml")
@@ -176,6 +186,18 @@ def paginas(saida):
 
 
 class Quieto(http.server.SimpleHTTPRequestHandler):
+    """Serve a pasta do site como o GitHub Pages: endereço que não existe devolve 404.html, com status 404."""
+    def send_head(self):
+        if not os.path.exists(self.translate_path(self.path)):
+            with open(os.path.join(self.directory, "404.html"), "rb") as f:
+                corpo = f.read()
+            self.send_response(404)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(corpo)))
+            self.end_headers()
+            return io.BytesIO(corpo)
+        return super().send_head()
+
     def log_message(self, *a):
         pass
 
@@ -309,6 +331,35 @@ def navegador(saida):
             pg.goto(base + "/en" + r)
             pg.wait_for_timeout(600)
             confere(pg.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"), f"celular: {r} em inglês sem rolagem para o lado")
+        # página de erro (404): em cada idioma, com busca e caminhos que funcionam a partir de qualquer endereço quebrado
+        pg = nova()
+        pg.goto(base + "/projeto/999999/")
+        pg.wait_for_selector(".naoachou h1", timeout=15000)
+        confere(pg.locator("h1").inner_text() == "Não achamos este projeto" and pg.evaluate("document.documentElement.lang") == "pt-BR", "404 em português: título conforme o tipo de endereço")
+        hrefs = pg.evaluate("[...document.querySelectorAll('main a')].map(a => a.getAttribute('href'))")
+        confere(hrefs and all(h.startswith("/") for h in hrefs), f"404 em português: os caminhos são do site, não do endereço quebrado {hrefs[:2]}")
+        pg.fill(".naoachou input[type=search]", "saúde")
+        pg.press(".naoachou input[type=search]", "Enter")
+        pg.wait_for_url(base + "/#/?q=sa%C3%BAde", timeout=10000)
+        pg.wait_for_selector(".tiles, .resultado", timeout=15000)
+        confere(True, "404 em português: a busca leva aos resultados")
+        pg = nova()
+        pg.goto(base + "/en/deputado/1/")
+        pg.wait_for_url("**/en/404.html?de=*", timeout=10000)
+        pg.wait_for_selector(".naoachou h1", timeout=15000)
+        confere(pg.locator("h1").inner_text() == "We could not find this deputy" and pg.evaluate("document.documentElement.lang") == "en", "404 em inglês: endereço /en/ leva à página em inglês")
+        hrefs = pg.evaluate("[...document.querySelectorAll('main a')].map(a => a.getAttribute('href'))")
+        confere(hrefs and all(h.startswith("/en/") for h in hrefs), f"404 em inglês: os caminhos são do site em inglês {hrefs[:2]}")
+        pg.fill(".naoachou input[type=search]", "tax")
+        pg.press(".naoachou input[type=search]", "Enter")
+        pg.wait_for_url(base + "/en/#/?q=tax", timeout=10000)
+        pg.wait_for_selector(".tiles, .resultado", timeout=15000)
+        confere(True, "404 em inglês: a busca leva aos resultados em inglês")
+        pg = nova(390)
+        pg.goto(base + "/en/qualquer-coisa/")
+        pg.wait_for_selector(".naoachou h1", timeout=15000)
+        confere(pg.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"), "celular: 404 em inglês sem rolagem para o lado")
+        confere(not pg.evaluate("window.__IDIOMA_FALTA__.size"), "404 em inglês sem texto faltando no dicionário")
         # modo escuro
         pg = nova(1280, "dark")
         pg.goto(base + "/en/")
