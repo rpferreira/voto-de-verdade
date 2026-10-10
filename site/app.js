@@ -318,8 +318,8 @@
     return h("li", {}, h("a", { class: "proj", href },
       h("span", { class: "proj__titulo" }, pr.titulo),
       h("span", { class: "proj__meta" },
-        opc.novo ? h("span", { class: "selo-novo" }, tx("Novo")) : null,
-        h("span", {}, data(v ? v.d : pr.ultima)), h("span", {}, resultado), sem && h("span", { class: "selo-info" }, sem),
+        h("span", {}, data(v ? v.d : pr.ultima)),
+        opc.novo ? h("span", { class: "selo-novo" }, tx("Novo")) : null, h("span", {}, resultado), sem && h("span", { class: "selo-info" }, sem),
         opc.assunto && h("span", {}, opc.assunto),
         incerto && h("span", { class: "selo-aviso" }, tx("Classificação incerta"))),
       placar));

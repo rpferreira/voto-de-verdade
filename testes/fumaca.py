@@ -634,6 +634,10 @@ with sync_playwright() as p:
             pg.goto(base + caminho)
             pg.wait_for_selector("#t-recentes ~ ul > li", timeout=15000)
             etiquetas = pg.locator("#t-recentes ~ ul > li .selo-novo")
+            # a etiqueta vem logo depois da data, na mesma linha
+            depois_da_data = pg.evaluate("""() => { const e = document.querySelector('#t-recentes ~ ul .selo-novo'), ant = e.previousElementSibling, r1 = ant.getBoundingClientRect(), r2 = e.getBoundingClientRect();
+              return /\\d{4}/.test(ant.textContent) && r2.left >= r1.right && Math.abs((r1.top + r1.height / 2) - (r2.top + r2.height / 2)) < 4; }""")
+            confere(depois_da_data, f"{nome} {tema}: «Novo» fica logo depois da data, na mesma linha")
             confere(etiquetas.count() == 3 and etiquetas.first.inner_text().lower() == esperado, f"{nome} {tema}: 3 de 5 últimas votações com «Novo» (hoje, 6 dias e 1 dia); 8 dias e sem data ficam sem")
             confere(pg.locator("#t-apertadas ~ ul .selo-novo").count() == 0, f"{nome} {tema}: «Decididas por pouco» nunca mostra «Novo»")
             contraste = pg.evaluate("""() => { const e = document.querySelector('.selo-novo'), cs = getComputedStyle(e);
