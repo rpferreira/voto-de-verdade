@@ -121,7 +121,7 @@ def no_pull_request(base):
         return
     confere(como_tupla(antes.stdout.strip()) is not None, f"VERSION da {base} lida ({antes.stdout.strip()!r})")
     if como_tupla(antes.stdout.strip()):
-        confere(como_tupla(versao) > como_tupla(antes.stdout.strip()), f"mexeu no código do site ({codigo[0]} e outros {len(codigo) - 1}): VERSION subiu de {antes.stdout.strip()} para {versao}")
+        confere(como_tupla(versao) > como_tupla(antes.stdout.strip()), f"mexeu no código do site ({codigo[0]}{' e outros ' + str(len(codigo) - 1) if len(codigo) > 1 else ''}): VERSION precisa ser maior que a da {base} ({antes.stdout.strip()}); agora é {versao}")
     confere("CHANGELOG.md" in arquivos, "CHANGELOG.md recebeu a entrada da nova versão")
 
 
