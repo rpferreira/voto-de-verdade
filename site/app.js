@@ -60,14 +60,27 @@
     return (memoria[nome] = dado);
   }
   // Em inglês, o texto vem de dados/en/<mesmo nome>.json, só com os campos traduzidos. O que ainda não foi traduzido fica em português.
+  // Só pedimos o que existe: meta, deputados e votos de cada votação não têm texto traduzido, e um projeto só tem
+  // arquivo de pontos em inglês quando tem pontos e já foi traduzido (a lista dados/en/projetos.json diz quais).
+  const COM_TRADUCAO = new Set(["assuntos", "projetos", "votacoes", "painel"]);
+  const traduzidos = {};
+  const temTraducao = (nome, dado) => {
+    if (COM_TRADUCAO.has(nome)) return true;
+    if (!nome.startsWith("projetos/")) return false;
+    if (!(dado.pontos && dado.pontos.length)) return false;
+    const lista = traduzidos.projetos;
+    return !lista || nome.slice("projetos/".length) in lista;
+  };
   async function traduzirDados(nome, dado) {
     const sobrepor = (alvo, tr, campos) => { if (tr) for (const c of campos) if (tr[c] !== undefined) alvo[c] = tr[c]; };
+    if (!temTraducao(nome, dado)) return;
     let en = null;
     try {
       const r = await fetch(RAIZ + "dados/en/" + nome + ".json");
       if (r.ok) en = await r.json();
     } catch (e) { /* sem tradução: fica em português */ }
     if (!en) return;
+    traduzidos[nome] = en;
     if (nome === "assuntos") for (const a of dado) sobrepor(a, en[a.slug], ["nome", "descricao"]);
     else if (nome === "projetos") for (const p of dado) sobrepor(p, en[p.id], ["titulo", "resumo", "tags", "aa", "ar"]);
     else if (nome === "votacoes") for (const v of dado) sobrepor(v, en[v.id], ["desc", "av"]);

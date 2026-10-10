@@ -228,8 +228,12 @@ def navegador(saida):
             ctx = nav.new_context(viewport={"width": largura, "height": 900}, color_scheme=tema)
             pg = ctx.new_page()
             pg.erros = []
+            pg.falhas = []
             pg.on("pageerror", lambda e: pg.erros.append(str(e)))
             pg.on("console", lambda m: pg.erros.append(m.text) if m.type == "error" and "Failed to load resource" not in m.text else None)
+            # Nenhum arquivo pedido pode dar erro (o app só deve pedir o que existe, por exemplo as traduções).
+            # (Telas de "não achamos" pedem de propósito um arquivo de dados que não existe; aqui só contam os de tradução e o dicionário.)
+            pg.on("response", lambda r: pg.falhas.append(f"{r.status} {r.url.split('/', 3)[-1]}") if r.status >= 400 and ("/dados/en/" in r.url or "/idiomas/" in r.url) else None)
             return pg
 
         pg = nova()
@@ -254,6 +258,7 @@ def navegador(saida):
         confere(not solto, "nenhuma tela em inglês com português solto" + (f" {dict(list(solto.items())[:3])}" if solto else ""))
         confere(not erros_tela, "html lang=en em todas as telas" + (f" {erros_tela[:2]}" if erros_tela else ""))
         confere(not pg.erros, "telas em inglês sem erros no console " + str(pg.erros[:3]))
+        confere(not pg.falhas, "telas em inglês sem arquivo pedido que não existe (404) " + str(sorted(set(pg.falhas))[:4]))
 
         # seletor de idioma no computador
         pg = nova()
