@@ -402,17 +402,29 @@
     const estado = { q: p.get("q") || "" };
     let limiteBusca = 8;
 
-    // Sugestão no próprio campo: os assuntos com mais projetos na base.
+    // Temas de exemplo (botões sob a busca): os assuntos com mais projetos na base. O campo diz o que buscar; os botões mostram como.
     const TERMO_CURTO = { "impostos-e-economia": tx("impostos"), "trabalho-e-direitos": tx("trabalho"), "seguranca-publica": tx("segurança pública"), "administracao-publica-e-congresso": tx("servidores públicos"), "relacoes-internacionais-e-defesa": tx("acordos internacionais") };
-    const sugestoes = assuntos.filter((x) => x.slug !== "outros").sort((x, y) => y.n - x.n).slice(0, 3)
-      .map((x) => TERMO_CURTO[x.slug] || x.nome.toLowerCase()).slice(0, window.matchMedia("(max-width: 30rem)").matches ? 2 : 3).join(", ") + "…";
+    const estreito = window.matchMedia("(max-width: 30rem)").matches;
+    const termosExemplo = assuntos.filter((x) => x.slug !== "outros").sort((x, y) => y.n - x.n).slice(0, 4)
+      .map((x) => TERMO_CURTO[x.slug] || x.nome.toLowerCase());
     const campoBusca = h("input", {
       id: "busca", type: "search", name: "q", autocomplete: "off", spellcheck: "false",
-      placeholder: sugestoes, value: estado.q, enterkeyhint: "search",
+      placeholder: tx("Busque por assunto ou palavra"), value: estado.q, enterkeyhint: "search",
     });
     const estadoTxt = h("p", { class: "estado so-leitor", role: "status", "aria-live": "polite" });
     const resultados = h("div", {});
     const destaques = h("div", {});
+    // Atalhos: temas de exemplo (os assuntos com mais projetos) preenchem a busca; o link «últimas votações» rola até a lista.
+    const exemplos = h("p", { class: "heroi__exemplos" }, h("span", {}, tx("Por exemplo:")),
+      ...termosExemplo.slice(0, estreito ? 3 : 4).map((t) => h("button", { type: "button", class: "chip-exemplo", onclick: () => { campoBusca.value = t; atualizar(true); campoBusca.focus(); } }, t)));
+    const irParaUltimas = (e) => {
+      e.preventDefault();
+      const alvo = document.getElementById("t-recentes");
+      if (!alvo) return;
+      alvo.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      alvo.setAttribute("tabindex", "-1");
+      alvo.focus({ preventScroll: true });
+    };
     const principios = h("ul", { class: "principios", "aria-label": tx("O que diferencia o Voto de Verdade") },
       [["p-neutro", tx("Neutro e apartidário"), tx("Sem ligação com partidos, candidatos ou a Câmara.")],
        ["p-sem-nota", tx("Sem nota e sem ranking"), tx("Não dizemos quem votou certo ou errado.")],
@@ -434,7 +446,8 @@
           h("p", { class: "heroi__texto" }, tx("Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.")),
           h("form", { class: "heroi__busca", role: "search", "aria-label": tx("Procurar assunto ou projeto"), onsubmit: (e) => e.preventDefault() },
             h("label", { for: "busca", class: "so-leitor" }, tx("Procure por um tema ou palavra")), campoBusca),
-          h("p", { class: "heroi__link" }, tx("Já sabe quem? "), h("a", { href: "#/deputados" }, tx("Procure um deputado pelo nome")), tx(". Ou veja "), h("a", { href: "#/em-numeros" }, tx("os números das votações")), "."))),
+          exemplos,
+          h("p", { class: "heroi__link" }, tx("Já sabe quem? "), h("a", { href: "#/deputados" }, tx("Procure um deputado pelo nome")), tx(". Ou veja "), h("a", { href: "#/em-numeros" }, tx("os números das votações")), tx(" e "), h("a", { href: "#/", onclick: irParaUltimas }, tx("as últimas votações")), "."))),
       principios, estadoTxt, resultados, destaques,
       h("p", { class: "confianca" },
         tx("Dados oficiais da Câmara dos Deputados, de {0} a {1}. Assunto e resumo são feitos por inteligência artificial e podem errar; avisamos quando há dúvida. ", data(meta.de), data(meta.ate)),
@@ -1271,7 +1284,7 @@
       const params = new URLSearchParams(p);
       params.set("votacao", v.id);
       caixa.replaceChildren(...[
-        h("p", { class: "resultado-linha" }, h("span", {}, tx("Votação de {0}", data(v.d))), seloResultado(v.ap)),
+        h("p", { class: "resultado-linha" }, h("span", {}, tx("Votação de {0}", data(v.d))), v.ap !== pr.aprovada ? seloResultado(v.ap) : null),
         v.s ? h("div", { class: "resultado-barra" }, barraDoPlacar(v.s)) : null,
         v.c !== "alta" && v.av ? h("div", { class: "cartao-aviso" }, h("strong", {}, tx("Atenção")), h("p", {}, v.av)) : null,
         painelVotos(v, { titulo: tx("Votos de cada deputado em {0} (votação de {1})", pr.nome, data(v.d)), descricao: h("p", { class: "nota registro" }, tx("Registro oficial da votação: {0}", v.desc)), p: params, gravar: (q) => { q.set("votacao", v.id); gravarEndereco("projeto/" + pr.id, q); } })].filter(Boolean));
@@ -1350,6 +1363,7 @@
     const campoQ = h("input", { id: "busca-d", type: "search", autocomplete: "off", spellcheck: "false", value: estado.q, placeholder: tx("nome do deputado"), enterkeyhint: "search" });
     const selPt = h("select", { id: "dep-pt" }, h("option", { value: "" }, tx("Todos os partidos")), partidos.map((x) => h("option", { value: x }, x)));
     selPt.value = estado.pt;
+    const resumoUf = h("summary", { id: "rotulo-uf" }, tx("Deputados do seu estado"));
     const chips = ufs.map((u) => h("li", {}, h("button", { type: "button", class: "chip-uf", "aria-pressed": "false", "data-uf": u, onclick: () => { estado.uf = estado.uf === u ? "" : u; atualizar(true); } }, u)));
     const caixaEx = h("input", { type: "checkbox", id: "dep-ex" }); caixaEx.checked = estado.ex;
     const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
@@ -1369,10 +1383,11 @@
         h("h1", { id: "titulo-deputados", tabindex: "-1" }, tx("Procure um deputado federal")),
         h("p", { class: "abertura__texto" }, tx("Veja como cada deputado votou nas votações nominais, as únicas em que o voto de cada um fica registrado. Sem nota e sem ranking."))),
       h("form", { class: "filtros", role: "search", "aria-label": tx("Procurar deputado"), onsubmit: (e) => e.preventDefault() },
-        h("div", {}, h("p", { class: "rotulo", id: "rotulo-uf" }, tx("Deputados do seu estado")), h("ul", { class: "chips-uf", "aria-labelledby": "rotulo-uf" }, chips)),
         h("div", { class: "filtros__linha" },
           h("div", { class: "campo" }, h("label", { for: "busca-d" }, tx("Nome")), campoQ),
           h("div", { class: "campo" }, h("label", { for: "dep-pt" }, tx("Partido")), selPt)),
+        // no celular os 27 estados ficam recolhidos (abrem sozinhos se já houver um estado escolhido)
+        h("details", { class: "filtro-uf", open: !!estado.uf || !window.matchMedia("(max-width: 37.9375rem)").matches }, resumoUf, h("ul", { class: "chips-uf", "aria-labelledby": "rotulo-uf" }, chips)),
         h("label", { class: "marcar", for: "dep-ex" }, caixaEx, h("span", {}, tx("Só quem está em exercício agora"),
           h("small", {}, tx("Deixe desligado para ver também quem já deixou o cargo ou foi suplente no período."))))),
       estadoTxt, h("div", { class: "lista-acoes" }, exportarDeps), lista, vazio, maisBox));
@@ -1383,6 +1398,7 @@
       estado.q = campoQ.value.trim(); estado.pt = selPt.value; estado.ex = caixaEx.checked;
       gravarEndereco("deputados", limparParams({ q: estado.q, pt: estado.pt, uf: estado.uf, ex: estado.ex ? "1" : "" }));
       for (const b of principal.querySelectorAll(".chip-uf")) b.setAttribute("aria-pressed", String(b.dataset.uf === estado.uf));
+      resumoUf.textContent = estado.uf ? tx("Deputados do seu estado: {0}", estado.uf) : tx("Deputados do seu estado");
       const ts = termos(estado.q);
       const r = deputados.filter((d) => (!ts.length || casa(d._t, ts)) && (!estado.pt || d.partido === estado.pt) && (!estado.uf || d.uf === estado.uf) && (!estado.ex || d.ex));
       depsAtuais = r;

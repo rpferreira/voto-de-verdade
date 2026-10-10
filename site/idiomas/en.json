@@ -627,5 +627,10 @@
 "Ser **gratuito, sem anúncios e sem rastrear** quem visita, com código aberto.": "Be **free, with no ads and no tracking** of visitors, with open code.",
 "Em desenvolvimento, para aproximar a sociedade do Congresso. ": "In development, to bring society closer to Congress. ",
 "Votação de {0}": "Vote on {0}",
-"Última votação em {0}": "Latest vote on {0}"
+"Última votação em {0}": "Latest vote on {0}",
+"Por exemplo:": "For example:",
+" e ": " and ",
+"as últimas votações": "the latest votes",
+"Deputados do seu estado: {0}": "Deputies from your state: {0}",
+"Busque por assunto ou palavra": "Search by subject or keyword"
 }
