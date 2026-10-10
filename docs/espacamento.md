@@ -52,3 +52,5 @@ python testes/espacamento.py _site      # confere também os valores calculados 
 ```
 
 O teste roda a cada pull request e barra qualquer valor fora dos papéis ou fora da escala.
+
+No navegador, o mesmo teste confere os **cantos concêntricos**: um elemento que encosta no canto de uma caixa arredondada precisa ter raio igual ao da caixa menos o respiro dela (caixa de 16px com 8px de respiro, itens de 8px). O `testes/fumaca.py` confere ainda o cabeçalho e o menu (respiro entre links, divisória, altura dos itens, contraste do item atual) no computador e no celular, em claro e escuro, em PT e EN.

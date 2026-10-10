@@ -150,6 +150,30 @@ JS = """() => {
   return saida;
 }"""
 
+# Cantos concêntricos: um filho que encosta no canto de uma caixa arredondada (dentro do respiro dela) precisa ter raio
+# igual ao da caixa menos esse respiro, senão os cantos "não acompanham" a caixa (foi o caso dos itens do menu mobile).
+RAIOS_JS = """() => {
+  const rad = (cs) => cs.borderTopLeftRadius.includes('%') ? 999 : (parseFloat(cs.borderTopLeftRadius) || 0);  // 50% = círculo, fora da regra
+  const nome = (e) => e.tagName.toLowerCase() + '.' + String(e.className).trim().split(/\\s+/).join('.');
+  const saida = [];
+  for (const f of document.querySelectorAll('body *')) {
+    if (f.closest('svg')) continue;
+    const cf = getComputedStyle(f), rf = rad(cf);
+    if (cf.display === 'none' || rf <= 0 || rf >= 99) continue;
+    let pai = f.parentElement;  // a caixa arredondada mais próxima (sem pular nenhuma outra com raio)
+    while (pai && rad(getComputedStyle(pai)) === 0) pai = pai.parentElement;
+    if (!pai || pai === document.body) continue;
+    const cp = getComputedStyle(pai), rp = rad(cp);
+    if (rp >= 99) continue;
+    const rr = pai.getBoundingClientRect(), rf2 = f.getBoundingClientRect();
+    const respiro = parseFloat(cp.paddingLeft) || 0, folga = (parseFloat(cp.borderTopWidth) || 0) + Math.max(parseFloat(cp.paddingTop), respiro);
+    if (rf2.width === 0 || rf2.left - rr.left > folga + 1 || rf2.top - rr.top > folga + 1) continue;  // não encosta no canto
+    const esperado = Math.max(rp - respiro, 0);
+    if (Math.abs(rf - esperado) > 1.5) saida.push([nome(pai), nome(f), rp, rf, esperado]);
+  }
+  return saida;
+}"""
+
 ROTAS = ["/", "/assunto/saude/", "/projeto/2611313/", "/deputados/", "/deputado/204549/", "/sobre/",
          "/en/", "/en/projeto/2611313/", "/en/sobre/"]
 
@@ -172,6 +196,7 @@ def navegador(pasta, escala):
     threading.Thread(target=servidor.serve_forever, daemon=True).start()
 
     fora = {}
+    raios_fora = {}
     with sync_playwright() as p:
         b = p.chromium.launch()
         for largura in (1280, 390):
@@ -182,10 +207,14 @@ def navegador(pasta, escala):
                 pg.goto(f"http://127.0.0.1:{porta}{rota}")
                 pg.wait_for_timeout(1200)
                 medidas = [(pg.evaluate(JS), "")]
+                for pai, filho, rp, rf, esperado in pg.evaluate(RAIOS_JS):
+                    raios_fora.setdefault((pai, filho, rp, rf, esperado), set()).add(f"{rota}@{largura}")
                 if largura == 390 and rota in ("/", "/en/"):  # com o menu aberto (nele fica o seletor de idioma)
                     pg.click(".menu-botao")
                     pg.wait_for_timeout(300)
                     medidas.append((pg.evaluate(JS), " (menu aberto)"))
+                    for pai, filho, rp, rf, esperado in pg.evaluate(RAIOS_JS):
+                        raios_fora.setdefault((pai, filho, rp, rf, esperado), set()).add(f"{rota}@{largura} (menu aberto)")
                 for itens, extra in medidas:
                     for nome, prop, valor in itens:
                         if prop in ("lineHeight", "altura"):
@@ -199,6 +228,9 @@ def navegador(pasta, escala):
     for (nome, prop, valor), onde in sorted(fora.items())[:40]:
         print(f"    {nome} {prop}={valor}  ({', '.join(sorted(onde)[:2])})")
     confere(not fora, f"espaços calculados todos na escala; linhas e alturas em múltiplos de 4px ({len(fora)} fora)")
+    for (pai, filho, rp, rf, esperado), onde in sorted(raios_fora.items())[:20]:
+        print(f"    {filho} dentro de {pai}: raio {rf}px, o esperado é {esperado}px (caixa {rp}px)  ({', '.join(sorted(onde)[:2])})")
+    confere(not raios_fora, f"cantos concêntricos: filhos no canto de caixas arredondadas acompanham o raio ({len(raios_fora)} fora)")
 
 
 if __name__ == "__main__":
