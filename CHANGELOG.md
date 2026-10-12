@@ -2,6 +2,12 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.8.0 (2026-10-12)
+
+### Mudanças
+- **Os números de Sim, Não, Abstenção e Presidia deixam de ser filtro.** Eles continuam mostrando o total, mas não são mais botões, nem na página do projeto nem na do deputado. O filtro por voto já existia na caixa «Filtrar por» e fazia o mesmo, então o clique era repetido e ficava ruim no celular. Saem também a frase «Toque em um número…» e o destaque de «número escolhido».
+- **No celular, a página do projeto passa a ter o campo «Voto» na caixa de filtros.** Antes ele só aparecia no computador, porque no celular o clique no número fazia esse papel.
+
 ## 0.7.0 (2026-10-10)
 
 ### Novidades

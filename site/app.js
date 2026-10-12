@@ -269,17 +269,12 @@
   const NOME_VOTO = Object.fromEntries(ORDEM_VOTO.map((c) => [c, VOTO[c].nome]));
   const fichaVoto = (cod) => h("span", { class: "voto voto--" + cod }, VOTO[cod].nome);
 
-  // Números do placar; cada um é um botão que mostra só os deputados com aquele voto.
-  function placarVotos(total, aoEscolher) {
-    const itens = ORDEM_VOTO.filter((c) => total[c]).map((c) => {
-      const conteudo = [h("span", { class: "placar__nome" }, c === "P" ? tx("Presidia") : VOTO[c].nome), h("span", { class: "placar__num" }, num(total[c]))];
-      return h("li", {}, aoEscolher
-        ? h("button", { type: "button", class: "placar__item placar__item--" + c, "aria-pressed": "false", "data-voto": c, onclick: () => aoEscolher(c) }, conteudo)
-        : h("div", { class: "placar__item placar__item--" + c }, conteudo));
-    });
-    const lista = h("ul", { class: "placar" }, itens);
-    lista.marcar = (cod) => lista.querySelectorAll("button[data-voto]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.voto === cod)));
-    return lista;
+  // Números do placar: só informam. Para ver só quem votou de um jeito, o filtro "Voto" da lista.
+  function placarVotos(total) {
+    const itens = ORDEM_VOTO.filter((c) => total[c]).map((c) =>
+      h("li", {}, h("div", { class: "placar__item placar__item--" + c },
+        h("span", { class: "placar__nome" }, c === "P" ? tx("Presidia") : VOTO[c].nome), h("span", { class: "placar__num" }, num(total[c])))));
+    return h("ul", { class: "placar" }, itens);
   }
 
   // ------------------------------------------------------------------ pedaços reaproveitados
@@ -1188,7 +1183,7 @@
       let limite = 60;
       const id = (x) => `${x}-${n}`;
 
-      const placar = placarVotos(total, (cod) => { selV.value = selV.value === cod ? "" : cod; atualizar(true); });
+      const placar = placarVotos(total);
       const meta = await dados("meta");
       let linhasAtuais = linhas;
       const exportarVotosDeps = botoesExportar("votos-" + v.id, () => ({
@@ -1215,7 +1210,7 @@
           h("div", { class: "campo campo--nome" }, h("label", { for: id("q") }, tx("Deputado")), campoQ),
           h("div", { class: "campo" }, h("label", { for: id("pt") }, tx("Partido")), selPt),
           h("div", { class: "campo" }, h("label", { for: id("uf") }, tx("Estado")), selUf),
-          h("div", { class: "campo campo--so-desktop" }, h("label", { for: id("v") }, tx("Voto")), selV)),
+          h("div", { class: "campo" }, h("label", { for: id("v") }, tx("Voto")), selV)),
         h("div", { class: "filtros__rodape" }, limpar));
 
       const ajudaVotos = h("details", { class: "ajuda ajuda--solta" },
@@ -1229,7 +1224,7 @@
         h("div", { class: "painel-topo" },
           h("div", { class: "painel-placar" },
             placar,
-            h("p", { class: "nota" }, tx("{0} voto; quem faltou não aparece. Toque em um número para ver só esses deputados.", plural(nTotal, tx("deputado registrou"), tx("deputados registraram")))),
+            h("p", { class: "nota" }, tx("{0} voto; quem faltou não aparece.", plural(nTotal, tx("deputado registrou"), tx("deputados registraram")))),
             total.P ? h("p", { class: "nota" }, tx("“Presidia a sessão”: quem conduz a sessão só vota em casos especiais. Nesses casos o registro aparece assim, e não como sim ou não.")) : null)),
         opc.descricao || null,
         h("div", { class: "bloco" }, filtros, estadoTxt, h("div", { class: "lista-acoes" }, exportarVotosDeps), lista, vazioLista, maisBox, ajudaVotos));
@@ -1249,7 +1244,6 @@
         const r = filtrar().sort(porNome);  // sempre alfabética por nome: o site não ordena pessoas por mérito nem por tamanho
         linhasAtuais = r;
         const mostrados = r.slice(0, limite);
-        placar.marcar(estado.v);
         lista.replaceChildren(...mostrados.map((l) => h("li", {}, h("a", { class: "linha-dep linha-dep--voto", href: "#/deputado/" + l.id },
           h("span", { class: "linha-dep__nome" }, l.nome),
           h("span", { class: "linha-dep__sub" }, [l.partido, l.uf].filter(Boolean).join(" · ")),
@@ -1491,7 +1485,7 @@
     const historico = arq.pt && arq.pt.length > 1 ? tx("Nas votações, apareceu nos partidos: {0} (do mais antigo ao mais recente).", arq.pt.join(", ")) : null;
 
     const temVotos = votos.length > 0;
-    const placar = placarVotos(total, (cod) => { selV.value = selV.value === cod ? "" : cod; atualizar(true); });
+    const placar = placarVotos(total);
 
     const maisOpcoes = h("details", { class: "ajuda mais-filtros" },
       h("summary", {}, tx("Mais opções")),
@@ -1513,7 +1507,7 @@
         ? h("section", { "aria-labelledby": "resumo-dep" },
             h("h2", { id: "resumo-dep" }, tx("Votos registrados")),
             placar,
-            h("p", { class: "nota" }, tx("{0} com voto registrado, de {1} a {2}. Votações simbólicas e votações em que o deputado faltou não aparecem. Toque em um número para ver só aquele voto.", plural(votos.length, tx("votação nominal"), tx("votações nominais")), data(meta.de), data(meta.ate))),
+            h("p", { class: "nota" }, tx("{0} com voto registrado, de {1} a {2}. Votações simbólicas e votações em que o deputado faltou não aparecem.", plural(votos.length, tx("votação nominal"), tx("votações nominais")), data(meta.de), data(meta.ate))),
             total.P ? h("p", { class: "nota" }, tx("“Presidia a sessão”: quem conduz a sessão só vota em casos especiais. Nesses casos o registro aparece assim, e não como sim ou não.")) : null)
         : estadoVazio({
             icone: "v-urna", titulo: tx("Sem voto registrado nas votações nominais"),
@@ -1568,7 +1562,6 @@
       estado.q = campoQ.value.trim(); estado.a = selA.value; estado.v = selV.value; estado.ord = selOrd.value; estado.ano = selAnoDep.value;
       gravarEndereco("deputado/" + id, limparParams({ q: estado.q, a: estado.a, v: estado.v, ano: estado.ano, ord: estado.ord === "recente" ? "" : estado.ord }));
       desenharTabela();
-      placar.marcar(estado.v);
       const ts = termos(estado.q);
       const r = votos.filter((x) => (!ts.length || casa(x._t, ts)) && (!estado.a || x.pr.a === estado.a) && (!estado.v || x.cod === estado.v) && (!estado.ano || x.v.d.startsWith(estado.ano)));
       votosAtuais = r;
