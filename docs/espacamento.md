@@ -16,7 +16,7 @@ o papel, não um número. Quanto mais distante o parentesco, maior o espaço.
 | `--respiro` | 40, 64 (≥ 48rem) | Seções da página | Entre seções, topo da tela inicial, antes do rodapé |
 | `--margem` | 16, 32 (≥ 40rem) | Lateral da página | |
 | `--calha` | 32, 48 (≥ 56rem) | Entre colunas | |
-| `--recuo-icone` | 56 | Uso único | Texto da busca, para caber a lupa |
+| `--recuo-botao` | 64 | Uso único | Texto da busca, para caber o botão de buscar |
 | `--recuo-seta` | 48 | Uso único | Texto das listas suspensas, para caber a seta |
 | `--topo-fixo` | 96 | Uso único | Margem de rolagem sob o cabeçalho fixo |
 
