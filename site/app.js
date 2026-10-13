@@ -148,9 +148,33 @@
   }
 
   const anunciar = (el, texto) => { el.textContent = texto; };
-  const comEspera = (campo, fn) => {
+  // Busca confirmada (Enter, botão de buscar do teclado do celular ou um tema de exemplo): leva a tela e o foco ao «estado da busca»
+  // («12 deputados»), que fica logo acima do resultado. No celular o resultado ficava abaixo da dobra, e a pessoa tinha de rolar para
+  // achá-lo. Só confirmar rola a tela; digitar não, para a lista não pular enquanto a pessoa escreve.
+  const irAoResultado = (alvo) => {
+    if (!alvo) return;
+    const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    alvo.setAttribute("tabindex", "-1");
+    alvo.focus({ preventScroll: true });  // tira o foco do campo: no celular, o teclado se recolhe e deixa o resultado à vista
+    alvo.scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "start" });  // o topo fixo é descontado por scroll-padding-top
+  };
+  // Campo de busca com o botão «Buscar» (lupa) dentro: o botão envia o formulário, o mesmo que o Enter. Só na busca simples (tela
+  // inicial e página de erro); onde a busca se junta a filtros (nome + partido + estado…), um botão «Filtrar» só faz tudo.
+  const caixaDeBusca = (campo) => h("div", { class: "busca-caixa" }, campo,
+    h("button", { type: "submit", class: "busca-caixa__botao", "aria-label": tx("Buscar"), title: tx("Buscar") }, icone("v-busca")));
+  // Botão «Filtrar» das caixas de filtros: um botão só para o nome e os filtros; aplica o que está nos campos e leva ao resultado
+  // (envia o formulário, como o Enter).
+  const botaoFiltrar = () => h("button", { type: "submit", class: "botao" }, tx("Filtrar"));
+  // Atualiza a lista enquanto a pessoa digita (com uma pequena espera) e, ao confirmar a busca, atualiza já e leva ao resultado.
+  // «fn» pode devolver uma promessa (a busca da tela inicial carrega dados): a tela só rola depois que o resultado existe.
+  const comEspera = (campo, fn, alvo) => {
     let espera;
     campo.addEventListener("input", () => { clearTimeout(espera); espera = setTimeout(fn, 180); });
+    const form = campo.closest("form");
+    if (form) form.addEventListener("submit", (e) => {
+      e.preventDefault(); clearTimeout(espera);
+      Promise.resolve(fn()).then(() => irAoResultado(alvo));
+    });
   };
 
   // Botão "Compartilhar": usa o menu do celular ou copia o endereço da página pronta.
@@ -418,7 +442,7 @@
     const destaques = h("div", {});
     // Atalhos: temas de exemplo (os assuntos com mais projetos) preenchem a busca; o link «últimas votações» rola até a lista.
     const exemplos = h("p", { class: "heroi__exemplos" }, h("span", {}, tx("Por exemplo:")),
-      ...termosExemplo.slice(0, estreito ? 2 : 3).map((t) => h("button", { type: "button", class: "chip-exemplo", onclick: () => { campoBusca.value = t; atualizar(true); campoBusca.focus(); } }, t)));
+      ...termosExemplo.slice(0, estreito ? 2 : 3).map((t) => h("button", { type: "button", class: "chip-exemplo", onclick: () => { campoBusca.value = t; atualizar(true).then(() => irAoResultado(estadoTxt)); } }, t)));
     const irParaUltimas = (e) => {
       e.preventDefault();
       const alvo = document.getElementById("t-recentes");
@@ -447,7 +471,7 @@
         h("div", { class: "heroi__lado" },
           h("p", { class: "heroi__texto" }, tx("Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.")),
           h("form", { class: "heroi__busca", role: "search", "aria-label": tx("Procurar assunto ou projeto"), onsubmit: (e) => e.preventDefault() },
-            h("label", { for: "busca", class: "so-leitor" }, tx("Procure por um tema ou palavra")), campoBusca),
+            h("label", { for: "busca", class: "so-leitor" }, tx("Procure por um tema ou palavra")), caixaDeBusca(campoBusca)),
           exemplos,
           h("p", { class: "heroi__link" }, tx("Já sabe quem? "), h("a", { href: "#/deputados" }, tx("Procure um deputado pelo nome")), tx(". Ou veja "), h("a", { href: "#/em-numeros" }, tx("os números das votações")), tx(" e "), h("a", { href: "#/", onclick: irParaUltimas }, tx("as últimas votações")), "."))),
       principios, estadoTxt, resultados, destaques,
@@ -520,8 +544,9 @@
       resultados.replaceChildren(...blocos);
       anunciar(estadoTxt, achados.length ? tx("{0} com “{1}”", plural(achados.length, tx("projeto"), tx("projetos")), estado.q) : tx("Nada encontrado com “{0}”.", estado.q));
     }
-    comEspera(campoBusca, () => atualizar(true));
+    comEspera(campoBusca, () => atualizar(true), estadoTxt);
     await atualizar(true);
+    if (p.get("ir") === "1" && estado.q) irAoResultado(estadoTxt);  // veio da busca da página de erro (404): já leva ao resultado
 
     // Últimas votações e votações apertadas: chegam depois, sem atrasar o resto. Vêm já escolhidas (dados/destaques.json,
     // feito por site/destaques.py), então a tela inicial não baixa projetos.json nem votacoes.json antes de alguém buscar.
@@ -1095,6 +1120,7 @@
         h("p", { class: "filtros__titulo" }, tx("Filtrar por")),
         h("div", { class: "campo" }, h("label", { for: "busca-a" }, tx("Procurar neste assunto")), campoBusca),
         maisFiltros,
+        h("div", { class: "filtros__rodape" }, botaoFiltrar()),
       ),
       estadoTxt, h("div", { class: "lista-acoes" }, exportarLista), lista, vazio, maisBox,
       h("div", { class: "mais" }, botaoCompartilhar("assunto/" + slug, tx("{0}: Voto de Verdade", a.nome)))));
@@ -1144,7 +1170,7 @@
       }
     }
 
-    comEspera(campoBusca, () => atualizar(true));
+    comEspera(campoBusca, () => atualizar(true), estadoTxt);
     for (const el of [seletorOrd, seletorRes, seletorAno, caixaCert]) el.addEventListener("change", () => atualizar(true));
     abaInd.addEventListener("click", () => { estado.todos = false; atualizar(true); });
     abaTodos.addEventListener("click", () => { estado.todos = true; atualizar(true); });
@@ -1211,7 +1237,7 @@
           h("div", { class: "campo" }, h("label", { for: id("pt") }, tx("Partido")), selPt),
           h("div", { class: "campo" }, h("label", { for: id("uf") }, tx("Estado")), selUf),
           h("div", { class: "campo" }, h("label", { for: id("v") }, tx("Voto")), selV)),
-        h("div", { class: "filtros__rodape" }, limpar));
+        h("div", { class: "filtros__rodape" }, botaoFiltrar(), limpar));
 
       const ajudaVotos = h("details", { class: "ajuda ajuda--solta" },
         h("summary", {}, tx("O que significam abstenção, obstrução e “presidia a sessão”?")),
@@ -1262,7 +1288,7 @@
             tx("Mostrar mais {0} deputados", Math.min(60, r.length - mostrados.length))));
         }
       }
-      comEspera(campoQ, () => atualizar(true));
+      comEspera(campoQ, () => atualizar(true), estadoTxt);
       for (const el of [selPt, selUf, selV]) el.addEventListener("change", () => atualizar(true));
       limpar.addEventListener("click", () => { campoQ.value = ""; selPt.value = ""; selUf.value = ""; selV.value = ""; atualizar(true); campoQ.focus(); });
       atualizar(true);
@@ -1394,7 +1420,8 @@
         // no celular os 27 estados ficam recolhidos (abrem sozinhos se já houver um estado escolhido)
         h("details", { class: "filtro-uf", open: !!estado.uf || !window.matchMedia("(max-width: 37.9375rem)").matches }, resumoUf, h("ul", { class: "chips-uf", "aria-labelledby": "rotulo-uf" }, chips)),
         h("label", { class: "marcar", for: "dep-ex" }, caixaEx, h("span", {}, tx("Só quem está em exercício agora"),
-          h("small", {}, tx("Deixe desligado para ver também quem já deixou o cargo ou foi suplente no período."))))),
+          h("small", {}, tx("Deixe desligado para ver também quem já deixou o cargo ou foi suplente no período.")))),
+        h("div", { class: "filtros__rodape" }, botaoFiltrar())),
       estadoTxt, h("div", { class: "lista-acoes" }, exportarDeps), lista, vazio, maisBox));
     document.title = tx("Deputados federais: {0}", "Voto de Verdade");
 
@@ -1423,7 +1450,7 @@
           tx("Mostrar mais {0} deputados", Math.min(60, r.length - mostrados.length))));
       }
     }
-    comEspera(campoQ, () => atualizar(true));
+    comEspera(campoQ, () => atualizar(true), estadoTxt);
     for (const el of [selPt, caixaEx]) el.addEventListener("change", () => atualizar(true));
     atualizar(true);
     return document.getElementById("titulo-deputados");
@@ -1525,7 +1552,7 @@
               h("div", { class: "campo" }, h("label", { for: "dep-a" }, tx("Assunto")), selA),
               h("div", { class: "campo" }, h("label", { for: "dep-v" }, tx("Voto")), selV)),
             maisOpcoes,
-            h("div", { class: "filtros__rodape" }, limpar)),
+            h("div", { class: "filtros__rodape" }, botaoFiltrar(), limpar)),
           estadoTxt, h("div", { class: "lista-acoes" }, exportarVotos), lista, vazioLista, maisBox,
           h("details", { class: "ajuda ajuda--solta" },
             h("summary", {}, tx("Ver os votos por assunto")),
@@ -1586,7 +1613,7 @@
       }
     }
     if (temVotos) {
-      comEspera(campoQ, () => atualizar(true));
+      comEspera(campoQ, () => atualizar(true), estadoTxt);
       for (const el of [selA, selV, selOrd, selAnoDep]) el.addEventListener("change", () => atualizar(true));
       limpar.addEventListener("click", () => { campoQ.value = ""; selA.value = ""; selV.value = ""; selAnoDep.value = ""; atualizar(true); campoQ.focus(); });
       atualizar(true);
@@ -1632,8 +1659,8 @@
     const t = NAO_ENCONTRADA[tipo] || NAO_ENCONTRADA.pagina;
     const campo = h("input", { id: "busca", type: "search", name: "q", autocomplete: "off", spellcheck: "false", placeholder: tx("Procurar assunto ou projeto"), enterkeyhint: "search" });
     const busca = h("form", { class: "heroi__busca naoachou__busca", role: "search", "aria-label": tx("Procurar assunto ou projeto"),
-      onsubmit: (e) => { e.preventDefault(); const q = campo.value.trim(); location.href = PAGINAS + "#/" + (q ? "?q=" + encodeURIComponent(q) : ""); } },
-      h("label", { for: "busca", class: "so-leitor" }, tx("Procure por um tema ou palavra")), campo);
+      onsubmit: (e) => { e.preventDefault(); const q = campo.value.trim(); location.href = PAGINAS + "#/" + (q ? "?q=" + encodeURIComponent(q) + "&ir=1" : ""); } },
+      h("label", { for: "busca", class: "so-leitor" }, tx("Procure por um tema ou palavra")), caixaDeBusca(campo));
     // Na página de erro o endereço é qualquer um; os links precisam ser do site, não do endereço quebrado.
     principal.replaceChildren(h("div", { class: "miolo naoachou" },
       h("p", { class: "naoachou__codigo" }, tx("Erro 404")),

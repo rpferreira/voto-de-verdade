@@ -2,6 +2,15 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.9.0 (2026-10-13)
+
+### Novidades
+- **Botão «Buscar» (lupa) na busca da tela inicial e da página de erro.** Ele faz o mesmo que o Enter, e o teclado do celular também tem a sua tecla de buscar.
+- **Botão «Filtrar» nas caixas de filtros** (assunto, projeto, lista de deputados e página do deputado). É um botão só para tudo: o nome ou a palavra e os filtros de partido, estado, voto e assunto. Ele aplica o que está nos campos e leva ao resultado, como o Enter.
+
+### Mudanças
+- **Ao confirmar uma busca ou um filtro, a tela e o foco vão para o resultado.** No celular, o resultado ficava abaixo da dobra e a pessoa tinha de rolar para achá-lo. Agora, ao apertar Enter, tocar em «Buscar» ou «Filtrar», ou escolher um tema de exemplo (como «impostos» ou «trabalho»), a página rola até o resultado e o foco vai para a contagem logo acima dele («12 deputados»), o que também avisa quem usa leitor de tela. Digitar e trocar um filtro continuam atualizando a lista sem rolar a tela. A busca da página de erro (404) também leva ao resultado na tela inicial.
+
 ## 0.8.0 (2026-10-12)
 
 ### Mudanças
