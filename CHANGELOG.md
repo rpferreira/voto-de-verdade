@@ -2,6 +2,15 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.10.0 (2026-10-13)
+
+### Novidades
+- **Botão «Filtrar» em «Em números»:** o filtro de ano agora tem o mesmo botão das outras caixas de filtros. Ao apertar, o ano é aplicado e a tela vai até o resultado. A tela agora diz também de que ano são os números.
+
+### Ajustes
+- **Cartões de projeto no celular:** o texto «Votação simbólica, sem o voto de cada deputado» passava para a segunda linha e ficava por cima da etiqueta cinza e da linha de baixo. A etiqueta agora cresce para duas linhas quando o texto não cabe, e a de «Classificação incerta» também.
+- **Votos na página do deputado, no celular:** o «Sim» ou «Não» tomava a largura da linha e deixava o título do projeto numa coluna estreita. Agora o voto fica embaixo do título, que usa a largura toda.
+
 ## 0.9.0 (2026-10-13)
 
 ### Novidades

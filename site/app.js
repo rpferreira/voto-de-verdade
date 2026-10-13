@@ -818,6 +818,7 @@
       h("option", { value: "" }, tx("Todos os anos")), ...(pn.anos || []).map((a) => h("option", { value: a }, a)));
     seletorAno.value = ano;
     const area = h("div", { class: "numeros__area", id: "numeros-area" });
+    const estadoTxt = h("p", { class: "estado", role: "status", "aria-live": "polite" });
 
     function desenhar() {
       const v = visao(pn, ano);
@@ -900,13 +901,19 @@
         h("p", { class: "numeros__nota" }, tx("Atualizado em {0}. Esta página só conta e descreve: não dá nota nem compara deputados ou partidos. ", data(pn.gerado_em)), h("a", { href: "#/sobre" }, tx("Como o site funciona"))),
         blocoMeses, blocoAssuntos, blocoResultado, blocoParticipacao, blocoPlacar);
       gravarEndereco("em-numeros", limparParams({ ano }));
+      anunciar(estadoTxt, ano ? tx("Números de {0}", ano) : tx("Números de todos os anos"));
     }
 
     seletorAno.addEventListener("change", () => { ano = seletorAno.value; desenhar(); });
+    // «Filtrar»: aplica o ano escolhido e leva ao resultado, como nas outras caixas de filtros.
+    const filtroAno = h("form", { class: "filtros filtros--compacto numeros__filtro", "aria-label": tx("Filtrar os números"), onsubmit: (e) => { e.preventDefault(); ano = seletorAno.value; desenhar(); irAoResultado(estadoTxt); } },
+      h("p", { class: "filtros__titulo" }, tx("Filtrar por")),
+      h("div", { class: "campo" }, h("label", { for: "ano-n" }, tx("Ano")), seletorAno),
+      h("div", { class: "filtros__rodape" }, botaoFiltrar()));
     principal.replaceChildren(h("div", { class: "miolo numeros" },
       h("nav", { class: "migalhas", "aria-label": tx("Você está em") }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, tx("Início"))), h("li", { "aria-current": "page" }, tx("Em números")))),
       h("h1", { id: "titulo-painel", tabindex: "-1" }, tx("Em números")),
-      pn.anos && pn.anos.length > 1 ? h("div", { class: "campo numeros__filtro" }, h("label", { for: "ano-n" }, tx("Ano")), seletorAno) : null,
+      ...(pn.anos && pn.anos.length > 1 ? [filtroAno, estadoTxt] : []),
       area));
     desenhar();
     document.title = tx("Em números: votações da Câmara ao longo do tempo | Voto de Verdade");
