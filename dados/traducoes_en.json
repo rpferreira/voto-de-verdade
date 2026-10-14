@@ -1938,6 +1938,21 @@
 ],
 "aviso_assunto":"The subject of this bill was chosen by artificial intelligence and may be wrong: The focus can be read as a rule for public servants or as a rule about teachers, in the area of education; two automatic readings chose different subjects (Public Administration and Congress and Labor and Rights)."
 },
+"2225432":{
+"h":"447d45077e587dee",
+"resumo":"Creates the National Program for Comprehensive Assistance to People with Epilepsy. The official summary (ementa) does not detail which actions, services or benefits the program will have, or who will be responsible for it.",
+"pontos":[
+"Establishes a national program aimed at people with epilepsy",
+"The program focuses on comprehensive assistance",
+"The official summary (ementa) does not detail the program's measures"
+],
+"tags":[
+"epilepsy",
+"comprehensive assistance",
+"national program",
+"neurological disease"
+]
+},
 "2227260":{
 "h":"0378d68203672662",
 "resumo":"The bill creates the National Day to Combat Rape. The official summary (ementa) does not detail the chosen date or the actions planned for that day.",
@@ -18191,6 +18206,10 @@
 "2225224-125":{
 "h":"ec8e04af162cedad",
 "descricao":"Approved, in second round, Constitutional Amendment Proposal No. 169 of 2019. Yes: 417; No: 17; Abstention: 1; Total: 435."
+},
+"2225432-103":{
+"h":"b6e515dc2f34dd0f",
+"descricao":"Approved the Substitute Sub-amendment to Bill No. 5.538, of 2019, adopted by the rapporteur of the Health Committee."
 },
 "2231069-136":{
 "h":"28b8611980d9195e",
