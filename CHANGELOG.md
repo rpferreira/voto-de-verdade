@@ -2,6 +2,11 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.10.1 (2026-10-14)
+
+### Ajustes
+- **Rotina diária de dados:** em 14/10 ela falhou na etapa que guarda as traduções no repositório e o site não foi publicado com os dados do dia. O motivo: o git se recusa a juntar as novidades quando há arquivos já refeitos pela rotina e ainda não guardados (como `site/dados`). O script agora os põe de lado e os devolve (`--autostash`). Há um teste novo (`testes/guardar.py`), que falha sem o conserto.
+
 ## 0.10.0 (2026-10-13)
 
 ### Novidades
