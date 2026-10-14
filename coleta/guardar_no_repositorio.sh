@@ -3,6 +3,9 @@
 # Uso: bash coleta/guardar_no_repositorio.sh "mensagem do commit" arquivo1 [arquivo2 ...]
 # Se alguém mexeu no repositório enquanto a rotina rodava, junta as novidades e tenta de novo,
 # para não perder o trabalho de uma coleta longa.
+# Os outros arquivos já refeitos pela rotina (como site/dados) ainda não foram guardados e ficam
+# fora do commit. O «--autostash» os põe de lado durante o pull e os devolve depois; sem ele o
+# git se recusa a juntar e a rotina falha, sem publicar o site.
 set -u
 mensagem="$1"
 shift
@@ -19,7 +22,7 @@ if git diff --cached --quiet; then
 fi
 git commit -q -m "$mensagem"
 for tentativa in 1 2 3 4 5; do
-  if git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME"; then
+  if git pull --rebase --autostash origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME"; then
     echo "Guardado no repositório."
     exit 0
   fi
