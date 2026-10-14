@@ -2085,6 +2085,32 @@
    "dois cargos"
   ]
  },
+ "2225432": {
+  "assunto": "Saúde",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "0d7d2705c8307eb0",
+  "gerado_em": "2026-10-14",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Institui um programa nacional voltado a pessoas com epilepsia",
+   "O programa tem como foco a assistência integral",
+   "A ementa não detalha as medidas do programa"
+  ],
+  "resumo": "Cria o Programa Nacional de Assistência Integral às Pessoas com Epilepsia. A ementa não detalha quais ações, serviços ou benefícios o programa terá, nem quem ficará responsável por ele.",
+  "tags": [
+   "epilepsia",
+   "assistência integral",
+   "programa nacional",
+   "doença neurológica"
+  ]
+ },
  "2227260": {
   "assunto": "Cultura, Esporte e Turismo",
   "assunto_secundario": "Segurança Pública",
