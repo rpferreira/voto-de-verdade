@@ -115,8 +115,8 @@
   {
    "data": "2026-10-14",
    "contagens": {
-    "votacoes": 941,
-    "projetos": 902,
+    "votacoes": 942,
+    "projetos": 903,
     "deputados": 644,
     "nominais": 215,
     "votos": 89688
@@ -124,11 +124,9 @@
    "pendentes": 1,
    "pendentes_en": 0,
    "pct_incertos": 11.5,
-   "gerado_em": "2026-10-13",
-   "custo_mes_usd": 0.01,
-   "erros": [
-    "A atualização diária terminou com resultado 'failure'. Veja o log: https://github.com/rpferreira/voto-de-verdade/actions/runs/38578135481"
-   ],
+   "gerado_em": "2026-10-14",
+   "custo_mes_usd": 0.03,
+   "erros": [],
    "avisos": [
     "Coleta: 1 projetos sem busca única (veja o relatório)."
    ]
