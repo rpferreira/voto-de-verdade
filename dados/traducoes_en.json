@@ -2079,6 +2079,22 @@
 "young apprentice"
 ]
 },
+"2236186":{
+"h":"889796652606e37e",
+"resumo":"Sets the rules for the resolution regimes that apply to institutions that operate with authorization from the Central Bank, the Superintendence of Private Insurance (Susep) and the Securities and Exchange Commission (CVM). The official summary (ementa) does not detail how each regime works.",
+"pontos":[
+"Addresses the resolution regimes of institutions authorized by the Central Bank",
+"Also covers institutions authorized by Susep and by the CVM",
+"The official summary (ementa) does not detail the rules of each regime"
+],
+"tags":[
+"bank resolution",
+"Central Bank",
+"financial institutions",
+"Susep",
+"CVM"
+]
+},
 "2236282":{
 "h":"8b39bf575b3b55dc",
 "resumo":"The bill inscribes the name of Padre Cícero Romão Batista in the Book of Heroes and Heroines of the Fatherland, which gathers the names of people honored by the country. It is a tribute.",
@@ -14426,6 +14442,22 @@
 "social security"
 ]
 },
+"2635476":{
+"h":"e869f41e13a9a53d",
+"resumo":"Changes Complementary Law No. 123, of 2006, to address two points about the Individual Microentrepreneur (MEI): the annual gross revenue limit and the number of employees. The official summary (ementa) does not detail what the new values will be.",
+"pontos":[
+"Amends Complementary Law No. 123, of 2006",
+"Addresses the MEI annual gross revenue limit",
+"Addresses the MEI number of employees"
+],
+"tags":[
+"MEI",
+"individual microentrepreneur",
+"revenue",
+"small businesses",
+"Simples Nacional"
+]
+},
 "2637279":{
 "h":"cc423568af3fea32",
 "resumo":"The bill amends article 67 of Law 15.421 of June 1, 2026, which deals with measures for holding the 2027 FIFA Women's World Cup in Brazil. The official summary (ementa) does not detail what changes in this article.",
@@ -14951,6 +14983,10 @@
 "2233324-86":{
 "h":"b0309bb92fc219d2",
 "descricao":"The global substitute sub-amendment to Bill No. 6.366 of 2019, adopted by the rapporteur of the Culture Committee, was approved, except for the separate votes. Yes: 233; No: 125; Total: 358."
+},
+"2236186-60":{
+"h":"8b101b1db1aaecf3",
+"descricao":"Rejected the Substitute Sub-amendment to Complementary Bill No. 281, of 2019, adopted by the rapporteur of the Special Committee. Yes: 252; No: 176; Total: 428."
 },
 "2236282-38":{
 "h":"9475b878f54d4f23",
@@ -17975,6 +18011,10 @@
 "2634392-23":{
 "h":"dc8aa87a168fa1f7",
 "descricao":"Approved Provisional Measure No. 1.369 of 2026."
+},
+"2635476-36":{
+"h":"28101c12dc9cac11",
+"descricao":"Approved the Global Substitute Sub-amendment to Complementary Bill No. 186, of 2026, adopted by the rapporteur of the Committee on Industry, Commerce and Services, except for the separate votes. Yes: 461; No: 4; Total: 465."
 },
 "2637279-29":{
 "h":"2f4f1d13713f2112",
