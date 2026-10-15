@@ -2325,6 +2325,33 @@
    "jovem aprendiz"
   ]
  },
+ "2236186": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "1363060437fd8f02",
+  "gerado_em": "2026-10-15",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata dos regimes de resolução de instituições autorizadas pelo Banco Central",
+   "Também abrange instituições autorizadas pela Susep e pela CVM",
+   "A ementa não detalha as regras de cada regime"
+  ],
+  "resumo": "Define as regras dos regimes de resolução aplicáveis a instituições que funcionam com autorização do Banco Central, da Superintendência de Seguros Privados (Susep) e da Comissão de Valores Mobiliários (CVM). A ementa não detalha como cada regime funciona.",
+  "tags": [
+   "resolução bancária",
+   "Banco Central",
+   "instituições financeiras",
+   "Susep",
+   "CVM"
+  ]
+ },
  "2236282": {
   "assunto": "Cultura, Esporte e Turismo",
   "assunto_secundario": null,
@@ -23174,6 +23201,33 @@
    "benefícios previdenciários",
    "medida provisória",
    "previdência"
+  ]
+ },
+ "2635476": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "b00ba13b38a5962c",
+  "gerado_em": "2026-10-15",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei Complementar nº 123, de 2006",
+   "Trata do limite de receita bruta anual do MEI",
+   "Trata do número de empregados do MEI"
+  ],
+  "resumo": "Muda a Lei Complementar nº 123, de 2006, para tratar de dois pontos do Microempreendedor Individual (MEI): o limite de receita bruta anual e o número de empregados. A ementa não detalha quais serão os novos valores.",
+  "tags": [
+   "MEI",
+   "microempreendedor individual",
+   "faturamento",
+   "pequenas empresas",
+   "Simples Nacional"
   ]
  },
  "2637279": {
