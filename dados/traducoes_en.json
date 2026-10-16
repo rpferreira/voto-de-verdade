@@ -5504,21 +5504,22 @@
 ]
 },
 "2353617":{
-"h":"eed6185af6c361bc",
-"resumo":"Creates the permanent national campaign \"Recrutando Anjos\" and requires establishments to post posters about maneuvers to clear the airways, such as the Heimlich Maneuver. It also changes the Child and Adolescent Statute (Law No. 8.069/1990).",
+"h":"7562de35d3662d3b",
+"resumo":"Creates the permanent national campaign \"Recrutando Anjos\" and requires establishments to post posters about maneuvers to clear the airways, such as the Heimlich Maneuver. It also changes the Statute of the Child and Adolescent (Law No. 8.069/1990). The official summary (ementa) does not detail what changes in that law.",
 "pontos":[
-"Establishes the permanent national campaign \"Recrutando Anjos\"",
+"Establishes the permanent national campaign Recrutando Anjos",
 "Establishments must post posters about airway-clearing maneuvers",
-"The initial version mentioned the Heimlich Maneuver in educational institutions",
-"Amends the Child and Adolescent Statute (Law No. 8.069/1990)"
+"The posters illustrate the Heimlich Maneuver, mentioned in the original official summary (ementa)",
+"Changes the Statute of the Child and Adolescent"
 ],
 "tags":[
-"Heimlich maneuver",
+"Heimlich Maneuver",
 "choking",
-"first aid",
 "posters",
+"first aid",
 "Recrutando Anjos"
-]
+],
+"aviso_assunto":"The subject of this bill was chosen by artificial intelligence and may be wrong: two automatic readings chose different subjects (Health and Education)."
 },
 "2353954":{
 "h":"21d14826e6e3d6d9",
@@ -11579,6 +11580,22 @@
 "individual"
 ]
 },
+"2487836":{
+"h":"ff92b34d44c50e96",
+"resumo":"Changes the law that organizes the SUS (Law No. 8.080/1990) to require that units of the Unified Health System accept tests done in private services. The official summary (ementa) does not detail conditions or rules for this acceptance.",
+"pontos":[
+"Changes Law No. 8.080 of 1990, which deals with the SUS",
+"SUS units would be required to accept tests from private services",
+"The official summary (ementa) does not detail conditions for the acceptance"
+],
+"tags":[
+"SUS",
+"tests",
+"private tests",
+"private network",
+"Law 8.080"
+]
+},
 "2487987":{
 "h":"9d2386082b7adbcf",
 "resumo":"The bill deals with the National Commitment to Child Literacy. The official summary (ementa) does not say how the Commitment works, who takes part or what its goals or rules are.",
@@ -14442,6 +14459,23 @@
 "social security"
 ]
 },
+"2634542":{
+"h":"84342f9e851b2697",
+"resumo":"Changes five laws to deal with the National Medical Education Assessment Exam. Among them are laws on medical education, the practice of medicine, medical residency and the evaluation of higher education. The official summary (ementa) does not detail the rules of the exam.",
+"pontos":[
+"Provisional measure that changes five federal laws",
+"Central topic: National Medical Education Assessment Exam",
+"Changes Laws 12.871/2013, 3.268/1957, 6.932/1981, 13.959/2019 and 10.861/2004",
+"The official summary (ementa) does not explain who takes the exam or what the rules are"
+],
+"tags":[
+"medical exam",
+"medical education",
+"medicine",
+"provisional measure",
+"medical school"
+]
+},
 "2635476":{
 "h":"e869f41e13a9a53d",
 "resumo":"Changes Complementary Law No. 123, of 2006, to address two points about the Individual Microentrepreneur (MEI): the annual gross revenue limit and the number of employees. The official summary (ementa) does not detail what the new values will be.",
@@ -15797,6 +15831,10 @@
 "2353617-39":{
 "h":"af63f1d9e20ae299",
 "descricao":"Substitute text to Bill No. 1.435 of 2023 approved, as adopted by the rapporteur of the Committee on Education."
+},
+"2353617-79":{
+"h":"9a42d338df42b291",
+"descricao":"Approved the Federal Senate's Substitute Text to Bill No. 1.435, of 2023."
 },
 "2353954-41":{
 "h":"9311360dcaf88146",
@@ -17281,6 +17319,10 @@
 "h":"42b1aefd92dd6aed",
 "descricao":"Approved: the substitute text to Bill No. 1.069 of 2025, from the Committee on Sport, except for the separate vote."
 },
+"2487836-50":{
+"h":"1e1eb67cbfe22750",
+"descricao":"Approved the Substitute Sub-amendment to Bill No. 1.123, of 2025, adopted by the rapporteur of the Health Committee."
+},
 "2487987-56":{
 "h":"bccb4094e03a744e",
 "descricao":"Approved: Bill No. 4.937 of 2024."
@@ -18011,6 +18053,10 @@
 "2634392-23":{
 "h":"dc8aa87a168fa1f7",
 "descricao":"Approved Provisional Measure No. 1.369 of 2026."
+},
+"2634542-24":{
+"h":"ab2fbe4c260f05e8",
+"descricao":"Approved Provisional Measure No. 1.370, of 2026, in the form of the Conversion Bill."
 },
 "2635476-36":{
 "h":"28101c12dc9cac11",
