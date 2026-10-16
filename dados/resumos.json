@@ -8093,29 +8093,29 @@
  },
  "2353617": {
   "assunto": "Saúde",
-  "assunto_secundario": "Educação",
+  "assunto_secundario": "Trabalho e Direitos",
   "conferencia": "claude-haiku-4-5-20251001",
   "conferencia_obs": [],
-  "confianca_assunto": "alta",
+  "confianca_assunto": "baixa",
   "confianca_resumo": "alta",
-  "entrada": "e1b9bec4aca5c976",
-  "gerado_em": "2026-10-07",
+  "entrada": "48479f6f92c1ac12",
+  "gerado_em": "2026-10-16",
   "modelo": "claude-sonnet-5-5",
-  "motivo_assunto": null,
+  "motivo_assunto": "duas leituras automáticas escolheram assuntos diferentes (Saúde e Educação)",
   "motivo_resumo": null,
   "pode_diferir": true,
   "pontos_chave": [
-   "Institui a campanha nacional permanente \"Recrutando Anjos\"",
+   "Institui a campanha nacional permanente Recrutando Anjos",
    "Estabelecimentos devem afixar cartazes sobre manobras de desobstrução das vias respiratórias",
-   "A versão inicial citava a Manobra de Heimlich em instituições de ensino",
-   "Altera o Estatuto da Criança e do Adolescente (Lei nº 8.069/1990)"
+   "Os cartazes ilustram a Manobra de Heimlich, citada na ementa original",
+   "Altera o Estatuto da Criança e do Adolescente"
   ],
-  "resumo": "Cria a campanha nacional permanente \"Recrutando Anjos\" e obriga estabelecimentos a afixar cartazes sobre manobras para desobstruir as vias respiratórias, como a Manobra de Heimlich. Também muda o Estatuto da Criança e do Adolescente (Lei nº 8.069/1990).",
+  "resumo": "Cria a campanha nacional permanente \"Recrutando Anjos\" e obriga estabelecimentos a afixar cartazes sobre manobras para desobstruir as vias respiratórias, como a Manobra de Heimlich. Também muda o Estatuto da Criança e do Adolescente (Lei nº 8.069/1990). A ementa não detalha o que muda nessa lei.",
   "tags": [
    "Manobra de Heimlich",
    "engasgo",
-   "primeiros socorros",
    "cartazes",
+   "primeiros socorros",
    "Recrutando Anjos"
   ]
  },
@@ -18292,6 +18292,33 @@
    "pessoa física"
   ]
  },
+ "2487836": {
+  "assunto": "Saúde",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "1e9415968973b1fd",
+  "gerado_em": "2026-10-16",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 8.080, de 1990, que trata do SUS",
+   "Unidades do SUS passam a ter de aceitar exames de serviços privados",
+   "A ementa não detalha condições para a aceitação"
+  ],
+  "resumo": "Muda a lei que organiza o SUS (Lei nº 8.080/1990) para determinar que as unidades do Sistema Único de Saúde aceitem exames feitos em serviços privados. A ementa não detalha condições ou regras para essa aceitação.",
+  "tags": [
+   "SUS",
+   "exames",
+   "exames particulares",
+   "rede privada",
+   "Lei 8.080"
+  ]
+ },
  "2487987": {
   "assunto": "Educação",
   "assunto_secundario": null,
@@ -23201,6 +23228,34 @@
    "benefícios previdenciários",
    "medida provisória",
    "previdência"
+  ]
+ },
+ "2634542": {
+  "assunto": "Educação",
+  "assunto_secundario": "Saúde",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "95980bc642e1f927",
+  "gerado_em": "2026-10-16",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Medida provisória que altera cinco leis federais",
+   "Tema central: Exame Nacional de Avaliação da Formação Médica",
+   "Altera as Leis 12.871/2013, 3.268/1957, 6.932/1981, 13.959/2019 e 10.861/2004",
+   "A ementa não explica quem faz o exame nem quais são as regras"
+  ],
+  "resumo": "Muda cinco leis para tratar do Exame Nacional de Avaliação da Formação Médica. Entre elas estão leis sobre a formação médica, o exercício da medicina, a residência médica e a avaliação do ensino superior. A ementa não detalha as regras do exame.",
+  "tags": [
+   "exame médico",
+   "formação médica",
+   "medicina",
+   "medida provisória",
+   "faculdade de medicina"
   ]
  },
  "2635476": {
