@@ -168,6 +168,25 @@
    "avisos": [
     "Coleta: 1 projetos sem busca única (veja o relatório)."
    ]
+  },
+  {
+   "data": "2026-10-17",
+   "contagens": {
+    "votacoes": 947,
+    "projetos": 907,
+    "deputados": 644,
+    "nominais": 217,
+    "votos": 90583
+   },
+   "pendentes": 1,
+   "pendentes_en": 0,
+   "pct_incertos": 11.6,
+   "gerado_em": "2026-10-17",
+   "custo_mes_usd": 0.16,
+   "erros": [],
+   "avisos": [
+    "Coleta: 1 projetos sem busca única (veja o relatório)."
+   ]
   }
  ]
 }
