@@ -2,6 +2,12 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.10.3 (2026-10-21)
+
+### Ajustes
+- **Tela inicial:** sai a linha «Já sabe quem? Procure um deputado pelo nome. Ou veja os números das votações e as últimas votações» sob a busca. Esses caminhos continuam no menu.
+- **Resultado da busca:** a contagem («11 projetos com “impostos”») deixa de ficar ao lado do título «Projetos», onde confundia, e passa para a linha logo abaixo dele, antes da frase sobre os projetos com voto de cada deputado.
+
 ## 0.10.2 (2026-10-21)
 
 ### Ajustes

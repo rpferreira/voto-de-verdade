@@ -440,17 +440,9 @@
     const estadoTxt = h("p", { class: "estado so-leitor", role: "status", "aria-live": "polite" });
     const resultados = h("div", {});
     const destaques = h("div", {});
-    // Atalhos: temas de exemplo (os assuntos com mais projetos) preenchem a busca; o link «últimas votações» rola até a lista.
+    // Atalhos: temas de exemplo (os assuntos com mais projetos) preenchem a busca e levam ao resultado.
     const exemplos = h("p", { class: "heroi__exemplos" }, h("span", {}, tx("Por exemplo:")),
       ...termosExemplo.slice(0, estreito ? 2 : 3).map((t) => h("button", { type: "button", class: "chip-exemplo", onclick: () => { campoBusca.value = t; atualizar(true).then(() => irAoResultado(estadoTxt)); } }, t)));
-    const irParaUltimas = (e) => {
-      e.preventDefault();
-      const alvo = document.getElementById("t-recentes");
-      if (!alvo) return;
-      alvo.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-      alvo.setAttribute("tabindex", "-1");
-      alvo.focus({ preventScroll: true });
-    };
     const principios = h("ul", { class: "principios", "aria-label": tx("O que diferencia o Voto de Verdade") },
       [["p-neutro", tx("Neutro e apartidário"), tx("Sem ligação com partidos, candidatos ou a Câmara.")],
        ["p-sem-nota", tx("Sem nota e sem ranking"), tx("Não dizemos quem votou certo ou errado.")],
@@ -472,8 +464,7 @@
           h("p", { class: "heroi__texto" }, tx("Escolha um tema e leia o que foi votado, com o voto de cada deputado federal.")),
           h("form", { class: "heroi__busca", role: "search", "aria-label": tx("Procurar assunto ou projeto"), onsubmit: (e) => e.preventDefault() },
             h("label", { for: "busca", class: "so-leitor" }, tx("Procure por um tema ou palavra")), caixaDeBusca(campoBusca)),
-          exemplos,
-          h("p", { class: "heroi__link" }, tx("Já sabe quem? "), h("a", { href: "#/deputados" }, tx("Procure um deputado pelo nome")), tx(". Ou veja "), h("a", { href: "#/em-numeros" }, tx("os números das votações")), tx(" e "), h("a", { href: "#/", onclick: irParaUltimas }, tx("as últimas votações")), "."))),
+          exemplos)),
       principios, estadoTxt, resultados, destaques,
       h("p", { class: "confianca" },
         tx("Dados oficiais da Câmara dos Deputados, de {0} a {1}. Assunto e resumo são feitos por inteligência artificial e podem errar; avisamos quando há dúvida. ", data(meta.de), data(meta.ate)),
@@ -520,8 +511,8 @@
       if (achados.length) {
         const mostrados = achados.slice(0, limiteBusca);
         blocos.push(h("section", { class: "secao", "aria-labelledby": "t-projetos" },
-          h("h2", { id: "t-projetos" }, tx("Projetos"), h("small", {}, tx("{0} com “{1}”", num(achados.length), estado.q))),
-          h("p", { class: "secao__intro" }, tx("Os que têm o voto de cada deputado aparecem primeiro.")),
+          h("h2", { id: "t-projetos" }, tx("Projetos")),
+          h("p", { class: "secao__intro" }, tx("{0} com “{1}”", plural(achados.length, tx("projeto"), tx("projetos")), estado.q), ". ", tx("Os que têm o voto de cada deputado aparecem primeiro.")),
           h("ul", { class: "projetos" }, mostrados.map((pr) => linhaProjeto(pr, vots, { assunto: nomes[pr.a] }))),
           achados.length > mostrados.length
             ? h("div", { class: "mais" }, h("button", { type: "button", class: "botao botao--leve", onclick: () => { limiteBusca += 10; atualizar(false); } },

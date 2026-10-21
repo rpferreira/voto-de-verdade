@@ -196,7 +196,6 @@ h3, .projeto__corpo h3, .numeros__bloco h3 { font-size: 1.0625rem; line-height: 
 .heroi__busca input[type="search"]:focus-visible { border-color: var(--cobalto); outline-offset: 2px; }
 .heroi__busca input[type="search"]::placeholder { color: var(--tinta-suave); opacity: 1; }
 @media (max-width: 30rem) { .heroi__busca input[type="search"] { font-size: 1rem; min-height: 3.5rem; padding-left: var(--item); padding-right: var(--recuo-seta); } }
-.heroi__link { margin: var(--item) 0 0 var(--perto); color: var(--tinta-suave); }
 .heroi__exemplos { display: flex; flex-wrap: wrap; align-items: center; gap: var(--perto); margin: var(--item) 0 0 var(--perto); color: var(--tinta-suave); }
 .chip-exemplo { font: inherit; font-size: 0.95rem; font-weight: 500; min-height: 2.5rem; padding: var(--junto) var(--item); cursor: pointer; border-radius: 99px; color: var(--tinta); background: var(--superficie); border: 1px solid var(--linha); }
 .chip-exemplo:hover { border-color: var(--tinta-suave); }
@@ -204,7 +203,6 @@ h3, .projeto__corpo h3, .numeros__bloco h3 { font-size: 1.0625rem; line-height: 
 
 .secao { margin-top: var(--respiro); }
 .secao > h2 { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--perto); }
-.titulo-secao small { line-height: 1.5rem; font-weight: 400; font-size: 1rem; color: var(--tinta-suave); letter-spacing: 0; }
 .secao > h2:has(+ .secao__intro) { margin-bottom: var(--perto); }
 .secao__intro { margin: 0 0 var(--item); max-width: 56ch; color: var(--tinta-suave); }
 .duas-colunas { display: grid; gap: var(--calha); margin-top: var(--respiro); }
@@ -656,7 +654,7 @@ a.botao, a.botao:hover { text-decoration: none; }
     --aviso-fundo: #fff3d1; --aviso-borda: #c98a00; --aviso-texto: #5e3d00; }  /* mesmo no modo escuro, imprime com as cores do modo claro (azul do Sim, cinza da abstenção) */
   body { background: #fff; color: #000; }
   .pular, .topo, .aviso-idioma, .faixa, .voltar-topo, .menu-botao, .tema, .rodape__apoie, .rodape__versao,
-  .cabeca-projeto__acoes, .cabeca-dep__acoes, .lista-acoes, .filtros, .mais, .heroi__busca, .heroi__exemplos, .heroi__link, .chips-uf, .filtro-uf, .migalhas { display: none !important; }
+  .cabeca-projeto__acoes, .cabeca-dep__acoes, .lista-acoes, .filtros, .mais, .heroi__busca, .heroi__exemplos, .chips-uf, .filtro-uf, .migalhas { display: none !important; }
   a { color: #000; text-decoration: underline; }
   .texto-longo a[href^="https://"]::after, .oficial + p a[href^="https://"]::after, .projeto__corpo a[href^="https://"]::after { content: " (" attr(href) ")"; font-size: 0.875rem; overflow-wrap: anywhere; }
   .proj, .linha-dep, .placar__item, .cartao-aviso { break-inside: avoid; box-shadow: none; }
