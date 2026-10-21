@@ -728,6 +728,9 @@ def gerar_idioma(site, g, D, L, URL, doacao):
         (L("Por que nem todo projeto mostra o voto de cada deputado"), [
             L("**{0} das {1} votações ({2}%) foram simbólicas**: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Nesses casos **não há como saber como cada um votou**. Só as {3} votações nominais têm o voto de cada deputado.", meta["simbolicas"], meta["votacoes"], pct_simbolicas_int, meta["nominais"]),
         ]),
+        (L("Últimas votações e decididas por pouco: só as nominais"), [
+            L("As listas «Últimas votações» e «Decididas por pouco», na tela inicial, mostram **só votações nominais**, porque são as únicas em que dá para ver o voto de cada deputado. Por isso uma votação simbólica recente não aparece ali: ela está na página do projeto, na do assunto e nos números de [Em números](#/em-numeros). Os projetos que entraram no site há menos de 7 dias levam a etiqueta **Novo**."),
+        ]),
         (L("O que significa “presidia a sessão”"), [
             L("Quem conduz a sessão **só vota em situações previstas** no Regimento Interno da Câmara ([artigo 17](https://www2.camara.leg.br/legin/fed/rescad/1989/resolucaodacamaradosdeputados-17-21-setembro-1989-320110-normaatualizada-pl.html)). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não."),
         ]),
@@ -737,7 +740,7 @@ def gerar_idioma(site, g, D, L, URL, doacao):
             L("[Ler a licença completa](#/licenca)"),
         ]),
         (L("Quem faz e privacidade"), [
-            L("O Voto de Verdade é um **site independente, sem ligação com a Câmara dos Deputados**, com partidos ou com candidatos. **Não usa cookies** nem ferramentas que rastreiam quem visita. Se você escolher o modo escuro, só o seu navegador guarda essa escolha."),
+            L("O Voto de Verdade é um **site independente, sem ligação com a Câmara dos Deputados**, com partidos ou com candidatos. **Não usa cookies** nem ferramentas que rastreiam quem visita. Só o seu navegador guarda as suas preferências (o modo escuro, o idioma e o fechamento da faixa «Read in English»), e elas nunca são enviadas a ninguém."),
         ]),
     ]
 

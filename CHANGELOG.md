@@ -2,6 +2,11 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.10.2 (2026-10-21)
+
+### Ajustes
+- **Página «Como o site funciona»:** a frase de privacidade dizia que o navegador guarda só a escolha do modo escuro. Agora diz tudo o que ele guarda: o modo escuro, o idioma e o fechamento da faixa «Read in English», sem enviar nada a ninguém. Nova seção explica que «Últimas votações» e «Decididas por pouco», na tela inicial, mostram só votações nominais, e onde achar as simbólicas. Em português e em inglês.
+
 ## 0.10.1 (2026-10-14)
 
 ### Ajustes
