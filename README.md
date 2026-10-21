@@ -29,19 +29,24 @@ site é publicado por workflow, não existe arquivo `CNAME` no repositório. O e
 
 ## Como funciona
 
-1. Todo dia, às 6h (horário de Brasília), o GitHub roda `coleta/coletar_votacoes.py`. Ele busca as votações
-   novas na API da Câmara e atualiza `dados/cache_v5.json`, que é commitado no repositório.
-2. Em seguida, `coleta/construir_banco.py` monta o banco `dados/voto_de_verdade.db` a partir do cache e de
-   `dados/resumos.json`. O banco é refeito do zero a cada rodada, fica guardado por 7 dias na aba Actions
-   e não vai para o repositório.
-3. Depois, `coleta/resumir_projetos.py` pede a uma IA o assunto e o resumo dos projetos novos, mede a confiança de
-   cada um e guarda tudo em `dados/resumos.json`. O banco é refeito com os resumos.
-4. Se algo falhar, a execução fica vermelha na aba Actions e o GitHub avisa o dono do repositório por e-mail.
+Todo dia, às 6h (horário de Brasília; o GitHub pode atrasar alguns minutos), a **Atualização diária** roda estas etapas, nesta ordem:
+
+1. `coleta/coletar_votacoes.py` busca as votações novas na API da Câmara e atualiza `dados/cache_v5.json`, que é commitado no repositório.
+2. `coleta/construir_banco.py` monta o banco `dados/voto_de_verdade.db` a partir do cache e de `dados/resumos.json`. O banco é refeito do zero a cada rodada, fica guardado por 7 dias na aba Actions e não vai para o repositório.
+3. `coleta/resumir_projetos.py` pede a uma IA o assunto e o resumo dos projetos novos, mede a confiança de cada um e guarda tudo em `dados/resumos.json` (e o gasto em `dados/custo.json`). O banco é refeito com os resumos.
+4. `site/exportar_dados.py` passa o banco para os JSON que o site lê (`site/dados/`), incluindo `painel.json`, `destaques.json` e a data de entrada de cada projeto (`dados/primeira_vez.json`).
+5. `coleta/traduzir_projetos.py` traduz para o inglês, com IA, só o que é novo ou mudou (`dados/traducoes_en.json`), e `site/exportar_en.py` monta `site/dados/en/`.
+6. Os dados do site e as fotos novas dos deputados são guardados no repositório e o site é publicado no GitHub Pages (**Publicar o site**).
+7. A **Foto do painel (Em números)** tira um PNG da tela e o job `monitorar` confere custo, dados e site no ar (veja Monitoramento).
+
+Cada etapa de guardar usa `coleta/guardar_no_repositorio.sh` e roda mesmo que a etapa anterior tenha falhado, para não perder o que já foi coletado ou pago à IA. Se algo falhar, a execução fica vermelha na aba Actions, o GitHub avisa o dono do repositório por e-mail e a publicação não acontece naquele dia (o site continua no ar com os dados do dia anterior).
 
 ```
 API da Câmara ──► coletar_votacoes.py ──► dados/cache_v5.json ─┐
                                                                ├──► construir_banco.py ──► voto_de_verdade.db
-                          dados/resumos.json (assunto, resumo) ┘
+                          dados/resumos.json (assunto, resumo) ┘                                  │
+                          dados/traducoes_en.json (inglês)                                        ▼
+                                                      exportar_dados.py + exportar_en.py ──► site/dados/ ──► GitHub Pages
 ```
 
 ## O que é coletado
@@ -133,18 +138,20 @@ O site inteiro existe também em inglês, em `/en/` (mesmas telas e endereços: 
 - **Imagem de compartilhamento**: `site/og-en.png` nas páginas em inglês. Para refazer (se a legenda ou o `og.png` mudarem): `python3 site/criar_og_en.py`.
 - **Montar só um idioma**: `python3 site/gerar_paginas.py --saida _site --idiomas pt` (ou `en`).
 
-## Telas e filtros planejados
+## Telas e filtros
 
-| Tela | Filtros | Ordenações (a primeira é a padrão) |
+| Tela | Filtros | Ordem (a primeira é a padrão) |
 | --- | --- | --- |
-| Início por assunto | busca por palavra | A–Z; votação mais recente; mais votações |
-| Página do assunto | período, tipo de proposta, resultado, como foi votada, só confiança alta, assunto secundário, busca | mais recente; mais antiga; mais disputada; nome A–Z |
-| Votação | voto, partido, estado, só em exercício, nome | nome A–Z; partido; estado; voto |
-| Busca de deputados | estado, partido, em exercício, nome | nome A–Z; estado; partido |
-| Página do deputado | assunto, período, como votou, resultado, busca | mais recente; mais antiga; mais disputada; por assunto |
+| Início por assunto | busca por tema ou palavra | assuntos em ordem alfabética; resultado da busca com voto individual primeiro e depois os mais recentes; «Últimas votações» (as 5 mais recentes **nominais**) e «Votações apertadas» (5) vêm escolhidas |
+| Página do assunto | busca; abas «com o voto de cada deputado» e «todos»; em *Mais filtros*: resultado (aprovados ou rejeitados), ano da última votação e «Esconder projetos com aviso de possível erro» | mais recentes primeiro; mais antigos primeiro |
+| Página do projeto | nome do deputado, partido, estado e voto; quando há mais de uma votação com voto individual, dá para escolher qual ver | nome A–Z (fixa) |
+| Busca de deputados | nome, partido, estado e «Só quem está em exercício agora» | nome A–Z (fixa) |
+| Página do deputado | busca nos projetos, assunto e voto; em *Mais opções*: ano | mais recentes primeiro; mais antigas primeiro |
+| Em números | ano | |
 
-Os filtros vão no endereço da página, para o cidadão poder compartilhar o link de uma busca. Nada some sem
-o cidadão pedir: o filtro de confiança vem desligado.
+Os filtros vão no endereço da página, para o cidadão poder compartilhar o link de uma busca. Nada some sem o cidadão pedir: o filtro de aviso de erro vem desligado.
+
+**Buscar e filtrar.** Digitar atualiza a lista na hora, sem mexer na tela. Para confirmar, o cidadão aperta Enter ou o botão: a tela rola até o resultado e o foco vai para a contagem logo acima dele («12 deputados»), que também é lida pelos leitores de tela. A busca simples (tela inicial e página de erro) tem o botão de lupa **Buscar**; as caixas de filtros têm um botão só, **Filtrar**, que aplica o que está no nome e nos filtros. Escolher um tema de exemplo («impostos», «trabalho») também leva ao resultado. O seletor «Escolha uma votação» da página do projeto, as abas e os botões de estado não são filtros de lista e não têm botão.
 
 ## O site
 
@@ -153,11 +160,11 @@ A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Tel
 - **Buscadores e agentes de IA**: `site/gerar_paginas.py` escreve, para cada projeto, deputado e assunto, uma página com o conteúdo já no HTML (lê-se sem JavaScript), dados estruturados (schema.org: Legislation, ProfilePage, CollectionPage, Dataset e BreadcrumbList), links entre as páginas e uma versão em Markdown (`index.md`). Também cria `llms.txt`, `robots.txt` (com `Content-Signal: search=yes, ai-input=yes, ai-train=no`: busca e uso para responder perguntas liberados, treino de modelos não), `openapi.json` e `dados/LEIA-ME.md` (os JSON em `dados/` são uma API aberta, sem chave), `.well-known/api-catalog` e `.well-known/agent-skills/` (a skill fica em `site/modelos/skill.md`). No navegador, o `app.js` registra ferramentas WebMCP de leitura (`listar_assuntos`, `buscar_projetos`, `votos_do_projeto`, `buscar_deputado`, `votos_do_deputado`) quando o navegador tem `document.modelContext`. Observação: `robots.txt`, `llms.txt` e `.well-known/` só são lidos por buscadores e agentes na raiz do domínio; no endereço `usuario.github.io/repositorio` eles ficam numa subpasta e não são descobertos sozinhos. Com domínio próprio passam a valer.
 - **Apoie (doação única)**: preencha `doacao.url` em `site/config.json` com o link de pagamento do serviço escolhido (link de pagamento único, sem assinatura). Enquanto estiver vazio, nada de doação aparece. Com o link, o rodapé ganha o convite e a página `apoie/` explica que doar não muda o conteúdo (neutro e apartidário, sem nota e sem ranking) e leva ao serviço de pagamento. O site não vê nem guarda dados de pagamento.
 - **Modo escuro**: o site segue o aparelho; um botão (ícone no topo, ou "Modo escuro" no rodapé no celular) troca na hora e a escolha fica só no navegador.
-- **Início**: título e busca. A busca acha projetos e assuntos. Logo abaixo, os três compromissos do site (neutro e apartidário, sem nota e sem ranking, só o que foi votado) e os assuntos em cartões coloridos, as últimas votações e as votações decididas por pouca diferença (sim e não a menos de 15% uma da outra).
-- **Assunto** (`#/assunto/<assunto>`): lista de projetos votados, com abas "com o voto de cada deputado" e "todos". Cada linha mostra o placar e abre o projeto.
-- **Projeto** (`#/projeto/<id>`): título e resumo (aviso amarelo só quando a IA tem dúvida sobre o assunto ou o resumo; a nota sobre substitutivo é cinza e discreta), o placar e o voto de cada deputado. Tocar num número do placar mostra só aqueles deputados. Filtros por nome, partido, estado e voto. Se o projeto teve mais de uma votação, dá para escolher qual ver. O endereço antigo `#/votacao/<id>` abre a mesma página.
-- **Deputados** (`#/deputados`): atalho por estado, busca por nome e partido.
-- **Deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, com filtros por assunto e voto. Sem nota e sem ranking.
+- **Início**: título e busca (Enter ou **Buscar**). A busca acha projetos e assuntos. Logo abaixo, os três compromissos do site (neutro e apartidário, sem nota e sem ranking, só o que foi votado) e os assuntos em cartões coloridos. Depois vêm as últimas votações, só as **nominais**, as únicas em que o voto de cada deputado fica registrado (com a etiqueta **Novo** nos projetos que entraram há menos de 7 dias), e as votações decididas por pouca diferença (sim e não a menos de 15% uma da outra). Votações simbólicas não aparecem nessas listas, mas estão na página do projeto, na do assunto e em «Em números».
+- **Assunto** (`#/assunto/<assunto>`): lista de projetos votados, com abas "com o voto de cada deputado" e "todos". Cada projeto é um cartão com o número oficial ("PLP 74/2026"), o título e, quando a votação foi simbólica, o aviso «Votação simbólica, sem o voto de cada deputado».
+- **Projeto** (`#/projeto/<id>`): título e resumo (aviso amarelo só quando a IA tem dúvida sobre o assunto ou o resumo; a nota sobre substitutivo é cinza e discreta), o placar (só conta: os números de Sim, Não, Abstenção e Presidia não são botões) e o voto de cada deputado, cada um num cartão com nome, partido, estado e voto. Filtros por nome, partido, estado e voto, na caixa «Filtrar por». Se o projeto teve mais de uma votação, dá para escolher qual ver. O endereço antigo `#/votacao/<id>` abre a mesma página.
+- **Deputados** (`#/deputados`): atalho por estado, busca por nome e partido, e a opção de ver só quem está em exercício.
+- **Deputado** (`#/deputado/<id>`): os votos dele nas votações nominais, cada um num cartão com o título do projeto e o voto (no celular, o voto fica embaixo do título), com busca e filtros por assunto, voto e ano. Sem nota e sem ranking.
 - **Como o site funciona** (`#/sobre`): de onde vêm os dados, o que a IA faz, por que nem toda votação mostra o voto de cada deputado, quem faz o site e privacidade (sem cookies, sem rastreamento).
 
 **Páginas para compartilhar.** `site/gerar_paginas.py` cria uma página para cada projeto (`projeto/<id>/`), deputado (`deputado/<id>/`) e assunto (`assunto/<slug>/`), com título, descrição e imagem de prévia próprios (WhatsApp, Google), mais `sitemap.xml`, `robots.txt` e a página de erro (`404.html`). As páginas abrem o mesmo aplicativo. O botão "Compartilhar" copia o endereço dessa página.
@@ -168,9 +175,9 @@ A pasta `site/` é o site (HTML, CSS e JavaScript puros, sem instalar nada). Tel
 
 Os dados que o site lê ficam em `site/dados/` e são gerados por `python3 site/exportar_dados.py` a partir do banco. As fotos dos deputados ficam em `site/fotos/` (`python3 site/baixar_fotos.py` baixa só as que faltam). A atualização diária faz tudo isso e publica no GitHub Pages. Mudanças em `site/` publicadas no ramo principal também vão ao ar sozinhas (fluxo **Publicar o site**), sem precisar rodar a atualização diária.
 
-**Em números.** A tela só conta e descreve (nada ordena pessoas, não dá nota e não compara partidos): votações ao longo do tempo, por assunto e resultado; quantos deputados votaram, o placar das nominais e como a inteligência artificial é usada (modelos, confiança e avisos). Cada gráfico tem a tabela numa página própria (`/em-numeros/<tabela>/`), um filtro por ano (`?ano=2025`; o `painel.json` traz o período inteiro e, em `por_ano`, os mesmos campos de cada ano) e os botões **Baixar CSV** e **Baixar JSON**. Como a inteligência artificial é usada tem menu e página próprios, **Transparência da IA** (`/inteligencia-artificial/`: o que faz, como é feito, confiança, avisos e limites). Só «Confiança» tem tabela própria e exportação; os outros blocos são texto. O mesmo filtro por ano e a mesma exportação existem na página do assunto, na lista de deputados, na página do deputado e nos votos de cada projeto. Os arquivos baixados (CSV com BOM e CRLF, para abrir direto no Excel; JSON com título, fonte, licença, data e filtros usados) são montados no navegador, sem enviar nada a ninguém; nas páginas estáticas, sem JavaScript, o filtro e os botões não aparecem. Os números são refeitos a cada atualização diária, e o fluxo **Foto do painel (Em números)** tira um PNG da tela, anexa à execução (Artifacts, 30 dias) e guarda a mais recente em `painel/ultima-geracao.png`.
+**Em números.** A tela só conta e descreve (nada ordena pessoas, não dá nota e não compara partidos): votações ao longo do tempo, por assunto e resultado; quantos deputados votaram, o placar das nominais e como a inteligência artificial é usada (modelos, confiança e avisos). Cada gráfico tem a tabela numa página própria (`/em-numeros/<tabela>/`), um filtro por ano, com o botão **Filtrar** (`?ano=2025`; o `painel.json` traz o período inteiro e, em `por_ano`, os mesmos campos de cada ano) e os botões **Baixar CSV** e **Baixar JSON**. Como a inteligência artificial é usada tem menu e página próprios, **Transparência da IA** (`/inteligencia-artificial/`: o que faz, como é feito, confiança, avisos e limites). Só «Confiança» tem tabela própria e exportação; os outros blocos são texto. O mesmo filtro por ano e a mesma exportação existem na página do assunto, na lista de deputados, na página do deputado e nos votos de cada projeto. Os arquivos baixados (CSV com BOM e CRLF, para abrir direto no Excel; JSON com título, fonte, licença, data e filtros usados) são montados no navegador, sem enviar nada a ninguém; nas páginas estáticas, sem JavaScript, o filtro e os botões não aparecem. Os números são refeitos a cada atualização diária, e o fluxo **Foto do painel (Em números)** tira um PNG da tela, anexa à execução (Artifacts, 30 dias) e guarda a mais recente em `painel/ultima-geracao.png`.
 
-**Testes.** `python3 site/gerar_paginas.py --saida _site` e `python3 testes/fumaca.py _site` abrem o site num navegador de verdade e conferem as telas principais (precisa de `pip install -r testes/requirements.txt` e `playwright install chromium`). O fluxo **Testar o site** roda isso em todo pull request.
+**Testes.** `python3 site/gerar_paginas.py --saida _site` e `python3 testes/fumaca.py _site` abrem o site num navegador de verdade e conferem as telas principais (precisa de `pip install -r testes/requirements.txt` e `playwright install chromium`). O fluxo **Testar o site** roda isso em todo pull request, junto com `testes/versao.py`, `idiomas.py`, `espacamento.py`, `seguranca.py` e `guardar.py` (este confere o script que a rotina diária usa para guardar arquivos no repositório, inclusive com arquivos ainda não guardados e com alguém mexendo no repositório no meio do caminho).
 
 **Segurança.** `python3 testes/seguranca.py` (roda em todo pull request) troca os dados por versões com código malicioso, gera o site e confere que nada executa, que links só valem se forem `https://` e que a política de segurança (CSP) bloqueia script embutido. Detalhes em [`SECURITY.md`](SECURITY.md).
 
@@ -188,12 +195,12 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `coleta/construir_banco.py` | Monta o banco SQLite |
 | `coleta/resumir_projetos.py` | Assunto e resumo por IA, com confiança |
 | `coleta/monitorar.py` | Monitoramento: confere custo, dados e site no ar, e abre alerta na aba Issues |
-| `coleta/guardar_no_repositorio.sh` | Guarda arquivos da rotina no repositório, repetindo se alguém mexeu nele |
+| `coleta/guardar_no_repositorio.sh` | Guarda arquivos da rotina no repositório. Põe de lado os arquivos ainda não guardados (`--autostash`) e repete se alguém mexeu no repositório |
 | `dados/cache_v5.json` | Tudo o que veio da API (a base do banco) |
 | `dados/resumos.json` | Assunto e resumo de cada projeto, com confiança (escrito pela IA) |
 | `dados/custo.json` | Quanto cada rodada de resumos e traduções gastou com a IA (escrito pela rotina) |
 | `dados/monitor.json` | Histórico das conferências do monitoramento (escrito pela rotina) |
-| `site/` | O site (`index.html`, `estilos.css`, `app.js`, fontes, `og.png`) |
+| `site/` | O site (`index.html`, `estilos.css`, `app.js`, `tema.js`, fontes, `og.png`) |
 | `site/exportar_dados.py` | Passa o banco para os JSON que o site lê (`site/dados/`) |
 | `site/painel.py` | Faz `site/dados/painel.json`, os números da tela **Em números** (simbólicas × nominais ao longo do tempo, por assunto e resultado, participação, placar e transparência da IA). Roda junto com o `exportar_dados.py` |
 | `site/destaques.py` | Faz `site/dados/destaques.json` (e `en/destaques.json`): as 10 votações em destaque da tela inicial, já escolhidas. Assim a primeira visita não baixa `projetos.json` e `votacoes.json` (cerca de 156 KB comprimidos); eles só são baixados quando alguém busca. Roda junto com `exportar_dados.py` |
@@ -214,6 +221,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `testes/versao.py` | Confere `VERSION`, `CHANGELOG.md`, o rodapé das páginas e, no pull request, se a versão subiu quando o código do site mudou |
 | `testes/espacamento.py` | Confere as regras de espaçamento (grade de 8px) no CSS e nas telas |
 | `testes/idiomas.py` | Confere a versão em inglês: dicionário, dados, páginas e telas |
+| `testes/guardar.py` | Testa o `guardar_no_repositorio.sh` num repositório de mentira (arquivos pendentes e alguém mexendo no remoto) |
 | `testes/seguranca.py` | Ataca o site com dados maliciosos e confere a política de segurança (CSP), sem rastreio e sem cookies |
 | `testes/requirements.txt` | Versão fixa do programa de teste (o Dependabot avisa quando sai nova) |
 | `SECURITY.md` | Como avisar de uma falha e o que o site garante |
@@ -221,6 +229,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `docs/espacamento.md` | As regras de espaçamento: escala, papéis e padrões |
 | `.github/workflows/atualizacao-diaria.yml` | A rotina diária: coleta, resumos, traduções, dados do site, fotos e publicação |
 | `.github/workflows/publicar-site.yml` | Põe o site no ar (depois da rotina diária e a cada mudança em `site/`) |
+| `.github/workflows/painel-imagem.yml` | Tira a foto (PNG) da tela Em números (chamado pela rotina diária) |
 | `.github/workflows/vigiar-site.yml` | Todo dia à noite, confere se o site está no ar e com dados recentes |
 | `.github/workflows/testar-site.yml` | Testa o site em cada pull request |
 
@@ -300,24 +309,24 @@ confere também o site no ar.
 - **Sem revisão humana.** A rede de segurança são os avisos de confiança. Um canal de "Reportar erro" está no
   backlog, com baixa prioridade, e o site não tem esse botão por enquanto.
 - **Resumos por IA.** Podem conter erros. A confiança e a conferência automática reduzem o risco, mas não o eliminam.
-  Os 13 assuntos são fixos. Em testes com 59 projetos, "Outros" ficou com 13 de 40 no começo, e todos eram regras
+  Os 13 assuntos são fixos. No começo, em testes com 59 projetos, "Outros" ficou com 13 de 40, e todos eram regras
   internas do Congresso, servidores, acordos internacionais, datas e homenagens. Por isso existem os assuntos
   "Administração Pública e Congresso", "Relações Internacionais e Defesa" e "Cultura, Esporte e Turismo". "Agropecuária
-  e Campo" foi criado depois de aparecerem reforma agrária, trabalho por safra e programa de alimentos. Vale conferir a
-  distribuição de novo depois da primeira carga completa.
+  e Campo" foi criado depois de aparecerem reforma agrária, trabalho por safra e programa de alimentos. Com a carga
+  completa, "Outros" ficou com 6 dos 907 projetos (21/10/2026).
 - **Projeto em dois assuntos.** Muitos projetos cabem em dois assuntos (por exemplo, um fundo de telecomunicações que
   muda regras fiscais). A IA escolhe um assunto principal e um secundário, e o site lista o projeto nos dois. A
   confiança do assunto só cai para média ou baixa quando a segunda leitura discorda dos dois assuntos, quando as
   palavras da ementa apontam para outro, ou quando o projeto ficou em "Outros".
-- **Projetos com outro número.** Em 23 projetos (27 votações), o texto cita um número que a Câmara não tem
+- **Projetos com outro número.** Em 23 projetos (cerca de 28 votações), o texto cita um número que a Câmara não tem
   registrado hoje, e a Câmara indica o projeto com outro número. Conferimos o ano de apresentação: nos 23 casos ele
   é igual ao ano citado no texto, ou seja, é o mesmo projeto com outro número. Se o ano não bater, a votação fica
   com confiança baixa e aviso.
 - **PEC 45/2019.** A busca acha dois registros com esse número. Escolhemos o mais recente que já tinha sido
   apresentado na data da votação, com confiança média e aviso. A votação de 15/12/2023 afeta, segundo a Câmara, a
   PEC 293/2004, que não usamos porque o texto cita a 45/2019.
-- **Partido no dia do voto.** A coleta guarda o partido que a API informa junto com cada voto. Falta
-  confirmar, na primeira rodada real, que é o partido do dia do voto.
+- **Partido no dia do voto.** A coleta guarda o partido que a API informa junto com cada voto, e nenhum voto fica
+  sem partido. A página do deputado mostra os partidos por que ele passou, do mais antigo ao mais recente.
 - **Sem ausências.** A API só lista quem votou, então o site não mostra "não votou".
 - **Só a Câmara.** O Senado não está incluído.
 - **Sem votações novas.** Em recesso e em período de eleição a Câmara quase não vota; a data da última votação aparece no rodapé.
