@@ -1006,6 +1006,8 @@
       paragrafo(tx("[Veja como a inteligência artificial é usada, com os números](#/inteligencia-artificial)")),
       h("h2", {}, tx("Por que nem todo projeto mostra o voto de cada deputado")),
       paragrafo(tx("**{0} das {1} votações ({2}%) foram simbólicas**: os partidos chegam a um acordo e o resultado é anunciado sem registrar o voto de cada deputado. Nesses casos **não há como saber como cada um votou**. Só as {3} votações nominais têm o voto de cada deputado.", num(meta.simbolicas), num(meta.votacoes), pct, num(meta.nominais))),
+      h("h2", {}, tx("Últimas votações e decididas por pouco: só as nominais")),
+      paragrafo(tx("As listas «Últimas votações» e «Decididas por pouco», na tela inicial, mostram **só votações nominais**, porque são as únicas em que dá para ver o voto de cada deputado. Por isso uma votação simbólica recente não aparece ali: ela está na página do projeto, na do assunto e nos números de [Em números](#/em-numeros). Os projetos que entraram no site há menos de 7 dias levam a etiqueta **Novo**.")),
       h("h2", {}, tx("O que significa “presidia a sessão”")),
       paragrafo(tx("Quem conduz a sessão **só vota em situações previstas** no Regimento Interno da Câmara ([artigo 17](https://www2.camara.leg.br/legin/fed/rescad/1989/resolucaodacamaradosdeputados-17-21-setembro-1989-320110-normaatualizada-pl.html)). Nos dados da Câmara, o voto de quem presidia aparece com esse registro, e não como sim ou não.")),
       h("h2", {}, tx("Licença e uso do conteúdo")),
@@ -1013,7 +1015,7 @@
       paragrafo(tx("**Pedimos que o conteúdo não seja usado para treinar modelos de inteligência artificial.** Consultá-lo para responder perguntas, citando o site, é bem-vindo.")),
       paragrafo(tx("[Ler a licença completa](#/licenca)")),
       h("h2", {}, tx("Quem faz e privacidade")),
-      paragrafo(tx("O Voto de Verdade é um **site independente, sem ligação com a Câmara dos Deputados**, com partidos ou com candidatos. **Não usa cookies** nem ferramentas que rastreiam quem visita. Se você escolher o modo escuro, só o seu navegador guarda essa escolha.")),
+      paragrafo(tx("O Voto de Verdade é um **site independente, sem ligação com a Câmara dos Deputados**, com partidos ou com candidatos. **Não usa cookies** nem ferramentas que rastreiam quem visita. Só o seu navegador guarda as suas preferências (o modo escuro, o idioma e o fechamento da faixa «Read in English»), e elas nunca são enviadas a ninguém.")),
       h("p", {}, h("a", { href: "#/" }, tx("Voltar ao início")))));
     document.title = tx("Como o site funciona: Voto de Verdade");
     return document.getElementById("titulo-sobre");

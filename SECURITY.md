@@ -13,7 +13,7 @@ segredo exposto, ou algo que quebre a promessa de não rastrear quem visita.
 
 ## O que o site garante
 
-- Não usa cookies nem ferramentas de rastreio. A única coisa guardada no navegador é o tema (claro ou escuro).
+- Não usa cookies nem ferramentas de rastreio. O navegador guarda só preferências de quem visita, sem enviar a ninguém: o tema (claro ou escuro), a escolha de idioma (ao voltar para o português) e o fechamento da faixa «Read in English».
 - Não fala com outros endereços: fontes, fotos e dados são do próprio site.
 - Todo texto vindo dos dados é mostrado como texto, nunca como código. Links vindos dos dados só valem se forem `https://`.
 - Uma política de segurança de conteúdo (CSP) bloqueia scripts que não sejam os do próprio site.

@@ -8,6 +8,11 @@ Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dad
 - **Tela inicial:** sai a linha «Já sabe quem? Procure um deputado pelo nome. Ou veja os números das votações e as últimas votações» sob a busca. Esses caminhos continuam no menu.
 - **Resultado da busca:** a contagem («11 projetos com “impostos”») deixa de ficar ao lado do título «Projetos», onde confundia, e passa para a linha logo abaixo dele, antes da frase sobre os projetos com voto de cada deputado.
 
+## 0.10.2 (2026-10-21)
+
+### Ajustes
+- **Página «Como o site funciona»:** a frase de privacidade dizia que o navegador guarda só a escolha do modo escuro. Agora diz tudo o que ele guarda: o modo escuro, o idioma e o fechamento da faixa «Read in English», sem enviar nada a ninguém. Nova seção explica que «Últimas votações» e «Decididas por pouco», na tela inicial, mostram só votações nominais, e onde achar as simbólicas. Em português e em inglês.
+
 ## 0.10.1 (2026-10-14)
 
 ### Ajustes
