@@ -730,7 +730,10 @@ with sync_playwright() as p:
     pg = nova(390)
     pg.goto(base + "/")
     pg.wait_for_selector("#t-recentes ~ ul > li", timeout=15000)
-    confere(pg.locator(".selo-novo").count() == 0, "com os dados de hoje (nenhum projeto entrou depois do registro começar) não há «Novo»")
+    # Com os dados do dia, «Novo» aparece só nas últimas votações cujo projeto entrou há menos de 7 dias (depende do dia: não vale fixar um número)
+    esperado_novos = pg.evaluate("""async () => { const d = await (await fetch('dados/destaques.json')).json();
+      return d.recentes.filter((x) => { const dias = x.p.inc ? (Date.now() - Date.parse(x.p.inc + 'T00:00:00Z')) / 864e5 : NaN; return dias > -1 && dias < 7; }).length; }""")
+    confere(pg.locator(".selo-novo").count() == esperado_novos, f"com os dados de hoje, «Novo» só nas últimas votações de projetos com menos de 7 dias no site (esperado {esperado_novos}, na tela {pg.locator('.selo-novo').count()})")
     pg.goto(base + "/#/assunto/saude?todos=1")
     pg.wait_for_selector("ul.projetos .proj", timeout=15000)
     pg.context.close()
