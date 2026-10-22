@@ -1,2 +1,2 @@
 playwright==1.63.0
-pillow==12.3.0  # imagens de prévia de cada deputado, assunto e página (site/imagens_og.py)
+pillow==13.0.0  # imagens de prévia de cada deputado, assunto e página (site/imagens_og.py)
