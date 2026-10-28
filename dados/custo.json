@@ -108,5 +108,19 @@
   "feitos": 3,
   "erros": 0,
   "sem_saldo": false
+ },
+ {
+  "data": "2026-10-28T15:38:25",
+  "usd": 0.0257,
+  "tokens": {
+   "claude-sonnet-5-5": [
+    7490,
+    1069
+   ]
+  },
+  "feitos": 6,
+  "erros": 0,
+  "sem_saldo": false,
+  "tarefa": "traducao"
  }
 ]

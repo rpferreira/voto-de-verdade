@@ -13163,6 +13163,23 @@
 "free baggage"
 ]
 },
+"2572799":{
+"h":"76f30dd3d12722c6",
+"resumo":"Provides that SUS make possible the first gynecological appointment for girls from 10 years of age. The official summary (ementa) states reproductive health and the prevention of health problems in this age group as the goal.",
+"pontos":[
+"Deals with the first gynecological appointment in SUS",
+"The appointment would be from 10 years of age",
+"Aimed at girls",
+"Focuses on reproductive and preventive health"
+],
+"tags":[
+"gynecological appointment",
+"girls",
+"SUS",
+"women's health",
+"adolescents"
+]
+},
 "2575942":{
 "h":"6548873af2d8c40b",
 "resumo":"The bill sets September 21 as the Brazilian Women's Self-Esteem Day. The official summary (ementa) does not detail other measures or actions tied to the date.",
@@ -14492,6 +14509,23 @@
 "Simples Nacional"
 ]
 },
+"2637101":{
+"h":"fd78427054d813cc",
+"resumo":"Adds more careers and special job plans to those that receive the compensation provided for in Law No. 12.855/2013. Changes Law No. 15.367/2026 so that people named in two constitutional amendments can make the choice provided for in that law. It also transforms vacant permanent positions.",
+"pontos":[
+"Expands the list of careers and job plans entitled to the compensation under Law No. 12.855/2013",
+"Amends Law No. 15.367/2026 regarding the right of choice in arts. 52 to 54",
+"Covers people named in art. 6 of Constitutional Amendments No. 79/2014 and No. 98/2017",
+"Transforms permanent positions that are vacant"
+],
+"tags":[
+"public servants",
+"compensation",
+"careers",
+"vacant positions",
+"provisional measure"
+]
+},
 "2637279":{
 "h":"cc423568af3fea32",
 "resumo":"The bill amends article 67 of Law 15.421 of June 1, 2026, which deals with measures for holding the 2027 FIFA Women's World Cup in Brazil. The official summary (ementa) does not detail what changes in this article.",
@@ -14650,6 +14684,23 @@
 "Federal Court of Accounts",
 "nomination",
 "Rodrigo Pacheco"
+]
+},
+"2648807":{
+"h":"53cd2d21560c3cd9",
+"resumo":"Authorizes financial support in 2026 for independent sugarcane producers in the Northeast. It also authorizes directing funds to reimbursable financing lines, to renew fleets. It also changes three laws: 9.818/1999, 11.540/2007 and 14.947/2024.",
+"pontos":[
+"Authorizes financial support in 2026 for independent sugarcane producers in the Northeast",
+"Authorizes funds for reimbursable financing aimed at fleet renewal",
+"Amends Laws 9.818/1999, 11.540/2007 and 14.947/2024",
+"The official summary (ementa) does not detail the amount of the support or the financing rules"
+],
+"tags":[
+"sugarcane",
+"Northeast",
+"financial support",
+"fleet renewal",
+"financing"
 ]
 }
 },
@@ -17720,6 +17771,10 @@
 "h":"09bc563940a3da43",
 "descricao":"Approved: the substitute text to Bill No. 5.041 of 2025, as adopted by the rapporteur of the Committee on Roads and Transport, except for the separate votes."
 },
+"2572799-46":{
+"h":"9fe454d8106b9a89",
+"descricao":"Approved the Substitute Text to Bill No. 5.239, of 2025, adopted by the rapporteur of the Health Committee."
+},
 "2575942-32":{
 "h":"1fa2513b436adade",
 "descricao":"Approved: Bill No. 5.405 of 2025."
@@ -18062,6 +18117,10 @@
 "h":"28101c12dc9cac11",
 "descricao":"Approved the Global Substitute Sub-amendment to Complementary Bill No. 186, of 2026, adopted by the rapporteur of the Committee on Industry, Commerce and Services, except for the separate votes. Yes: 461; No: 4; Total: 465."
 },
+"2637101-42":{
+"h":"0bbdd401c2a72694",
+"descricao":"Approved Provisional Measure No. 1.375, of 2026, in the form of the Conversion Bill, except for the separate vote."
+},
 "2637279-29":{
 "h":"2f4f1d13713f2112",
 "descricao":"Approved the Substitute Text to Bill No. 3.481 of 2026, adopted by the rapporteur of the Education Committee."
@@ -18097,6 +18156,10 @@
 "264726-144":{
 "h":"9d9b609854aefc28",
 "descricao":"Approved the Global Substitute Sub-amendment to Bill No. 4.149 of 2004, adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship, except for the separate votes. Yes: 273; No: 153; Abstention: 1; Total: 427."
+},
+"2648807-19":{
+"h":"c196f92286700df4",
+"descricao":"Approved the Substitute Text to Bill No. 5.649, of 2026, adopted by the rapporteur of the Committee on Science, Technology and Innovation."
 },
 "345311-270":{
 "h":"8e1aad80c07fa2f9",
