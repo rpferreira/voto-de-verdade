@@ -21011,6 +21011,34 @@
    "bagagem gratuita"
   ]
  },
+ "2572799": {
+  "assunto": "Saúde",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "676154429f18b7a0",
+  "gerado_em": "2026-10-28",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata da primeira consulta ginecológica no SUS",
+   "A consulta seria a partir dos 10 anos de idade",
+   "Voltada a meninas",
+   "Tem foco em saúde reprodutiva e preventiva"
+  ],
+  "resumo": "Prevê que o SUS torne possível a primeira consulta ginecológica de meninas a partir dos 10 anos de idade. A ementa indica como objetivo a saúde reprodutiva e a prevenção de problemas de saúde nessa faixa etária.",
+  "tags": [
+   "consulta ginecológica",
+   "meninas",
+   "SUS",
+   "saúde da mulher",
+   "adolescentes"
+  ]
+ },
  "2575942": {
   "assunto": "Cultura, Esporte e Turismo",
   "assunto_secundario": null,
@@ -23285,6 +23313,34 @@
    "Simples Nacional"
   ]
  },
+ "2637101": {
+  "assunto": "Administração Pública e Congresso",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "b6b7b57aa68f9e9b",
+  "gerado_em": "2026-10-28",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Amplia a lista de carreiras e planos de cargos com direito à indenização da Lei nº 12.855/2013",
+   "Altera a Lei nº 15.367/2026 quanto ao direito de opção dos arts. 52 a 54",
+   "Abrange pessoas citadas no art. 6º das Emendas Constitucionais nº 79/2014 e nº 98/2017",
+   "Transforma cargos efetivos que estão vagos"
+  ],
+  "resumo": "Inclui mais carreiras e planos especiais de cargos entre os que recebem a indenização prevista na Lei nº 12.855/2013. Muda a Lei nº 15.367/2026 para que pessoas citadas em duas emendas constitucionais possam fazer a opção prevista nessa lei. Também transforma cargos efetivos vagos.",
+  "tags": [
+   "servidores públicos",
+   "indenização",
+   "carreiras",
+   "cargos vagos",
+   "medida provisória"
+  ]
+ },
  "2637279": {
   "assunto": "Cultura, Esporte e Turismo",
   "assunto_secundario": null,
@@ -23581,6 +23637,34 @@
    "arma de uso restrito",
    "aumento de pena",
    "armas"
+  ]
+ },
+ "2648807": {
+  "assunto": "Agropecuária e Campo",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "6dbeeae0ba1a9f9d",
+  "gerado_em": "2026-10-28",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Autoriza apoio financeiro em 2026 a produtores independentes de cana-de-açúcar do Nordeste",
+   "Autoriza recursos para financiamento reembolsável voltado à renovação de frota",
+   "Altera as Leis 9.818/1999, 11.540/2007 e 14.947/2024",
+   "A ementa não detalha o valor do apoio nem as regras do financiamento"
+  ],
+  "resumo": "Autoriza apoio financeiro em 2026 aos produtores independentes de cana-de-açúcar do Nordeste. Também autoriza destinar recursos a linhas de financiamento com devolução do dinheiro, para renovar frota. Muda ainda três leis: 9.818/1999, 11.540/2007 e 14.947/2024.",
+  "tags": [
+   "cana-de-açúcar",
+   "Nordeste",
+   "apoio financeiro",
+   "renovação de frota",
+   "financiamento"
   ]
  },
  "285284": {
