@@ -22826,6 +22826,33 @@
    "Minas e Energia"
   ]
  },
+ "2620905": {
+  "assunto": "Relações Internacionais e Defesa",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "ac21d951907ecce2",
+  "gerado_em": "2026-10-29",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Aprova um acordo internacional assinado em Assunção, Paraguai, em 20 de julho de 2022",
+   "Envolve os Estados Partes do MERCOSUL e os Estados Associados",
+   "O tema do acordo é o reconhecimento mútuo de medidas de proteção a mulheres em situação de violência de gênero"
+  ],
+  "resumo": "Aprova o texto de um acordo entre os países do MERCOSUL e Estados Associados sobre o reconhecimento mútuo de medidas de proteção às mulheres em situação de violência de gênero. O acordo foi assinado em Assunção, no Paraguai, em 20 de julho de 2022.",
+  "tags": [
+   "MERCOSUL",
+   "violência contra a mulher",
+   "medidas protetivas",
+   "acordo internacional",
+   "violência de gênero"
+  ]
+ },
  "2620930": {
   "assunto": "Impostos e Economia",
   "assunto_secundario": null,
