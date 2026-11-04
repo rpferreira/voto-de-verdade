@@ -17305,6 +17305,33 @@
    "internet das coisas"
   ]
  },
+ "2475487": {
+  "assunto": "Saúde",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "f916bf5fa952e8f0",
+  "gerado_em": "2026-11-04",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Envolve exames de ultrassonografia morfológica",
+   "Os exames seriam oferecidos na rede pública de saúde",
+   "A ementa não detalha as regras de acesso ao exame"
+  ],
+  "resumo": "Trata da oferta de exames de ultrassonografia morfológica na rede pública de saúde. A ementa não detalha quem terá direito ao exame, em quais condições nem quais prazos ou regras serão aplicados.",
+  "tags": [
+   "ultrassom",
+   "exame",
+   "SUS",
+   "ultrassonografia morfológica",
+   "gestantes"
+  ]
+ },
  "2477340": {
   "assunto": "Tecnologia e Comunicação",
   "assunto_secundario": "Trabalho e Direitos",

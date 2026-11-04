@@ -153,5 +153,22 @@
   "erros": 0,
   "sem_saldo": false,
   "tarefa": "traducao"
+ },
+ {
+  "data": "2026-11-04T16:41:30",
+  "usd": 0.0151,
+  "tokens": {
+   "claude-sonnet-5-5": [
+    3554,
+    438
+   ],
+   "claude-haiku-4-5-20251001": [
+    2845,
+    158
+   ]
+  },
+  "feitos": 1,
+  "erros": 0,
+  "sem_saldo": false
  }
 ]
