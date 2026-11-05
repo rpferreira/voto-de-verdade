@@ -12038,6 +12038,32 @@
    "futebol"
   ]
  },
+ "2410357": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "374e2718c6a79adb",
+  "gerado_em": "2026-11-05",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera o Código Penal (Decreto-Lei nº 2.848/1940)",
+   "Trata do uso de drones no espaço aéreo de presídios",
+   "A ementa não detalha as regras ou penas"
+  ],
+  "resumo": "Muda o Código Penal para tratar do uso de drones no espaço aéreo dos presídios. A ementa não detalha qual será a regra, nem se haverá proibição ou pena.",
+  "tags": [
+   "drones",
+   "presídios",
+   "prisões",
+   "Código Penal"
+  ]
+ },
  "2410466": {
   "assunto": "Segurança Pública",
   "assunto_secundario": "Trabalho e Direitos",
@@ -19700,6 +19726,31 @@
    "quadro de pessoal"
   ]
  },
+ "2531613": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "b40b8644c9d72f48",
+  "gerado_em": "2026-11-05",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Institui o Dia Nacional da Consolidação da Independência do Brasil",
+   "A ementa não informa a data nem a forma de celebração"
+  ],
+  "resumo": "Cria o Dia Nacional da Consolidação da Independência do Brasil. A ementa não informa a data da comemoração nem detalha como ela será celebrada.",
+  "tags": [
+   "data comemorativa",
+   "dia nacional",
+   "independência",
+   "história do Brasil"
+  ]
+ },
  "2531924": {
   "assunto": "Administração Pública e Congresso",
   "assunto_secundario": "Tecnologia e Comunicação",
@@ -21369,6 +21420,34 @@
    "Câmara dos Deputados"
   ]
  },
+ "2584437": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Saúde",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "44d2ea678069e254",
+  "gerado_em": "2026-11-05",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Cria o PNAPE, programa de acompanhamento anual pediátrico, médico e emocional de crianças e adolescentes",
+   "Cita prevenção de violência, negligência, exploração, tráfico humano e abuso sexual",
+   "Prevê escuta ativa e periódica de crianças e adolescentes",
+   "Altera a Lei nº 8.069 de 1990"
+  ],
+  "resumo": "Cria o Programa Nacional de Acompanhamento Anual Pediátrico/Médico e Emocional/Psicossocial da Infância e Adolescência (PNAPE), chamado de Lei Augusto Cury. O Estado passaria a acompanhar todo ano o desenvolvimento de crianças e adolescentes, com escuta periódica, para prevenir violência, abuso sexual e outros danos. Altera a Lei nº 8.069 de 1990.",
+  "tags": [
+   "criança",
+   "adolescente",
+   "Lei Augusto Cury",
+   "abuso sexual",
+   "saúde mental"
+  ]
+ },
  "2585316": {
   "assunto": "Administração Pública e Congresso",
   "assunto_secundario": null,
@@ -22770,6 +22849,33 @@
    "psicopedagogia",
    "regulamentação da profissão",
    "profissão"
+  ]
+ },
+ "2617269": {
+  "assunto": "Tecnologia e Comunicação",
+  "assunto_secundario": "Infraestrutura e Transporte",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "17785855d6a74197",
+  "gerado_em": "2026-11-05",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata do compartilhamento de infraestrutura física aérea de distribuidoras de energia",
+   "O compartilhamento é com empresas de serviços de telecomunicações",
+   "Altera as Leis nº 9.427/1996, nº 9.472/1997 e nº 14.947/2024"
+  ],
+  "resumo": "Define regras para que empresas de distribuição de energia elétrica compartilhem a infraestrutura física aérea que possuem (como postes) com empresas de telecomunicações. Também muda três leis: a Lei nº 9.427/1996, a Lei nº 9.472/1997 e a Lei nº 14.947/2024.",
+  "tags": [
+   "postes",
+   "compartilhamento de infraestrutura",
+   "distribuidoras de energia",
+   "telecomunicações",
+   "internet"
   ]
  },
  "2617614": {
