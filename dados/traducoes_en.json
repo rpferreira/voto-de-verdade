@@ -7853,6 +7853,21 @@
 "football"
 ]
 },
+"2410357":{
+"h":"7fa7ad2a42ee7e5d",
+"resumo":"Changes the Penal Code to deal with the use of drones in the airspace of prisons. The official summary (ementa) does not detail what the rule will be, or whether there will be a ban or a penalty.",
+"pontos":[
+"Amends the Penal Code (Decree-Law No. 2.848/1940)",
+"Deals with the use of drones in prison airspace",
+"The official summary (ementa) does not detail the rules or penalties"
+],
+"tags":[
+"drones",
+"prisons",
+"jails",
+"Penal Code"
+]
+},
 "2410466":{
 "h":"91698157e6dcaa47",
 "resumo":"The bill changes the Penal Code and other laws to make femicide a crime with its own definition and increase its penalty. It also increases the penalty for other crimes committed against women because of their female sex and provides for other measures to prevent and combat violence against women.",
@@ -12417,6 +12432,20 @@
 "staff"
 ]
 },
+"2531613":{
+"h":"5cbc3ba80ac56a31",
+"resumo":"Creates the National Day of the Consolidation of Brazil's Independence. The official summary (ementa) does not give the date of the commemoration or detail how it will be celebrated.",
+"pontos":[
+"Establishes the National Day of the Consolidation of Brazil's Independence",
+"The official summary (ementa) does not give the date or the way it will be celebrated"
+],
+"tags":[
+"commemorative date",
+"national day",
+"independence",
+"Brazilian history"
+]
+},
 "2531924":{
 "h":"dc2695cb22885853",
 "resumo":"The bill changes the Access to Information Law and the Administrative Misconduct Law to prohibit secrecy being placed on information about spending by the Federal Public Administration. The details of how this works are specified in the text of the proposal.",
@@ -13361,6 +13390,23 @@
 "Chamber of Deputies"
 ]
 },
+"2584437":{
+"h":"d51dd6e27509e246",
+"resumo":"Creates the National Program for Annual Pediatric/Medical and Emotional/Psychosocial Monitoring of Childhood and Adolescence (PNAPE), called the Augusto Cury Law. The State would monitor the development of children and adolescents every year, with periodic listening, to prevent violence, sexual abuse and other harm. Amends Law No. 8.069 of 1990.",
+"pontos":[
+"Creates the PNAPE, a program of annual pediatric, medical and emotional monitoring of children and adolescents",
+"Mentions prevention of violence, neglect, exploitation, human trafficking and sexual abuse",
+"Provides for active and periodic listening to children and adolescents",
+"Amends Law No. 8.069 of 1990"
+],
+"tags":[
+"child",
+"adolescent",
+"Augusto Cury Law",
+"sexual abuse",
+"mental health"
+]
+},
 "2585316":{
 "h":"e6e9843b1b532a9d",
 "resumo":"The bill creates permanent (effective) positions in the Ministry of Education and the Ministry of Management and Innovation in Public Services. Effective positions are filled through public competitive exams, for civil servants with permanent careers. The official summary (ementa) does not say how many positions there are or what duties they will have.",
@@ -14187,6 +14233,22 @@
 "psychopedagogy",
 "regulation of the profession",
 "profession"
+]
+},
+"2617269":{
+"h":"5df95faec49d5b26",
+"resumo":"Sets rules for electric power distribution companies to share the overhead physical infrastructure they own (such as poles) with telecommunications companies. It also changes three laws: Law No. 9.427/1996, Law No. 9.472/1997 and Law No. 14.947/2024.",
+"pontos":[
+"Deals with the sharing of overhead physical infrastructure of power distribution companies",
+"The sharing is with telecommunications service companies",
+"Amends Laws No. 9.427/1996, No. 9.472/1997 and No. 14.947/2024"
+],
+"tags":[
+"poles",
+"infrastructure sharing",
+"power distributors",
+"telecommunications",
+"internet"
 ]
 },
 "2617614":{
@@ -16488,6 +16550,10 @@
 "h":"a43bb2058e70b77c",
 "descricao":"Approved Bill No. 5.867 of 2023."
 },
+"2410357-44":{
+"h":"681ebd534ec7cf28",
+"descricao":"Approved the Substitute Sub-amendment to Bill No. 5.902, of 2023, adopted by the rapporteur of the Committee on Constitution and Justice and Citizenship."
+},
 "2410466-60":{
 "h":"a44268e74323114e",
 "descricao":"Approved Bill No. 4.266 of 2023, except for the separate vote."
@@ -17607,6 +17673,10 @@
 "h":"f3ee1534249f433e",
 "descricao":"Approved: Bill No. 3.181 of 2025, except for the separate votes. Yes: 210; No: 166; Total: 376."
 },
+"2531613-28":{
+"h":"a0c3a75826834279",
+"descricao":"Approved Bill No. 3.220, of 2025."
+},
 "2531924-53":{
 "h":"b7f05b3d36cdec30",
 "descricao":"Approved: the substitute text to Bill No. 3.240 of 2025, as adopted by the rapporteur of the Committee on Public Administration and Civil Service, except for the separate vote."
@@ -17851,6 +17921,10 @@
 "h":"170ebd9d2fdc3593",
 "descricao":"Approved: the substitute text to Draft Resolution No. 80 of 2025, as adopted by the rapporteur of the Governing Board of the Chamber of Deputies."
 },
+"2584437-50":{
+"h":"1de84b9035823c00",
+"descricao":"Approved the Substitute Text to Bill No. 5.815, of 2025, adopted by the rapporteur of the Health Committee."
+},
 "2585316-39":{
 "h":"e6060b7ea80fb0b1",
 "descricao":"Approved: the substitute text to Bill No. 5.874 of 2025, as adopted by the rapporteur of the Committee on Public Administration and Civil Service, except for the separate vote."
@@ -18068,6 +18142,10 @@
 "2616937-26":{
 "h":"d7c4a1c8cdd8a057",
 "descricao":"Approved Bill No. 1.675 of 2023."
+},
+"2617269-32":{
+"h":"d9cdc49ad6f5b7e9",
+"descricao":"Approved the Substitute Text to Bill No. 3.220, of 2019, adopted by the rapporteur of the Communication Committee."
 },
 "2617614-20":{
 "h":"0d0b1bb4676f0c06",
