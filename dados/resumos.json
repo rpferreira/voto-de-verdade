@@ -2544,6 +2544,36 @@
    "descarbonização"
   ]
  },
+ "2238560": {
+  "assunto": "Saúde",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [
+   "A ementa não detalha quais ações são previstas nem como serão executadas",
+   "A ementa não detalha o conteúdo das ações"
+  ],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "9ae78942338577cc",
+  "gerado_em": "2026-11-06",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Altera a Lei nº 8.080, de 1990",
+   "Trata de ações de educação em saúde",
+   "As ações são executadas por profissionais do SUS",
+   "A ementa não detalha o conteúdo das ações"
+  ],
+  "resumo": "Muda a Lei nº 8.080/1990, que organiza o Sistema Único de Saúde (SUS), para tratar de ações de educação em saúde feitas pelos profissionais do SUS. A ementa não detalha quais ações são previstas nem como serão executadas.",
+  "tags": [
+   "SUS",
+   "educação em saúde",
+   "Lei 8.080",
+   "profissionais de saúde"
+  ]
+ },
  "2238631": {
   "assunto": "Segurança Pública",
   "assunto_secundario": "Tecnologia e Comunicação",
@@ -10899,6 +10929,33 @@
    "Jataí"
   ]
  },
+ "2389679": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": "Administração Pública e Congresso",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "e5f9ac5ea2e6542f",
+  "gerado_em": "2026-11-06",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Define o nome \"José Richa\" para um túnel da Câmara dos Deputados",
+   "O túnel conecta os anexos II e IV da Câmara",
+   "É um projeto de resolução, norma interna da Câmara"
+  ],
+  "resumo": "Dá o nome de José Richa ao túnel que liga os anexos II e IV da Câmara dos Deputados. A ementa não detalha quem foi a pessoa homenageada nem os motivos da escolha.",
+  "tags": [
+   "homenagem",
+   "túnel",
+   "José Richa",
+   "anexos da Câmara",
+   "denominação"
+  ]
+ },
  "2390091": {
   "assunto": "Cultura, Esporte e Turismo",
   "assunto_secundario": "Trabalho e Direitos",
@@ -12201,6 +12258,33 @@
    "hora extra",
    "jornada de trabalho",
    "feriado"
+  ]
+ },
+ "2412504": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Cultura, Esporte e Turismo",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "72c232800a954172",
+  "gerado_em": "2026-11-06",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata de reprodução adaptada de obras",
+   "Voltado a pessoas com deficiência intelectual",
+   "A ementa não detalha as regras da adaptação"
+  ],
+  "resumo": "Permite a reprodução adaptada de obras para pessoas com deficiência intelectual. A ementa não detalha quais tipos de obra entram, quem pode fazer a adaptação nem em que condições.",
+  "tags": [
+   "deficiência intelectual",
+   "obras adaptadas",
+   "acessibilidade",
+   "direitos autorais",
+   "leitura fácil"
   ]
  },
  "2413137": {
@@ -23525,6 +23609,32 @@
    "FIFA 2027",
    "futebol feminino",
    "Lei 15.421"
+  ]
+ },
+ "2637478": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "de5487de98417bca",
+  "gerado_em": "2026-11-06",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Trata do artesanato tradicional do Maranhão",
+   "Reconhece esse artesanato como manifestação da cultura nacional",
+   "A ementa não cita outras medidas além do reconhecimento"
+  ],
+  "resumo": "Reconhece o artesanato tradicional do Estado do Maranhão como manifestação da cultura nacional. A ementa não detalha outras medidas, como apoio financeiro ou regras específicas para os artesãos.",
+  "tags": [
+   "artesanato",
+   "Maranhão",
+   "cultura popular",
+   "reconhecimento cultural"
   ]
  },
  "2637883": {
