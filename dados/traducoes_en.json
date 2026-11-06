@@ -2209,6 +2209,22 @@
 "decarbonization"
 ]
 },
+"2238560":{
+"h":"a1660b2cf6f5d7d1",
+"resumo":"Changes Law No. 8.080/1990, which organizes the Unified Health System (SUS), to deal with health education actions carried out by SUS professionals. The official summary (ementa) does not detail which actions are planned or how they will be carried out.",
+"pontos":[
+"Amends Law No. 8.080 of 1990",
+"Deals with health education actions",
+"The actions are carried out by SUS professionals",
+"The official summary (ementa) does not detail the content of the actions"
+],
+"tags":[
+"SUS",
+"health education",
+"Law 8.080",
+"health professionals"
+]
+},
 "2238631":{
 "h":"d8080cb38992e9fb",
 "resumo":"The bill changes Law No. 12.737/2012, known as the Carolina Dieckmann Law. The goal is to prevent the actions of harassers who capture images without authorization using digital photographic equipment. The official summary (ementa) does not detail which measures or penalties will be adopted.",
@@ -7180,6 +7196,22 @@
 "Jataí"
 ]
 },
+"2389679":{
+"h":"9a1e7a723061e0cd",
+"resumo":"Gives the name José Richa to the tunnel that connects annexes II and IV of the Chamber of Deputies. The official summary (ementa) does not detail who the honored person was or the reasons for the choice.",
+"pontos":[
+"Sets the name \"José Richa\" for a tunnel of the Chamber of Deputies",
+"The tunnel connects annexes II and IV of the Chamber",
+"It is a draft resolution, an internal rule of the Chamber"
+],
+"tags":[
+"tribute",
+"tunnel",
+"José Richa",
+"Chamber annexes",
+"naming"
+]
+},
 "2390091":{
 "h":"25499109cd151434",
 "resumo":"Creates the National Day of Women in Construction, to be celebrated every year on March 25. The official summary (ementa) does not detail any measures other than creating the commemorative date.",
@@ -7950,6 +7982,22 @@
 "overtime",
 "working hours",
 "holiday"
+]
+},
+"2412504":{
+"h":"014f93e9d477e210",
+"resumo":"Allows the adapted reproduction of works for people with intellectual disabilities. The official summary (ementa) does not detail which types of works are included, who can make the adaptation, or under what conditions.",
+"pontos":[
+"Deals with the adapted reproduction of works",
+"Aimed at people with intellectual disabilities",
+"The official summary (ementa) does not detail the rules for the adaptation"
+],
+"tags":[
+"intellectual disability",
+"adapted works",
+"accessibility",
+"copyright",
+"easy reading"
 ]
 },
 "2413137":{
@@ -14635,6 +14683,21 @@
 "Law 15.421"
 ]
 },
+"2637478":{
+"h":"45f5aa6912e1c36b",
+"resumo":"Recognizes the traditional handicrafts of the State of Maranhão as an expression of national culture. The official summary (ementa) does not detail other measures, such as financial support or specific rules for artisans.",
+"pontos":[
+"Deals with the traditional handicrafts of Maranhão",
+"Recognizes these handicrafts as an expression of national culture",
+"The official summary (ementa) does not mention any measures other than the recognition"
+],
+"tags":[
+"handicrafts",
+"Maranhão",
+"folk culture",
+"cultural recognition"
+]
+},
 "2637883":{
 "h":"ba01eadd766c6486",
 "resumo":"The bill amends two tax laws to set the rate of the Social Contribution on Net Profit (CSLL) for local reinsurance companies. It also removes the limit on offsetting tax losses and negative calculation bases in reinsurance and retrocession activities.",
@@ -15190,6 +15253,10 @@
 "2238434-80":{
 "h":"c0fd766bdc22a282",
 "descricao":"The global substitute sub-amendment to Bill No. 528 of 2020, adopted by the rapporteur of the Mines and Energy Committee, was approved, except for the separate votes. Yes: 429; No: 19; Abstention: 3; Total: 451."
+},
+"2238560-42":{
+"h":"6e56b08de17e99c9",
+"descricao":"Approved Bill No. 565, of 2020."
 },
 "2238631-90":{
 "h":"e7650e7f95b55cdf",
@@ -16386,6 +16453,10 @@
 "h":"d03cf24ad266ece6",
 "descricao":"Approved Bill No. 4.562 of 2023."
 },
+"2389679-27":{
+"h":"454361fb55cb53f1",
+"descricao":"Approved Draft Resolution No. 113, of 2023."
+},
 "2390091-39":{
 "h":"c8c305c364785476",
 "descricao":"Approved Bill No. 4.638 of 2023."
@@ -16573,6 +16644,10 @@
 "2412181-88":{
 "h":"3fe2d0c406d36a06",
 "descricao":"Approved the Substitute Text to Bill No. 5.967 of 2023, adopted by the rapporteur of the Committee on Public Safety and the Fight Against Organized Crime."
+},
+"2412504-60":{
+"h":"833d7947e3135136",
+"descricao":"Approved the Substitute Text to Bill No. 5.974, of 2023, from the Committee on the Defense of the Rights of Persons with Disabilities."
 },
 "2413137-27":{
 "h":"a0bb513f9e1b0206",
@@ -18242,6 +18317,10 @@
 "2637279-29":{
 "h":"2f4f1d13713f2112",
 "descricao":"Approved the Substitute Text to Bill No. 3.481 of 2026, adopted by the rapporteur of the Education Committee."
+},
+"2637478-26":{
+"h":"3b22c701809477ad",
+"descricao":"Approved Bill No. 3.507, of 2026."
 },
 "2637883-17":{
 "h":"d72e8d1dd5fab09f",
