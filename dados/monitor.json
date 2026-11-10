@@ -624,6 +624,28 @@
    "avisos": [
     "Coleta: 1 projetos sem busca única (veja o relatório)."
    ]
+  },
+  {
+   "data": "2026-11-10",
+   "contagens": {
+    "votacoes": 960,
+    "projetos": 920,
+    "deputados": 644,
+    "nominais": 217,
+    "votos": 90583
+   },
+   "pendentes": 1,
+   "pendentes_en": 0,
+   "pct_incertos": 11.4,
+   "gerado_em": "2026-11-09",
+   "custo_mes_usd": 0.22,
+   "erros": [
+    "A atualização diária terminou com resultado 'failure'. Veja o log: https://github.com/rpferreira/voto-de-verdade/actions/runs/42856802606",
+    "A última coleta registrou problemas: 1 janela(s) de datas incompletas; lista de deputados não atualizada; o número de votações de mérito caiu de 960 para 947."
+   ],
+   "avisos": [
+    "Coleta: 1 projetos sem busca única (veja o relatório)."
+   ]
   }
  ]
 }
