@@ -1762,6 +1762,32 @@
    "programa nacional"
   ]
  },
+ "2204495": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "ffb39ea657d9cb85",
+  "gerado_em": "2026-11-11",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Institui o Dia Nacional do Autocuidado",
+   "A data entra no calendário nacional",
+   "A ementa não informa em que dia será comemorado"
+  ],
+  "resumo": "Cria o \"Dia Nacional do Autocuidado\" no calendário nacional. A ementa não detalha a data da comemoração nem se haverá ações específicas ligadas ao dia.",
+  "tags": [
+   "dia nacional",
+   "autocuidado",
+   "data comemorativa",
+   "calendário"
+  ]
+ },
  "2205254": {
   "assunto": "Impostos e Economia",
   "assunto_secundario": "Administração Pública e Congresso",
@@ -16843,6 +16869,33 @@
    "segurança alimentar"
   ]
  },
+ "2465246": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": "Infraestrutura e Transporte",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "32e7eccec75dc39e",
+  "gerado_em": "2026-11-11",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Dá nome a um viaduto já existente na BR-343",
+   "Local: Ladeira do Uruguai, Zona Leste de Teresina (PI)",
+   "Nome escolhido: Viaduto Severo Eulálio Filho"
+  ],
+  "resumo": "Dá o nome de \"Viaduto Severo Eulálio Filho\" ao viaduto da BR-343, na Ladeira do Uruguai, Zona Leste de Teresina, no Piauí. A ementa não detalha quem foi a pessoa homenageada.",
+  "tags": [
+   "nome de viaduto",
+   "BR-343",
+   "Teresina",
+   "Piauí",
+   "homenagem"
+  ]
+ },
  "2466104": {
   "assunto": "Impostos e Economia",
   "assunto_secundario": "Administração Pública e Congresso",
@@ -17440,6 +17493,33 @@
    "SUS",
    "ultrassonografia morfológica",
    "gestantes"
+  ]
+ },
+ "2476576": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Administração Pública e Congresso",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "f588b5920f3031d4",
+  "gerado_em": "2026-11-11",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Acrescenta o § 1º ao artigo 299 do Código Eleitoral",
+   "Cria causa de aumento de pena para o crime do artigo 299",
+   "O aumento vale quando o crime é cometido por associações ou organizações criminosas"
+  ],
+  "resumo": "Muda o Código Eleitoral (Lei nº 4.737/1965) para aumentar a pena do crime previsto no artigo 299 quando ele for cometido por meio de associações ou organizações criminosas. Para isso, acrescenta um § 1º a esse artigo.",
+  "tags": [
+   "Código Eleitoral",
+   "crime eleitoral",
+   "organização criminosa",
+   "aumento de pena",
+   "artigo 299"
   ]
  },
  "2477340": {
@@ -20441,6 +20521,34 @@
    "ONU"
   ]
  },
+ "2551091": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [
+   "É uma homenagem simbólica",
+   "sem criação de regras ou despesas descritas na ementa"
+  ],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "media",
+  "entrada": "ebb5531fd9359b56",
+  "gerado_em": "2026-11-11",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Inclui Padre Inácio de Sousa Rolim no Livro dos Heróis e Heroínas da Pátria",
+   "É uma homenagem simbólica, sem criação de regras ou despesas descritas na ementa"
+  ],
+  "resumo": "Inscreve o nome de Padre Inácio de Sousa Rolim no Livro dos Heróis e Heroínas da Pátria, que é um registro de homenagem a pessoas reconhecidas pelo país. A ementa não detalha quem foi ele nem os motivos da homenagem.",
+  "tags": [
+   "homenagem",
+   "Padre Inácio de Sousa Rolim",
+   "Livro dos Heróis",
+   "herói nacional"
+  ]
+ },
  "2551307": {
   "assunto": "Segurança Pública",
   "assunto_secundario": null,
@@ -20708,6 +20816,33 @@
    "Auxílio Gás do Povo",
    "benefício social",
    "medida provisória"
+  ]
+ },
+ "2557714": {
+  "assunto": "Infraestrutura e Transporte",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "ed8927002531283d",
+  "gerado_em": "2026-11-11",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "as palavras da ementa sugerem Segurança Pública",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 14.312, de 2022, do Programa Habite Seguro",
+   "Muda os critérios para conceder subvenções econômicas",
+   "Cria nova hipótese de acesso a crédito imobiliário no programa"
+  ],
+  "resumo": "Muda a lei que criou o Programa Habite Seguro. Altera os critérios para dar subvenções econômicas (ajuda financeira do governo) e cria uma nova situação em que a pessoa pode ter acesso a crédito imobiliário no programa. A ementa não detalha quais são esses critérios nem essa nova situação.",
+  "tags": [
+   "Habite Seguro",
+   "crédito imobiliário",
+   "subvenção",
+   "moradia",
+   "financiamento habitacional"
   ]
  },
  "2558704": {
@@ -23720,6 +23855,64 @@
    "Cidade Ocidental",
    "Goiás",
    "Jardim da Imaculada"
+  ]
+ },
+ "2639957": {
+  "assunto": "Agropecuária e Campo",
+  "assunto_secundario": "Impostos e Economia",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [
+   "O resumo usa o termo 'renegociar dívidas' quando o texto original especifica 'composição de dívidas para liquidação ou amortização de operações', que são conceitos distintos"
+  ],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "media",
+  "entrada": "fcf5f4f20fa02479",
+  "gerado_em": "2026-11-11",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": "uma conferência automática achou partes do resumo sem apoio no texto original",
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Autoriza linhas de crédito para compor dívidas de crédito rural e de Cédulas de Produto Rural",
+   "Autoriza a União a participar de fundo garantidor de operações de crédito rural",
+   "O fundo atende produtores rurais afetados por eventos climáticos adversos",
+   "Muda a Medida Provisória 1359/2026 e a Lei 11.540/2007"
+  ],
+  "resumo": "Autoriza a criação de linhas de crédito para renegociar dívidas de crédito rural e de Cédulas de Produto Rural (CPR). Também autoriza a União a participar de um fundo garantidor que cobre operações de crédito rural de produtores afetados por eventos climáticos adversos.",
+  "tags": [
+   "dívidas rurais",
+   "crédito rural",
+   "CPR",
+   "seca",
+   "fundo garantidor"
+  ]
+ },
+ "2641546": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": "Relações Internacionais e Defesa",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "b244c9b2ca4a5d2e",
+  "gerado_em": "2026-11-11",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 15.473, de 22 de julho de 2026",
+   "Essa lei mexe nas leis nº 9.818/1999 e nº 12.712/2012",
+   "Tema: sistema oficial de apoio ao crédito à exportação",
+   "A ementa não explica as medidas concretas"
+  ],
+  "resumo": "Muda a Lei nº 15.473/2026, que já havia alterado as leis nº 9.818/1999 e nº 12.712/2012, sobre o sistema brasileiro de apoio oficial ao crédito à exportação. A ementa não detalha quais mudanças são feitas.",
+  "tags": [
+   "crédito à exportação",
+   "exportações",
+   "comércio exterior",
+   "medida provisória",
+   "financiamento"
   ]
  },
  "2642167": {
