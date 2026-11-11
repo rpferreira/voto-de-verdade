@@ -1745,6 +1745,21 @@
 "national program"
 ]
 },
+"2204495":{
+"h":"2573feebb9270190",
+"resumo":"Creates the \"National Self-Care Day\" in the national calendar. The official summary (ementa) does not detail the date of the commemoration or whether there will be specific actions tied to the day.",
+"pontos":[
+"Establishes the National Self-Care Day",
+"The date is added to the national calendar",
+"The official summary (ementa) does not say on which day it will be commemorated"
+],
+"tags":[
+"national day",
+"self-care",
+"commemorative date",
+"calendar"
+]
+},
 "2205254":{
 "h":"152e2bab31897d60",
 "resumo":"The bill changes the Fiscal Responsibility Law to prevent the government from limiting the commitment of funds (setting money aside to spend) and the financial movement of expenses of the National Institute of Industrial Property (INPI). Thus, the agency's funds would not be included in spending cuts.",
@@ -10714,6 +10729,22 @@
 "food security"
 ]
 },
+"2465246":{
+"h":"8a0c5d9d453b34ec",
+"resumo":"Names the BR-343 viaduct at Ladeira do Uruguai, in the East Zone of Teresina, Piauí, \"Viaduto Severo Eulálio Filho.\" The official summary (ementa) does not detail who the honored person was.",
+"pontos":[
+"Names an already existing viaduct on the BR-343",
+"Location: Ladeira do Uruguai, East Zone of Teresina (PI)",
+"Name chosen: Viaduto Severo Eulálio Filho"
+],
+"tags":[
+"viaduct name",
+"BR-343",
+"Teresina",
+"Piauí",
+"tribute"
+]
+},
 "2466104":{
 "h":"11c294a97fc0268c",
 "resumo":"The bill deals with how deputies and senators propose and carry out parliamentary amendments to the annual budget law, which sets the government's revenues and expenses for the year. The official summary (ementa) does not detail what the rules are or what other topics are included.",
@@ -11068,6 +11099,22 @@
 "SUS",
 "morphological ultrasound",
 "pregnant women"
+]
+},
+"2476576":{
+"h":"f690a24af3b8bc92",
+"resumo":"Changes the Electoral Code (Law No. 4.737/1965) to increase the penalty for the crime provided for in article 299 when it is committed through criminal associations or organizations. To do this, it adds a § 1º to that article.",
+"pontos":[
+"Adds § 1º to article 299 of the Electoral Code",
+"Creates a penalty increase for the crime in article 299",
+"The increase applies when the crime is committed by criminal associations or organizations"
+],
+"tags":[
+"Electoral Code",
+"electoral crime",
+"criminal organization",
+"penalty increase",
+"article 299"
 ]
 },
 "2477340":{
@@ -12837,6 +12884,21 @@
 "UN"
 ]
 },
+"2551091":{
+"h":"9c898f842d270d03",
+"resumo":"Inscribes the name of Padre Inácio de Sousa Rolim in the Book of Heroes and Heroines of the Homeland, which is a record honoring people recognized by the country. The official summary (ementa) does not detail who he was or the reasons for the honor.",
+"pontos":[
+"Includes Padre Inácio de Sousa Rolim in the Book of Heroes and Heroines of the Homeland",
+"It is a symbolic honor, with no rules or expenses described in the official summary (ementa)"
+],
+"tags":[
+"tribute",
+"Padre Inácio de Sousa Rolim",
+"Book of Heroes",
+"national hero"
+],
+"aviso_resumo":"This summary was written by artificial intelligence and may contain errors: an automatic check found parts of the summary without support in the original text."
+},
 "2551307":{
 "h":"1eee108336bdeb03",
 "resumo":"The bill changes the Penal Code and the Heinous Crimes Law to increase the penalties for homicide and bodily injury when the victim is a state agent. The official summary (ementa) also indicates that the text contains other provisions, without detailing them.",
@@ -12980,6 +13042,23 @@
 "provisional measure"
 ],
 "aviso_assunto":"The subject of this bill was chosen by artificial intelligence and may be wrong: The bill covers a social benefit (Auxílio Gás), but it can also be seen as an energy and economy topic."
+},
+"2557714":{
+"h":"1776178e389f8996",
+"resumo":"Changes the law that created the Habite Seguro Program. It changes the criteria for granting economic subsidies (financial aid from the government) and creates a new situation in which a person can access real estate credit under the program. The official summary (ementa) does not detail what these criteria or this new situation are.",
+"pontos":[
+"Amends Law No. 14.312 of 2022, on the Habite Seguro Program",
+"Changes the criteria for granting economic subsidies",
+"Creates a new case of access to real estate credit under the program"
+],
+"tags":[
+"Habite Seguro",
+"real estate credit",
+"subsidy",
+"housing",
+"housing finance"
+],
+"aviso_assunto":"The subject of this bill was chosen by artificial intelligence and may be wrong: the words in the official summary (ementa) suggest Public Safety."
 },
 "2558704":{
 "h":"7b69bc147bbfb916",
@@ -14746,6 +14825,41 @@
 "Cidade Ocidental",
 "Goiás",
 "Jardim da Imaculada"
+]
+},
+"2639957":{
+"h":"26a53d0a2846c617",
+"resumo":"Authorizes the creation of credit lines to renegotiate rural credit debts and Rural Product Notes (CPR) debts. It also authorizes the federal government to take part in a guarantee fund that covers rural credit operations of producers affected by adverse weather events.",
+"pontos":[
+"Authorizes credit lines to settle rural credit debts and Rural Product Notes debts",
+"Authorizes the federal government to take part in a guarantee fund for rural credit operations",
+"The fund serves rural producers affected by adverse weather events",
+"Changes Provisional Measure 1359/2026 and Law 11.540/2007"
+],
+"tags":[
+"rural debts",
+"rural credit",
+"CPR",
+"drought",
+"guarantee fund"
+],
+"aviso_resumo":"This summary was written by artificial intelligence and may contain errors: an automatic check found parts of the summary without support in the original text."
+},
+"2641546":{
+"h":"aaec6c130e5befda",
+"resumo":"Changes Law No. 15.473/2026, which had already amended Laws No. 9.818/1999 and No. 12.712/2012, on the Brazilian system of official support for export credit. The official summary (ementa) does not detail which changes are made.",
+"pontos":[
+"Amends Law No. 15.473 of July 22, 2026",
+"That law changes Laws No. 9.818/1999 and No. 12.712/2012",
+"Subject: official system of support for export credit",
+"The official summary (ementa) does not explain the specific measures"
+],
+"tags":[
+"export credit",
+"exports",
+"foreign trade",
+"provisional measure",
+"financing"
 ]
 },
 "2642167":{
@@ -17311,6 +17425,10 @@
 "h":"83da7944b30faa3e",
 "descricao":"The Substitute Text to Bill No. 2.874 of 2019, adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship, was approved."
 },
+"2465246-61":{
+"h":"2e7ab28fcf4f3b97",
+"descricao":"Approved Bill No. 2.829, of 2024."
+},
 "2466104-39":{
 "h":"10c578bf8c569619",
 "descricao":"The Global Substitute Sub-amendment to Complementary Bill No. 175 of 2024, adopted by the rapporteur of the Committee on Public Administration and Service, was approved, except for the separate votes. Yes: 330; No: 74; Abstention: 2; Total: 406."
@@ -17402,6 +17520,10 @@
 "2475487-76":{
 "h":"b6b12f7bb93d0456",
 "descricao":"Approved the Substitute Text to Bill No. 4.674, of 2024, adopted by the rapporteur of the Health Committee."
+},
+"2476576-30":{
+"h":"de37ecf41089a323",
+"descricao":"Approved the Substitute Text to Bill No. 4.724, of 2024, from the Committee on Constitution, Justice and Citizenship."
 },
 "2477340-69":{
 "h":"ce0c106400f521fc",
@@ -17844,6 +17966,10 @@
 "h":"4606a35db4c07fa5",
 "descricao":"Approved: the substitute text to Bill No. 4.028 of 2025, as adopted by the rapporteur of the Committee on Education."
 },
+"2551091-48":{
+"h":"75045535bbceb71e",
+"descricao":"Approved Bill No. 4.159, of 2025."
+},
 "2551307-35":{
 "h":"e7342149143f0665",
 "descricao":"Approved: the substitute text to Bill No. 4.176 of 2025, as adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship."
@@ -17883,6 +18009,10 @@
 "2557414-32":{
 "h":"805ef18eb40c0938",
 "descricao":"Approved: Provisional Measure No. 1.313 of 2025, in the form of the conversion bill, except for the separate votes. Yes: 415; No: 29; Abstention: 2; Total: 446."
+},
+"2557714-58":{
+"h":"fed62b6b73f22b9c",
+"descricao":"Approved the Substitute Text to Bill No. 4.480, of 2025, adopted by the rapporteur of the Committee on Public Safety and Combating Organized Crime."
 },
 "2558704-31":{
 "h":"2e10b8d5a76d2ca8",
@@ -18334,6 +18464,14 @@
 "h":"c062ac179d9b0d21",
 "descricao":"Approved Bill No. 3.710 of 2026."
 },
+"2639957-18":{
+"h":"6b8759d13d2f79fd",
+"descricao":"Approved Provisional Measure No. 1.376 of 2026, in the form of the Conversion Bill."
+},
+"2641546-18":{
+"h":"79b3e3ed07497a3c",
+"descricao":"Approved Provisional Measure No. 1.379 of 2026, in the form of the Conversion Bill."
+},
 "2642167-20":{
 "h":"eae1ac3a6b4f4d45",
 "descricao":"Approved Bill No. 4.921 of 2026."
@@ -18544,6 +18682,10 @@
 "h":"68d79a034e7521d7",
 "descricao":"Approved, in second round, Constitutional Amendment Proposal No. 45 of 2019, except for the separate votes. Yes: 375; No: 113; Abstention: 3; Total: 491.",
 "aviso":"This vote was classified automatically and may be wrong: the search found 2 bills with the number PEC 45/2019; we chose the most recent one that had already been submitted on the date of the vote."
+},
+"2204495-106":{
+"h":"ef871993e5b5a772",
+"descricao":"Approved the Federal Senate's Substitute Text to Bill No. 3.099, of 2019."
 },
 "2225224-117":{
 "h":"b55560dca2f4a049",
