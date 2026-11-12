@@ -3140,6 +3140,31 @@
    "relações bilaterais"
   ]
  },
+ "2270540": {
+  "assunto": "Saúde",
+  "assunto_secundario": "Educação",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "035d6169f3146f32",
+  "gerado_em": "2026-11-12",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Cria uma política nacional para a residência em área profissional da saúde",
+   "A ementa não explica regras, requisitos ou funcionamento da residência"
+  ],
+  "resumo": "Cria a Política Nacional de Residência em Área Profissional da Saúde. A ementa não detalha como a residência vai funcionar, quem poderá participar nem quais serão as regras de cada programa.",
+  "tags": [
+   "residência em saúde",
+   "residência multiprofissional",
+   "profissionais de saúde",
+   "formação profissional"
+  ]
+ },
  "2270800": {
   "assunto": "Administração Pública e Congresso",
   "assunto_secundario": null,
@@ -19373,6 +19398,33 @@
    "R$ 520 milhões"
   ]
  },
+ "2515534": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Meio Ambiente",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "da557834795d9925",
+  "gerado_em": "2026-11-12",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 8.072/1990, a Lei dos Crimes Hediondos",
+   "Atinge o crime de maus-tratos aos animais",
+   "Vale quando o crime resultar na morte do animal"
+  ],
+  "resumo": "Muda a Lei dos Crimes Hediondos (Lei nº 8.072/1990) para incluir o crime de maus-tratos aos animais na lista de crimes hediondos quando o animal morrer. Crimes hediondos são os que a lei trata com regras mais rígidas.",
+  "tags": [
+   "maus-tratos",
+   "animais",
+   "crime hediondo",
+   "pena",
+   "proteção animal"
+  ]
+ },
  "2515648": {
   "assunto": "Outros",
   "assunto_secundario": null,
@@ -22337,6 +22389,33 @@
    "RETAD"
   ]
  },
+ "2602370": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "aed94ac6efc1b0c9",
+  "gerado_em": "2026-11-12",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O foco pode ser lido como direitos da pessoa idosa ou como regras do Código Civil sobre interdição e responsabilidade",
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera o Código Civil (Lei nº 10.406/2002)",
+   "Altera o Estatuto da Pessoa Idosa (Lei nº 10.741/2003)",
+   "Tema: responsabilização por interdição abusiva"
+  ],
+  "resumo": "Muda o Código Civil e o Estatuto da Pessoa Idosa para tratar da responsabilização por interdição abusiva. A ementa não detalha quem seria responsabilizado, nem quais seriam as consequências.",
+  "tags": [
+   "interdição",
+   "curatela",
+   "idosos",
+   "Código Civil",
+   "responsabilidade"
+  ]
+ },
  "2603272": {
   "assunto": "Administração Pública e Congresso",
   "assunto_secundario": "Relações Internacionais e Defesa",
@@ -23391,6 +23470,33 @@
    "medida provisória",
    "orçamento",
    "Integração e Desenvolvimento Regional"
+  ]
+ },
+ "2629310": {
+  "assunto": "Relações Internacionais e Defesa",
+  "assunto_secundario": "Meio Ambiente",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "db1860f3bb88d5ea",
+  "gerado_em": "2026-11-12",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Trata da Convenção de Hong Kong de 2009 (HKC)",
+   "O tema da convenção é a reciclagem segura e ambientalmente adequada de navios",
+   "Tem como finalidade a adesão do Brasil ao acordo"
+  ],
+  "resumo": "Aprova o texto da Convenção Internacional de Hong Kong de 2009, sobre a reciclagem segura e ambientalmente adequada de navios. A aprovação do texto serve para que o Brasil possa aderir a esse acordo internacional.",
+  "tags": [
+   "Convenção de Hong Kong",
+   "reciclagem de navios",
+   "tratado internacional",
+   "HKC",
+   "adesão do Brasil"
   ]
  },
  "2629561": {
