@@ -2560,6 +2560,20 @@
 "bilateral relations"
 ]
 },
+"2270540":{
+"h":"40599b6dc47d673f",
+"resumo":"Creates the National Policy on Residency in Health Professional Areas. The official summary (ementa) does not say how the residency will work, who will be able to take part, or what the rules of each program will be.",
+"pontos":[
+"Creates a national policy for residency in health professional areas",
+"The official summary (ementa) does not explain the rules, requirements or operation of the residency"
+],
+"tags":[
+"health residency",
+"multiprofessional residency",
+"health professionals",
+"professional training"
+]
+},
 "2270800":{
 "h":"122054b5969d319f",
 "resumo":"Constitutional amendment proposal on parliamentary prerogatives, that is, special rules tied to the exercise of the mandate of deputies and senators. It amends articles 14, 27, 53, 102 and 105. The official summary (ementa) does not detail the content of each change.",
@@ -12220,6 +12234,22 @@
 "R$ 520 million"
 ]
 },
+"2515534":{
+"h":"de0cff19c915aad4",
+"resumo":"Changes the Heinous Crimes Law (Law No. 8.072/1990) to include the crime of animal cruelty in the list of heinous crimes when the animal dies. Heinous crimes are those that the law treats with stricter rules.",
+"pontos":[
+"Amends Law No. 8.072/1990, the Heinous Crimes Law",
+"Covers the crime of animal cruelty",
+"Applies when the crime results in the animal's death"
+],
+"tags":[
+"cruelty",
+"animals",
+"heinous crime",
+"penalty",
+"animal protection"
+]
+},
 "2515648":{
 "h":"bc80d942d5900512",
 "resumo":"The bill suspends the effects of Decree No. 12.466 of May 22, 2025, using the power of Congress set out in art. 49, V, of the Constitution. The official summary (ementa) does not say what the decree contains or why it is being suspended.",
@@ -13927,6 +13957,23 @@
 "RETAD"
 ]
 },
+"2602370":{
+"h":"c29b687eaa8d91b8",
+"resumo":"Changes the Civil Code and the Statute of Older Persons to deal with liability for abusive interdiction. The official summary (ementa) does not say who would be held liable, or what the consequences would be.",
+"pontos":[
+"Amends the Civil Code (Law No. 10.406/2002)",
+"Amends the Statute of Older Persons (Law No. 10.741/2003)",
+"Subject: liability for abusive interdiction"
+],
+"tags":[
+"interdiction",
+"guardianship",
+"older people",
+"Civil Code",
+"liability"
+],
+"aviso_assunto":"The subject of this bill was chosen by artificial intelligence and may be wrong: The focus can be read as the rights of older persons or as Civil Code rules on interdiction and liability."
+},
 "2603272":{
 "h":"cc0b4fc65e144192",
 "resumo":"Creates, within the National Council of Justice (CNJ), the Department for Monitoring and Oversight of the Decisions of the International Human Rights Systems, called DDH. The official summary (ementa) does not detail how the department will work or what its tasks will be.",
@@ -14550,6 +14597,22 @@
 "provisional measure",
 "budget",
 "Integration and Regional Development"
+]
+},
+"2629310":{
+"h":"0ff019c0226e23ca",
+"resumo":"Approves the text of the 2009 Hong Kong International Convention on the safe and environmentally sound recycling of ships. Approving the text allows Brazil to join this international agreement.",
+"pontos":[
+"Deals with the 2009 Hong Kong Convention (HKC)",
+"The subject of the convention is the safe and environmentally sound recycling of ships",
+"Its purpose is Brazil's accession to the agreement"
+],
+"tags":[
+"Hong Kong Convention",
+"ship recycling",
+"international treaty",
+"HKC",
+"Brazil's accession"
 ]
 },
 "2629561":{
@@ -15439,6 +15502,10 @@
 "2270327-36":{
 "h":"02ebc859130de85e",
 "descricao":"Resolution Bill No. 10 of 2021 was approved."
+},
+"2270540-87":{
+"h":"36c96eb2e4fac73c",
+"descricao":"Approved the Substitute Text to Bill No. 504, of 2021, adopted by the rapporteur of the Health Committee."
 },
 "2273166-67":{
 "h":"60aa6a2a41cb3653",
@@ -17793,6 +17860,10 @@
 "h":"9a9d9a21be4ac3cc",
 "descricao":"Approved: Provisional Measure No. 1.299 of 2025."
 },
+"2515534-66":{
+"h":"971c7b2ad753964a",
+"descricao":"Approved the Substitute Sub-Amendment to Bill No. 2.475, of 2025, adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship."
+},
 "2515648-44":{
 "h":"cce768e2c1fc7e72",
 "descricao":"Approved: the substitute text to Legislative Decree Bill No. 214 of 2025, as adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship. Yes: 383; No: 98; Total: 481."
@@ -18240,6 +18311,10 @@
 "h":"a0697e18aff2d4fc",
 "descricao":"Approved the Substitute Text to Complementary Bill No. 21 of 2026, adopted by the rapporteur of the Committee on Finance and Taxation. Yes: 421; No: 3; Abstention: 1; Total: 425."
 },
+"2602370-38":{
+"h":"a58cfff6ee1b0ad7",
+"descricao":"Approved the Substitute Text to Bill No. 464, of 2026, from the Committee on the Defense of the Rights of Elderly Persons."
+},
 "2603272-26":{
 "h":"ed3f2db3bcc8bf86",
 "descricao":"Approved the Substitute Text to Bill No. 591 of 2026, adopted by the rapporteur of the Committee on Public Administration and Civil Service."
@@ -18395,6 +18470,10 @@
 "2626766-34":{
 "h":"8e078708ddb9c28c",
 "descricao":"Approved Provisional Measure No. 1.361 of 2026."
+},
+"2629310-42":{
+"h":"0c4634b355925411",
+"descricao":"Approved the Legislative Decree Bill No. 557, of 2026."
 },
 "2629561-29":{
 "h":"55be642e5989c9fd",
