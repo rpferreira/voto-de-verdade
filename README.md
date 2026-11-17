@@ -29,7 +29,7 @@ site é publicado por workflow, não existe arquivo `CNAME` no repositório. O e
 
 ## Como funciona
 
-Todo dia, às 6h (horário de Brasília; o GitHub pode atrasar alguns minutos), a **Atualização diária** roda estas etapas, nesta ordem:
+Todo dia, de madrugada (agendada para 5h17 no horário de Brasília; o GitHub pode atrasar, às vezes por horas), a **Atualização diária** roda estas etapas, nesta ordem:
 
 1. `coleta/coletar_votacoes.py` busca as votações novas na API da Câmara e atualiza `dados/cache_v5.json`, que é commitado no repositório.
 2. `coleta/construir_banco.py` monta o banco `dados/voto_de_verdade.db` a partir do cache e de `dados/resumos.json`. O banco é refeito do zero a cada rodada, fica guardado por 7 dias na aba Actions e não vai para o repositório.
@@ -237,7 +237,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 
 ### No GitHub
 
-Aba **Actions**, **Atualização diária**, **Run workflow**. A rotina também roda sozinha todo dia às 6h.
+Aba **Actions**, **Atualização diária**, **Run workflow**. A rotina também roda sozinha todo dia de madrugada (5h17 em Brasília).
 O workflow precisa estar em `.github/workflows/atualizacao-diaria.yml` (com esse caminho exato) para
 aparecer na aba Actions.
 

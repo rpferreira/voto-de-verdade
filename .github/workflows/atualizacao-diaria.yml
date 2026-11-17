@@ -1,9 +1,11 @@
 name: Atualização diária
 
-# Roda todo dia às 6h (horário de Brasília) e também quando você clicar em "Run workflow".
+# Roda todo dia de madrugada (08:17 UTC, 5h17 em Brasília) e também quando você clicar em "Run workflow".
+# O minuto 17 é de propósito: o GitHub atrasa muito as execuções marcadas em hora redonda (como 09:00),
+# e com isso a rotina chegava a começar só no começo da tarde, deixando o site com a data do dia anterior de manhã.
 on:
   schedule:
-    - cron: "0 9 * * *"
+    - cron: "17 8 * * *"
   workflow_dispatch:
     inputs:
       limite_resumos:
