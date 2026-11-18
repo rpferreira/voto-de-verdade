@@ -1,0 +1,66 @@
+name: Diagnóstico da API da Câmara (temporário)
+
+# TEMPORÁRIO: só consultas de leitura à API pública da Câmara, a partir do robô do GitHub, para entender as quedas de
+# 10/11 e 18/11/2026. Não grava nada e não deve ser mesclado; o PR é fechado depois da investigação.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/diagnostico-api-camara.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sondar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Rede do robô
+        run: |
+          date -u +%FT%TZ
+          echo "IP público do robô: $(curl -s --max-time 15 https://api.ipify.org || echo '?')"
+          echo "--- DNS"
+          getent ahosts dadosabertos.camara.leg.br | head -6 || true
+          echo "--- Um pedido detalhado (TLS e cabeçalhos)"
+          curl -sS -v --max-time 60 -o /dev/null -H "Accept: application/json" \
+            "https://dadosabertos.camara.leg.br/api/v2/deputados?itens=1" 2>&1 | grep -E "^(\*|<) " | grep -viE "^\* (Added|Connection|using|Trying|Server|ALPN|CAfile|CApath|TLSv1\.3 \(OUT\)|old SSL|Mark)" | head -40
+
+      - name: Sondar a API (6 rodadas, 5 tipos de pedido)
+        run: |
+          B="https://dadosabertos.camara.leg.br/api/v2"
+          HOJE=$(date -u +%F)
+          UA_COLETA="voto-de-verdade-coleta/0.5"
+          UA_NAV="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+          sonda() {  # rotulo, user-agent, url
+            local saida
+            saida=$(curl -s --max-time 60 -o /tmp/corpo -D /tmp/cab -A "$2" -H "Accept: application/json" \
+              -w "%{http_code} dns=%{time_namelookup} conn=%{time_connect} tls=%{time_appconnect} ttfb=%{time_starttransfer} total=%{time_total} bytes=%{size_download}" "$3" 2>&1)
+            local cod=$?
+            local extras
+            extras=$(grep -iE "^(server|via|retry-after|x-ratelimit[a-z-]*|cf-ray|x-cache|age|content-length|x-request-id):" /tmp/cab 2>/dev/null | tr -d '\r' | tr '\n' ';')
+            printf "%s | %-34s | curl=%s | %s | %s\n" "$(date -u +%T)" "$1" "$cod" "$saida" "$extras"
+          }
+          for r in 1 2 3 4 5 6; do
+            echo "=== rodada $r"
+            sonda "A lista de deputados (coleta)" "$UA_COLETA" "$B/deputados?itens=100&pagina=1&ordem=ASC&ordenarPor=nome"
+            sonda "B janela atual 23/10 a hoje (coleta)" "$UA_COLETA" "$B/votacoes?dataInicio=2026-10-23&dataFim=$HOJE&itens=100&pagina=1&ordem=ASC&ordenarPor=dataHoraRegistro"
+            sonda "C janela de 7 dias (coleta)" "$UA_COLETA" "$B/votacoes?dataInicio=$(date -u -d '7 days ago' +%F)&dataFim=$HOJE&itens=100&pagina=1&ordem=ASC&ordenarPor=dataHoraRegistro"
+            sonda "D deputados, UA padrão do curl" "curl/8" "$B/deputados?itens=1"
+            sonda "E deputados, UA de navegador" "$UA_NAV" "$B/deputados?itens=1"
+            [ $r -lt 6 ] && sleep 25
+          done
+
+      - name: Paginar a janela atual como a coleta faz
+        run: |
+          B="https://dadosabertos.camara.leg.br/api/v2"
+          HOJE=$(date -u +%F)
+          for p in 1 2 3 4 5 6 7 8; do
+            r=$(curl -s --max-time 60 -o /tmp/p.json -A "voto-de-verdade-coleta/0.5" -H "Accept: application/json" \
+              -w "%{http_code} total=%{time_total} bytes=%{size_download}" \
+              "$B/votacoes?dataInicio=2026-10-23&dataFim=$HOJE&itens=100&pagina=$p&ordem=ASC&ordenarPor=dataHoraRegistro"); 
+            n=$(python3 -c 'import json; print(len(json.load(open("/tmp/p.json")).get("dados", [])))' 2>/dev/null || echo "?")
+            echo "página $p: $r itens=$n"
+            [ "$n" = "?" ] && break
+            [ "$n" -lt 100 ] && break
+          done
