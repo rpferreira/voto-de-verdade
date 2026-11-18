@@ -3,9 +3,14 @@ name: Atualização diária
 # Roda todo dia de madrugada (08:17 UTC, 5h17 em Brasília) e também quando você clicar em "Run workflow".
 # O minuto 17 é de propósito: o GitHub atrasa muito as execuções marcadas em hora redonda (como 09:00),
 # e com isso a rotina chegava a começar só no começo da tarde, deixando o site com a data do dia anterior de manhã.
+#
+# Segunda tentativa, às 13:47 UTC (10h47 em Brasília): se a de madrugada falhou (por exemplo, a API da Câmara fora do
+# ar) ou nem chegou a rodar, esta refaz tudo. Se o site já está com os dados de hoje, o job "decidir" pula o resto,
+# e nada é coletado, resumido nem publicado duas vezes. Quem clica em "Run workflow" sempre roda tudo.
 on:
   schedule:
     - cron: "17 8 * * *"
+    - cron: "47 13 * * *"
   workflow_dispatch:
     inputs:
       limite_resumos:
@@ -34,7 +39,35 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Só nas execuções agendadas: se o site no ar já tem os dados de hoje (UTC), a tentativa é desnecessária e o resto é pulado.
+  # Se não der para ler o site, não pula: na dúvida, atualiza.
+  decidir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      pular: ${{ steps.conferir.outputs.pular }}
+    steps:
+      - name: Ver se o site já está com os dados de hoje
+        id: conferir
+        env:
+          EVENTO: ${{ github.event_name }}
+        run: |
+          pular=false
+          if [ "$EVENTO" = "schedule" ]; then
+            hoje=$(date -u +%F)
+            no_ar=$(curl -fsS --max-time 30 "https://votodeverdade.com.br/dados/meta.json" \
+              | python3 -c 'import sys, json; print(json.load(sys.stdin).get("gerado_em", ""))' || true)
+            echo "Dados no ar: ${no_ar:-não deu para ler}. Hoje (UTC): $hoje."
+            if [ "$no_ar" = "$hoje" ]; then
+              pular=true
+              echo "O site já está atualizado hoje; esta tentativa é pulada."
+            fi
+          fi
+          echo "pular=$pular" >> "$GITHUB_OUTPUT"
+
   atualizar:
+    needs: decidir
+    if: needs.decidir.outputs.pular != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
@@ -160,8 +193,8 @@ jobs:
   # e um alerta é aberto na aba Issues; ele fecha sozinho quando tudo volta ao normal.
   # Roda mesmo se a atualização ou a publicação falharam, justamente para avisar disso.
   monitorar:
-    needs: [atualizar, publicar]
-    if: always()
+    needs: [decidir, atualizar, publicar]
+    if: always() && needs.decidir.outputs.pular != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
