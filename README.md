@@ -238,6 +238,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 ### No GitHub
 
 Aba **Actions**, **Atualização diária**, **Run workflow**. A rotina também roda sozinha todo dia de madrugada (5h17 em Brasília), com uma segunda tentativa às 10h47 que só age se o site ainda não tiver os dados do dia.
+Como o agendador do GitHub atrasa por horas, dá para disparar a rotina de um serviço externo na hora certa: [docs/agendador-externo.md](docs/agendador-externo.md).
 O workflow precisa estar em `.github/workflows/atualizacao-diaria.yml` (com esse caminho exato) para
 aparecer na aba Actions.
 

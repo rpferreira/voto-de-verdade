@@ -6,13 +6,17 @@ name: Atualização diária
 #
 # Segunda tentativa, às 13:47 UTC (10h47 em Brasília): se a de madrugada falhou (por exemplo, a API da Câmara fora do
 # ar) ou nem chegou a rodar, esta refaz tudo. Se o site já está com os dados de hoje, o job "decidir" pula o resto,
-# e nada é coletado, resumido nem publicado duas vezes. Quem clica em "Run workflow" sempre roda tudo.
+# e nada é coletado, resumido nem publicado duas vezes. Quem clica em "Run workflow" sempre roda tudo, a não ser que
+# escolha pular_se_atualizado = sim (é o que o agendador externo, docs/agendador-externo.md, envia).
 on:
   schedule:
     - cron: "17 8 * * *"
     - cron: "47 13 * * *"
   workflow_dispatch:
     inputs:
+      pular_se_atualizado:
+        description: "Use sim para só rodar se o site ainda não tem os dados de hoje (é o que o agendador externo envia; ver docs/agendador-externo.md). Deixe nao para rodar sempre"
+        default: "nao"
       limite_resumos:
         description: "Quantos projetos resumir com IA nesta execução (use 5 para um teste barato)"
         default: "300"
@@ -39,7 +43,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Só nas execuções agendadas: se o site no ar já tem os dados de hoje (UTC), a tentativa é desnecessária e o resto é pulado.
+  # Nas execuções agendadas, e nas manuais com pular_se_atualizado = sim: se o site no ar já tem os dados de hoje (UTC),
+  # a tentativa é desnecessária e o resto é pulado.
   # Se não der para ler o site, não pula: na dúvida, atualiza.
   decidir:
     runs-on: ubuntu-latest
@@ -51,9 +56,10 @@ jobs:
         id: conferir
         env:
           EVENTO: ${{ github.event_name }}
+          SO_SE_PRECISAR: ${{ github.event.inputs.pular_se_atualizado || 'nao' }}
         run: |
           pular=false
-          if [ "$EVENTO" = "schedule" ]; then
+          if [ "$EVENTO" = "schedule" ] || [ "$SO_SE_PRECISAR" = "sim" ]; then
             hoje=$(date -u +%F)
             no_ar=$(curl -fsS --max-time 30 "https://votodeverdade.com.br/dados/meta.json" \
               | python3 -c 'import sys, json; print(json.load(sys.stdin).get("gerado_em", ""))' || true)
