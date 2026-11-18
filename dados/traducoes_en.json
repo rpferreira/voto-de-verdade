@@ -14971,6 +14971,54 @@
 ],
 "aviso_assunto":"The subject of this bill was chosen by artificial intelligence and may be wrong: two automatic readings chose different subjects (Education and Public Administration and Congress)."
 },
+"2643429":{
+"h":"982752b5b8a601db",
+"resumo":"Releases R$ 360 million in extraordinary credit to the Ministry of Integration and Regional Development. The official summary (ementa) does not detail what the money will be used for, saying only \"for the purpose specified\".",
+"pontos":[
+"Extraordinary credit of R$ 360,000,000.00",
+"Beneficiary: Ministry of Integration and Regional Development",
+"The official summary (ementa) does not state the specific purpose of the spending"
+],
+"tags":[
+"extraordinary credit",
+"provisional measure",
+"budget",
+"R$ 360 million",
+"regional development"
+]
+},
+"2643435":{
+"h":"37cb221a3553cf41",
+"resumo":"Releases an extraordinary credit of R$ 924,985,960.00 in the budget for two ministries: Agrarian Development and Family Farming, and Development and Social Assistance, Family and Fight Against Hunger. The official summary (ementa) does not detail what the money will be used for.",
+"pontos":[
+"Amount of the extraordinary credit: R$ 924,985,960.00",
+"Benefits the Ministry of Agrarian Development and Family Farming",
+"Benefits the Ministry of Development and Social Assistance, Family and Fight Against Hunger",
+"The official summary (ementa) says only that the purposes are those it specifies"
+],
+"tags":[
+"extraordinary credit",
+"provisional measure",
+"budget",
+"family farming",
+"social assistance"
+]
+},
+"2644208":{
+"h":"4bfef5326ca7645b",
+"resumo":"Recognizes the Romaria do Divino Pai Eterno as an expression of national culture. The pilgrimage is held in the municipality of Trindade, in the state of Goiás. The official summary (ementa) does not detail other measures.",
+"pontos":[
+"Recognizes the Romaria do Divino Pai Eterno as an expression of national culture",
+"The pilgrimage takes place in Trindade, in the state of Goiás"
+],
+"tags":[
+"pilgrimage",
+"Divino Pai Eterno",
+"Trindade",
+"Goiás",
+"national culture"
+]
+},
 "2645239":{
 "h":"414c537806f347c2",
 "resumo":"The bill approves the text of Convention No. 156 of the International Labour Organization (ILO), of 1981. The convention deals with equal opportunities and equal treatment for men and women workers with family responsibilities. It was signed in Geneva on June 23, 1981.",
@@ -15020,6 +15068,56 @@
 "Rodrigo Pacheco"
 ]
 },
+"2646241":{
+"h":"bbd27516e10f3bb9",
+"resumo":"Opens an extraordinary credit of R$ 6.605 billion in the budget in favor of the Ministry of Mines and Energy. The official summary (ementa) does not detail what the money will be used for, saying only \"for the purposes specified\".",
+"pontos":[
+"Extraordinary credit of R$ 6,605,000,000.00",
+"Beneficiary: Ministry of Mines and Energy",
+"The official summary (ementa) does not state the purpose of the funds",
+"It is a provisional measure"
+],
+"tags":[
+"extraordinary credit",
+"provisional measure",
+"mines and energy",
+"budget"
+]
+},
+"2648606":{
+"h":"d248cf03286e29c8",
+"resumo":"Releases an extraordinary credit of R$ 6,494,296,446.00 in the federal government's budget, intended for \"Financial Charges of the Federal Government\". The official summary (ementa) says the money is for \"the purpose specified\", but does not detail what that purpose is.",
+"pontos":[
+"Opens extraordinary credit of R$ 6,494,296,446.00",
+"The amount is in favor of Financial Charges of the Federal Government",
+"The official summary (ementa) does not detail the purpose of the spending",
+"It is a provisional measure, issued in 2026"
+],
+"tags":[
+"extraordinary credit",
+"provisional measure",
+"budget",
+"public spending",
+"financial charges"
+]
+},
+"2648616":{
+"h":"593ee395a168da6d",
+"resumo":"Releases R$ 300 million in extraordinary credit to the Ministry of Integration and Regional Development. The official summary (ementa) does not detail what the money will be used for, saying only \"for the purpose specified\".",
+"pontos":[
+"Credit amount: R$ 300,000,000.00",
+"Beneficiary: Ministry of Integration and Regional Development",
+"It is extraordinary credit, opened by provisional measure",
+"The official summary (ementa) does not state the specific purpose of the spending"
+],
+"tags":[
+"extraordinary credit",
+"provisional measure",
+"budget",
+"regional integration",
+"funds"
+]
+},
 "2648807":{
 "h":"53cd2d21560c3cd9",
 "resumo":"Authorizes financial support in 2026 for independent sugarcane producers in the Northeast. It also authorizes directing funds to reimbursable financing lines, to renew fleets. It also changes three laws: 9.818/1999, 11.540/2007 and 14.947/2024.",
@@ -15035,6 +15133,22 @@
 "financial support",
 "fleet renewal",
 "financing"
+]
+},
+"2652524":{
+"h":"99f757a8b1d9c39b",
+"resumo":"Creates the Trajectories of Success in Giftedness and Twice-Exceptionality Award. The official summary (ementa) does not detail who can receive the award, what the selection criteria are, or how it will be granted.",
+"pontos":[
+"Establishes an award called Trajectories of Success in Giftedness and Twice-Exceptionality",
+"The award's theme is giftedness and twice-exceptionality",
+"The official summary (ementa) does not state selection criteria or how the award is delivered"
+],
+"tags":[
+"award",
+"giftedness",
+"high abilities",
+"twice-exceptionality",
+"tribute"
 ]
 }
 },
@@ -18563,17 +18677,45 @@
 "h":"ce6d05b540fb7695",
 "descricao":"Approved the Substitute Text to Bill No. 4.952 of 2026, adopted by the rapporteur of the Committee on Public Administration and Civil Service."
 },
+"2643429-30":{
+"h":"0ee3c840298bd955",
+"descricao":"Approved Provisional Measure No. 1.383, of 2026."
+},
+"2643435-32":{
+"h":"58662cfc5c4ea5a2",
+"descricao":"Approved Provisional Measure No. 1.384, of 2026."
+},
+"2644208-16":{
+"h":"6ea87a4ac54773dd",
+"descricao":"Approved Bill No. 5.127, of 2026."
+},
 "2645346-18":{
 "h":"3fff9215dbaded31",
 "descricao":"Approved Legislative Decree Bill No. 995 of 2026 (Approves the nomination of Mr. Rodrigo Otávio Soares Pacheco for the position of Minister of the Federal Court of Accounts). Yes: 404; No: 61; Abstention: 1; Total: 466."
+},
+"2646241-32":{
+"h":"ced32e649e3f01f7",
+"descricao":"Approved Provisional Measure No. 1.389, of 2026."
 },
 "264726-144":{
 "h":"9d9b609854aefc28",
 "descricao":"Approved the Global Substitute Sub-amendment to Bill No. 4.149 of 2004, adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship, except for the separate votes. Yes: 273; No: 153; Abstention: 1; Total: 427."
 },
+"2648606-26":{
+"h":"2df885f8e95469d5",
+"descricao":"Approved Provisional Measure No. 1.397, of 2026."
+},
+"2648616-28":{
+"h":"cfb7d4aaaec276b8",
+"descricao":"Approved Provisional Measure No. 1.398, of 2026."
+},
 "2648807-19":{
 "h":"c196f92286700df4",
 "descricao":"Approved the Substitute Text to Bill No. 5.649, of 2026, adopted by the rapporteur of the Committee on Science, Technology and Innovation."
+},
+"2652524-16":{
+"h":"d82755d3ca0c4127",
+"descricao":"Approved Resolution Bill No. 50, of 2026."
 },
 "345311-270":{
 "h":"8e1aad80c07fa2f9",
