@@ -24099,6 +24099,87 @@
    "ensino tecnológico"
   ]
  },
+ "2643429": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "e6add0f88d74e9e7",
+  "gerado_em": "2026-11-18",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Crédito extraordinário de R$ 360.000.000,00",
+   "Beneficiado: Ministério da Integração e do Desenvolvimento Regional",
+   "A ementa não informa a finalidade específica do gasto"
+  ],
+  "resumo": "Libera R$ 360 milhões em crédito extraordinário para o Ministério da Integração e do Desenvolvimento Regional. A ementa não detalha para qual finalidade o dinheiro será usado, dizendo apenas \"para o fim que especifica\".",
+  "tags": [
+   "crédito extraordinário",
+   "medida provisória",
+   "orçamento",
+   "R$ 360 milhões",
+   "desenvolvimento regional"
+  ]
+ },
+ "2643435": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "e0e50d68d8ce767f",
+  "gerado_em": "2026-11-18",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Valor do crédito extraordinário: R$ 924.985.960,00",
+   "Beneficia o Ministério do Desenvolvimento Agrário e Agricultura Familiar",
+   "Beneficia o Ministério do Desenvolvimento e Assistência Social, Família e Combate à Fome",
+   "A ementa diz apenas que os fins são os que especifica"
+  ],
+  "resumo": "Libera um crédito extraordinário de R$ 924.985.960,00 no orçamento para dois ministérios: o do Desenvolvimento Agrário e Agricultura Familiar e o do Desenvolvimento e Assistência Social, Família e Combate à Fome. A ementa não detalha para quais finalidades o dinheiro será usado.",
+  "tags": [
+   "crédito extraordinário",
+   "medida provisória",
+   "orçamento",
+   "agricultura familiar",
+   "assistência social"
+  ]
+ },
+ "2644208": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "6f70a3dcec8a956d",
+  "gerado_em": "2026-11-18",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Reconhece a Romaria do Divino Pai Eterno como manifestação da cultura nacional",
+   "A romaria acontece em Trindade, no Estado de Goiás"
+  ],
+  "resumo": "Reconhece a Romaria do Divino Pai Eterno como manifestação da cultura nacional. A romaria é realizada no Município de Trindade, no Estado de Goiás. A ementa não detalha outras medidas.",
+  "tags": [
+   "romaria",
+   "Divino Pai Eterno",
+   "Trindade",
+   "Goiás",
+   "cultura nacional"
+  ]
+ },
  "2645239": {
   "assunto": "Relações Internacionais e Defesa",
   "assunto_secundario": "Trabalho e Direitos",
@@ -24181,6 +24262,33 @@
    "Rodrigo Pacheco"
   ]
  },
+ "2646241": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": "Infraestrutura e Transporte",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "5b8b50f172964ee8",
+  "gerado_em": "2026-11-18",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Crédito extraordinário de R$ 6.605.000.000,00",
+   "Beneficiário: Ministério de Minas e Energia",
+   "A ementa não informa a finalidade dos recursos",
+   "Trata-se de uma medida provisória"
+  ],
+  "resumo": "Abre um crédito extraordinário de R$ 6,605 bilhões no orçamento em favor do Ministério de Minas e Energia. A ementa não detalha para quais finalidades o dinheiro será usado, dizendo apenas \"para os fins que especifica\".",
+  "tags": [
+   "crédito extraordinário",
+   "medida provisória",
+   "Minas e Energia",
+   "orçamento"
+  ]
+ },
  "264726": {
   "assunto": "Segurança Pública",
   "assunto_secundario": null,
@@ -24206,6 +24314,62 @@
    "arma de uso restrito",
    "aumento de pena",
    "armas"
+  ]
+ },
+ "2648606": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "c66a7e146fe90104",
+  "gerado_em": "2026-11-18",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Abre crédito extraordinário de R$ 6.494.296.446,00",
+   "O valor é em favor de Encargos Financeiros da União",
+   "A ementa não detalha a finalidade do gasto",
+   "É uma medida provisória, editada em 2026"
+  ],
+  "resumo": "Libera um crédito extraordinário de R$ 6.494.296.446,00 no orçamento da União, destinado a \"Encargos Financeiros da União\". A ementa diz que o dinheiro é para \"o fim que especifica\", mas não detalha qual é essa finalidade.",
+  "tags": [
+   "crédito extraordinário",
+   "medida provisória",
+   "orçamento",
+   "gasto público",
+   "encargos financeiros"
+  ]
+ },
+ "2648616": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "8ae9e871f868d8ab",
+  "gerado_em": "2026-11-18",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Valor do crédito: R$ 300.000.000,00",
+   "Beneficiado: Ministério da Integração e do Desenvolvimento Regional",
+   "Trata-se de crédito extraordinário, aberto por medida provisória",
+   "A ementa não informa a finalidade específica do gasto"
+  ],
+  "resumo": "Libera R$ 300 milhões em crédito extraordinário para o Ministério da Integração e do Desenvolvimento Regional. A ementa não detalha para qual finalidade o dinheiro será usado, dizendo apenas \"para o fim que especifica\".",
+  "tags": [
+   "crédito extraordinário",
+   "medida provisória",
+   "orçamento",
+   "Integração Regional",
+   "verba"
   ]
  },
  "2648807": {
@@ -24234,6 +24398,33 @@
    "apoio financeiro",
    "renovação de frota",
    "financiamento"
+  ]
+ },
+ "2652524": {
+  "assunto": "Cultura, Esporte e Turismo",
+  "assunto_secundario": "Educação",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "ab63db4d57412f62",
+  "gerado_em": "2026-11-18",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Institui um prêmio chamado Trajetórias de Êxito na Superdotação e na Dupla Excepcionalidade",
+   "O prêmio tem como tema a superdotação e a dupla excepcionalidade",
+   "A ementa não informa critérios de escolha nem forma de entrega"
+  ],
+  "resumo": "Cria o Prêmio Trajetórias de Êxito na Superdotação e na Dupla Excepcionalidade. A ementa não detalha quem pode receber o prêmio, quais são os critérios de escolha nem como ele será concedido.",
+  "tags": [
+   "prêmio",
+   "superdotação",
+   "altas habilidades",
+   "dupla excepcionalidade",
+   "homenagem"
   ]
  },
  "285284": {
