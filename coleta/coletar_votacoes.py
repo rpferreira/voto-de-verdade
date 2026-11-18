@@ -181,32 +181,54 @@ def log(txt=""):
     linhas.append(txt)
 
 
+# Quando a API da Câmara cai (503, sem resposta), três tentativas seguidas em poucos segundos não bastam: em 10/11 e 18/11/2026
+# ela falhou e o site ficou dias sem atualizar. Depois das tentativas curtas, a coleta espera mais e tenta de novo.
+ESPERAS_LONGAS = (30, 90, 180, 300)  # segundos de espera antes de cada nova tentativa
+ORCAMENTO_ESPERA = 900  # no máximo 15 minutos de espera em toda a coleta; passado isso, só as tentativas curtas
+_espera_gasta = [0.0]
+
+
+def _uma_tentativa(url):
+    """Uma consulta. Devolve (status, json, passageiro); passageiro = vale tentar de novo (429, 5xx ou sem resposta)."""
+    req = Request(url, headers={
+        "Accept": "application/json",
+        "User-Agent": "voto-de-verdade-coleta/0.5",
+    })
+    try:
+        with urlopen(req, timeout=30) as r:
+            return r.status, json.load(r), False
+    except HTTPError as e:
+        try:
+            corpo = e.read().decode("utf-8", "replace")
+        except Exception:
+            corpo = ""
+        return e.code, {"_erro": corpo[:300]}, e.code in (429, 500, 502, 503, 504)
+    except (URLError, TimeoutError, ValueError) as e:
+        return None, {"_erro": str(e)}, True
+
+
 def get_url(url, tentativas=3):
     """Devolve (status, json). Em erro HTTP, o json traz {'_erro': texto da API}.
-    status None = erro de rede. Repete quando a API pede calma (429) ou falha (5xx)."""
+    status None = erro de rede. Repete quando a API pede calma (429) ou falha (5xx ou sem resposta):
+    primeiro algumas tentativas curtas e, se a API continuar fora do ar, esperas longas (ESPERAS_LONGAS),
+    dentro do limite de ORCAMENTO_ESPERA para a coleta toda."""
     for i in range(tentativas):
         time.sleep(PAUSA)
-        req = Request(url, headers={
-            "Accept": "application/json",
-            "User-Agent": "voto-de-verdade-coleta/0.5",
-        })
-        try:
-            with urlopen(req, timeout=30) as r:
-                return r.status, json.load(r)
-        except HTTPError as e:
-            try:
-                corpo = e.read().decode("utf-8", "replace")
-            except Exception:
-                corpo = ""
-            if e.code in (429, 500, 502, 503, 504) and i < tentativas - 1:
-                time.sleep(5 * (i + 1))
-                continue
-            return e.code, {"_erro": corpo[:300]}
-        except (URLError, TimeoutError, ValueError) as e:
-            if i < tentativas - 1:
-                time.sleep(3)
-                continue
-            return None, {"_erro": str(e)}
+        st, dados, passageiro = _uma_tentativa(url)
+        if not passageiro:
+            return st, dados
+        if i < tentativas - 1:
+            time.sleep(5 * (i + 1) if st else 3)
+    for pausa in ESPERAS_LONGAS:
+        if _espera_gasta[0] + pausa > ORCAMENTO_ESPERA:
+            break
+        print(f"   A API não respondeu (status {st}); espero {pausa} s e tento de novo.", flush=True)
+        time.sleep(pausa)
+        _espera_gasta[0] += pausa
+        st, dados, passageiro = _uma_tentativa(url)
+        if not passageiro:
+            return st, dados
+    return st, dados
 
 
 def get(caminho, **params):

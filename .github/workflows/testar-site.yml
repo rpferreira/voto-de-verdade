@@ -71,3 +71,7 @@ jobs:
       # O script que a rotina diária usa para guardar arquivos no repositório (falhou em 14/10/2026 e o site não foi publicado).
       - name: Testar o guardar da rotina diária
         run: python testes/guardar.py
+
+      # Como a coleta repete as consultas quando a API da Câmara cai (falhou em 10/11 e 18/11/2026 e o site ficou desatualizado).
+      - name: Testar a repetição da coleta
+        run: python testes/coleta_repeticao.py
