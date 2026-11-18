@@ -2,6 +2,11 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.10.4 (2026-11-18)
+
+### Ajustes
+- **Rotina diária de dados:** quando a API da Câmara cai (erro 503 ou sem resposta), a coleta agora espera e tenta de novo, em vez de desistir depois de poucos segundos: pausas de 30 s, 90 s, 3 min e 5 min, com no máximo 15 minutos de espera na coleta toda. Em 10/11 e 18/11 a API falhou nas consultas mais recentes e a lista de deputados, a coleta ficou incompleta, o teste de segurança bloqueou a publicação, e o site ficou desatualizado. Há um teste novo (`testes/coleta_repeticao.py`).
+
 ## 0.10.3 (2026-10-21)
 
 ### Ajustes
