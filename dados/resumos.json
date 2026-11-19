@@ -21196,6 +21196,35 @@
    "Lei 11.416"
   ]
  },
+ "2565161": {
+  "assunto": "Relações Internacionais e Defesa",
+  "assunto_secundario": "Segurança Pública",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [
+   "A ementa não detalha as regras de cooperação previstas no tratado"
+  ],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "4f2a4a7567b187f9",
+  "gerado_em": "2026-11-19",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata de acordo entre o Brasil e o Japão",
+   "Assunto do tratado: assistência jurídica mútua em matéria penal",
+   "Assinado em Tóquio, em 25 de janeiro de 2024"
+  ],
+  "resumo": "Aprova o texto de um tratado entre o Brasil e o Japão sobre assistência jurídica mútua em matéria penal. O acordo foi assinado em Tóquio, em 25 de janeiro de 2024. A ementa não detalha as regras de cooperação previstas no tratado.",
+  "tags": [
+   "tratado Brasil Japão",
+   "cooperação jurídica",
+   "assistência jurídica internacional",
+   "acordo internacional",
+   "matéria penal"
+  ]
+ },
  "2565441": {
   "assunto": "Administração Pública e Congresso",
   "assunto_secundario": "Impostos e Economia",
@@ -23255,6 +23284,32 @@
    "medida provisória",
    "orçamento",
    "Minas e Energia"
+  ]
+ },
+ "2620100": {
+  "assunto": "Administração Pública e Congresso",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "media",
+  "confianca_resumo": "alta",
+  "entrada": "b38fbf2ef236d381",
+  "gerado_em": "2026-11-19",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": "O selo é criado dentro da Câmara, mas pode ser visto também como homenagem ou reconhecimento, e a ementa não diz quem o recebe",
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Institui o \"Selo Câmara de Respeito à Voz do Cidadão\"",
+   "O selo vale no âmbito da Câmara dos Deputados",
+   "A ementa não explica critérios nem quem pode receber o selo"
+  ],
+  "resumo": "Cria, dentro da Câmara dos Deputados, o \"Selo Câmara de Respeito à Voz do Cidadão\". A ementa não detalha quem pode receber o selo, quais são os critérios nem como ele será concedido.",
+  "tags": [
+   "selo",
+   "Câmara dos Deputados",
+   "voz do cidadão",
+   "projeto de resolução"
   ]
  },
  "2620905": {
