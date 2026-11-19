@@ -13267,6 +13267,22 @@
 "Law 11.416"
 ]
 },
+"2565161":{
+"h":"62582a2ea120dabe",
+"resumo":"Approves the text of a treaty between Brazil and Japan on mutual legal assistance in criminal matters. The agreement was signed in Tokyo on January 25, 2024. The official summary (ementa) does not detail the cooperation rules set out in the treaty.",
+"pontos":[
+"Concerns an agreement between Brazil and Japan",
+"Subject of the treaty: mutual legal assistance in criminal matters",
+"Signed in Tokyo on January 25, 2024"
+],
+"tags":[
+"Brazil Japan treaty",
+"legal cooperation",
+"international legal assistance",
+"international agreement",
+"criminal matters"
+]
+},
 "2565441":{
 "h":"7cdef3e8a5de406b",
 "resumo":"Changes the political parties law (Law No. 9.096/1995) so that each party body (national, state, district and municipal) is solely responsible for the fines it receives. It prohibits deducting one body's fines from another body's Party Fund share, and covers installment payment and oversight.",
@@ -14472,6 +14488,22 @@
 "budget",
 "Mines and Energy"
 ]
+},
+"2620100":{
+"h":"aac516fc8ba28288",
+"resumo":"Creates, within the Chamber of Deputies, the \"Selo Câmara de Respeito à Voz do Cidadão\" (Chamber Seal of Respect for the Citizen's Voice). The official summary (ementa) does not say who can receive the seal, what the criteria are, or how it will be granted.",
+"pontos":[
+"Establishes the \"Selo Câmara de Respeito à Voz do Cidadão\" (Chamber Seal of Respect for the Citizen's Voice)",
+"The seal applies within the Chamber of Deputies",
+"The official summary (ementa) does not explain the criteria or who can receive the seal"
+],
+"tags":[
+"seal",
+"Chamber of Deputies",
+"citizen's voice",
+"resolution bill"
+],
+"aviso_assunto":"The subject of this bill was chosen by artificial intelligence and may be wrong: The seal is created within the Chamber, but it can also be seen as a tribute or recognition, and the official summary (ementa) does not say who receives it."
 },
 "2620905":{
 "h":"82552fee495397fd",
@@ -18243,6 +18275,10 @@
 "h":"d114d70c69cb3107",
 "descricao":"Approved: Bill No. 4.750 of 2025. Yes: 299; No: 119; Abstention: 4; Total: 422."
 },
+"2565161-34":{
+"h":"12d1cac40b33ecd2",
+"descricao":"Approved the Substitute Text to Legislative Decree Bill No. 756, of 2025, adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship."
+},
 "2565441-32":{
 "h":"508b2e6862c6fddb",
 "descricao":"Approved: the substitute text to Bill No. 4.822 of 2025, as adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship, except for the separate vote."
@@ -18552,6 +18588,10 @@
 "2618769-33":{
 "h":"284a7f5e3266d0a6",
 "descricao":"Approved Provisional Measure No. 1.351 of 2026."
+},
+"2620100-19":{
+"h":"8893c3cc03c3fea5",
+"descricao":"Approved the Resolution Bill No. 25, of 2026."
 },
 "2620905-53":{
 "h":"e37830683df28376",
