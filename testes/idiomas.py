@@ -248,6 +248,9 @@ def navegador(saida):
                attrs: [...document.querySelectorAll('[aria-label],[title],[placeholder],[alt]')].map(e => [e.getAttribute('aria-label'), e.getAttribute('title'), e.getAttribute('placeholder'), e.getAttribute('alt')].filter(Boolean).join(' | ')).join('\\n') };
     }"""
     palavras_pt = re.compile(r"\b(não|votação|votações|deputado|deputados|projeto|projetos|assunto|resumo|inteligência|câmara|sem nota|ranking de)\b", re.I)
+    # Nome oficial entre aspas fica em português de propósito, com a tradução ao lado (ex.: "Selo Câmara de Respeito à Voz do Cidadão"
+    # (Chamber Seal of Respect for the Citizen's Voice)); não conta como português solto. Frase solta sem aspas continua contando.
+    entre_aspas = re.compile(r'"[^"\n]{1,160}"|\u201c[^\u201d\n]{1,160}\u201d')
     with sync_playwright() as p:
         nav = p.chromium.launch()
 
@@ -276,7 +279,7 @@ def navegador(saida):
             d = pg.evaluate(js)
             if d["falta"]:
                 faltas[r] = d["falta"]
-            ach = sorted(set(m.group(0).lower() for m in palavras_pt.finditer(d["texto"] + "\n" + d["attrs"])))
+            ach = sorted(set(m.group(0).lower() for m in palavras_pt.finditer(entre_aspas.sub(" ", d["texto"]) + "\n" + d["attrs"])))
             if ach:
                 solto[r] = ach
             if d["lang"] != "en":
