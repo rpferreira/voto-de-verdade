@@ -868,9 +868,11 @@
    "pendentes": 1,
    "pendentes_en": 0,
    "pct_incertos": 11.7,
-   "gerado_em": "2026-11-23",
+   "gerado_em": "2026-11-24",
    "custo_mes_usd": 0.68,
-   "erros": [],
+   "erros": [
+    "Os dados do site não foram gerados hoje (último: 2026-11-24)."
+   ],
    "avisos": [
     "Coleta: 1 projetos sem busca única (veja o relatório)."
    ]
