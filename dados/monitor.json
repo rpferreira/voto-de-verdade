@@ -892,7 +892,7 @@
    "gerado_em": "2026-11-25",
    "custo_mes_usd": 0.79,
    "erros": [
-    "A publicação do site terminou com resultado 'failure'. Veja o log: https://github.com/rpferreira/voto-de-verdade/actions/runs/45677105666",
+    "A publicação do site terminou com resultado 'failure'. Veja o log: https://github.com/rpferreira/voto-de-verdade/actions/runs/45716508203",
     "O site no ar está desatualizado: dados de 2026-11-24, esperado 2026-11-25."
    ],
    "avisos": [
