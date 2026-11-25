@@ -607,6 +607,22 @@
 "coast"
 ]
 },
+"606005":{
+"h":"2f309bebeeee257c",
+"resumo":"Changes the Racial Equality Statute (Law No. 12.288/2010) to include the color or race item in the records, registries and enrollments of the SUS Health Information System.",
+"pontos":[
+"Amends the Racial Equality Statute (Law No. 12.288/2010)",
+"Includes the color or race item in medical records, registries and enrollments",
+"Applies to the SUS Health Information System"
+],
+"tags":[
+"color or race",
+"racial equality",
+"SUS",
+"medical record",
+"Racial Equality Statute"
+]
+},
 "610520":{
 "h":"e1f77ebc088944f0",
 "resumo":"The bill changes article 282 of the Penal Code to include the illegal practice of the profession of veterinarian among the crimes provided for in that code. That is, it treats practicing this profession without legal authorization as a crime.",
@@ -2289,6 +2305,23 @@
 "health supplies",
 "research and development",
 "production autonomy"
+]
+},
+"2253448":{
+"h":"5c859cdda18f625d",
+"resumo":"Establishes measures so that the Black population has equitable health care, that is, treatment suited to its needs. The measures apply during epidemics, pandemics, outbreaks of contagious diseases and during a State of Public Calamity. The official summary (ementa) does not detail what the measures are.",
+"pontos":[
+"Deals with comprehensive health care for the Black population",
+"Applies during epidemics, pandemics and outbreaks of contagious diseases",
+"Also applies during a State of Public Calamity",
+"The ementa does not list the specific measures"
+],
+"tags":[
+"Black population",
+"racial equity",
+"pandemic",
+"public calamity",
+"health of the Black population"
 ]
 },
 "2253943":{
@@ -4280,6 +4313,23 @@
 "colorectal cancer",
 "men's health",
 "cancer prevention"
+]
+},
+"2332174":{
+"h":"0693f9819a641b87",
+"resumo":"Recognizes that the state is responsible for the forced disappearance of the 11 victims of Acari. It also establishes reparation and non-repetition measures for the victims and the families of the Acari Massacre. The official summary (ementa) does not detail what these measures are.",
+"pontos":[
+"Recognizes the state's responsibility for the forced disappearance of 11 victims of Acari",
+"Provides for reparation measures for victims and families of the Acari Massacre",
+"Provides for non-repetition measures",
+"The ementa does not specify the content of the measures"
+],
+"tags":[
+"Acari Massacre",
+"forced disappearance",
+"reparation for victims",
+"state responsibility",
+"human rights"
 ]
 },
 "2333334":{
@@ -15182,6 +15232,22 @@
 "twice-exceptionality",
 "tribute"
 ]
+},
+"2655570":{
+"h":"a98750099f1ccfb6",
+"resumo":"Changes six laws, including complementary laws from 2020, 2023, 2025 and 2026, to give the federal Executive branch new management instruments. The official summary (ementa) says the goal is the country's macroeconomic stability and conditions for socioeconomic development. The ementa does not detail what these instruments are.",
+"pontos":[
+"Amends four complementary laws and two ordinary laws (Law 11.540/2007 and Law 9.796/1999)",
+"Gives the federal Executive branch new management instruments",
+"Cites macroeconomic stability and socioeconomic development as its purpose",
+"The ementa does not explain the content of the changes to each law"
+],
+"tags":[
+"macroeconomic stability",
+"Executive branch",
+"complementary law",
+"federal management"
+]
 }
 },
 "votacoes":{
@@ -15588,6 +15654,10 @@
 "2244008-99":{
 "h":"518592de604e8f74",
 "descricao":"The reformulated floor substitute text to Bill No. 2.950 of 2019, adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship, was approved."
+},
+"2253448-98":{
+"h":"407c0f9ab79a1eed",
+"descricao":"Approved the Substitute Text to Bill No. 2.819, of 2020, adopted by the rapporteur of the Health Committee."
 },
 "2254495-42":{
 "h":"5cf9f847e020d305",
@@ -16056,6 +16126,10 @@
 "2330136-58":{
 "h":"ec5f7fa3599fc327",
 "descricao":"Substitute text to Bill No. 1.749 of 2022 approved, as adopted by the rapporteur of the Committee on Health."
+},
+"2332174-59":{
+"h":"874e036fb5af7b9a",
+"descricao":"Approved the Substitute Text to Bill No. 1.969, of 2022, from the Committee on Human Rights, Minorities and Racial Equality. Yes: 292; No: 147; Abstention: 2; Total: 441."
 },
 "2333334-44":{
 "h":"6bf1cc4b6bcc050a",
@@ -18757,6 +18831,10 @@
 "h":"d82755d3ca0c4127",
 "descricao":"Approved Resolution Bill No. 50, of 2026."
 },
+"2655570-39":{
+"h":"5739615e546849ae",
+"descricao":"Approved Complementary Bill No. 299, of 2026, except for the separate votes. Yes: 353; No: 128; Abstention: 5; Total: 486."
+},
 "345311-270":{
 "h":"8e1aad80c07fa2f9",
 "descricao":"Approved the Global Substitute Sub-amendment to Bill No. 490 of 2007, adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship, except for the separate votes. Yes: 283; No: 155; Abstention: 1; Total: 439."
@@ -18828,6 +18906,10 @@
 "604557-191":{
 "h":"d13b38d5e4488da4",
 "descricao":"Approved the Substitute Text to Bill No. 6.969 of 2013, adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship, except for the separate vote. Yes: 378; No: 66; Abstention: 1; Total: 445."
+},
+"606005-107":{
+"h":"e6b5403d1134e38a",
+"descricao":"Approved the Substitute Text to Bill No. 7.103, of 2014, from the Committee on Social Security and Family."
 },
 "949094-181":{
 "h":"d398b17ebd01070b",
