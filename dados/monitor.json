@@ -876,6 +876,28 @@
    "avisos": [
     "Coleta: 1 projetos sem busca única (veja o relatório)."
    ]
+  },
+  {
+   "data": "2026-11-25",
+   "contagens": {
+    "votacoes": 984,
+    "projetos": 944,
+    "deputados": 644,
+    "nominais": 219,
+    "votos": 91522
+   },
+   "pendentes": 1,
+   "pendentes_en": 0,
+   "pct_incertos": 11.7,
+   "gerado_em": "2026-11-25",
+   "custo_mes_usd": 0.79,
+   "erros": [
+    "A publicação do site terminou com resultado 'failure'. Veja o log: https://github.com/rpferreira/voto-de-verdade/actions/runs/45677105666",
+    "O site no ar está desatualizado: dados de 2026-11-24, esperado 2026-11-25."
+   ],
+   "avisos": [
+    "Coleta: 1 projetos sem busca única (veja o relatório)."
+   ]
   }
  ]
 }
