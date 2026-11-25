@@ -3,6 +3,10 @@ name: Publicar o site
 # Põe o site no ar (GitHub Pages) toda vez que algo da pasta site/ muda no ramo principal,
 # e também depois da atualização diária (que chama este fluxo). Se falhar, a execução fica
 # vermelha e o GitHub avisa por e-mail.
+#
+# A entrega ao GitHub Pages (deploy-pages) falha às vezes por problema passageiro do próprio GitHub (10/11 e 25/11/2026:
+# «Fetching artifact metadata failed», mesmo com o arquivo do site já enviado), e o site ficava um dia desatualizado.
+# Por isso ela tem até 3 tentativas, com pausas de 2 e de 5 minutos; só a última falha deixa a execução vermelha.
 on:
   push:
     branches: [main]
@@ -24,10 +28,10 @@ concurrency:
 jobs:
   publicar:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     environment:
       name: github-pages
-      url: ${{ steps.pagina.outputs.page_url }}
+      url: ${{ steps.pagina_3.outputs.page_url || steps.pagina_2.outputs.page_url || steps.pagina_1.outputs.page_url }}
     steps:
       - name: Baixar o repositório já atualizado
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,5 +64,30 @@ jobs:
           include-hidden-files: true
 
       - name: Publicar
-        id: pagina
+        id: pagina_1
+        continue-on-error: true
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      - name: Esperar 2 minutos antes de tentar publicar de novo
+        if: steps.pagina_1.outcome == 'failure'
+        run: |
+          echo "::warning::A publicação falhou na primeira tentativa; espero 2 minutos e tento de novo."
+          sleep 120
+
+      - name: Publicar (segunda tentativa)
+        id: pagina_2
+        if: steps.pagina_1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      - name: Esperar 5 minutos antes da última tentativa
+        if: steps.pagina_1.outcome == 'failure' && steps.pagina_2.outcome == 'failure'
+        run: |
+          echo "::warning::A publicação falhou na segunda tentativa; espero 5 minutos e tento pela última vez."
+          sleep 300
+
+      # Última tentativa: sem continue-on-error, então se falhar a execução fica vermelha e o monitoramento avisa.
+      - name: Publicar (terceira tentativa)
+        id: pagina_3
+        if: steps.pagina_1.outcome == 'failure' && steps.pagina_2.outcome == 'failure'
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
