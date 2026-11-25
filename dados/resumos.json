@@ -2684,6 +2684,34 @@
    "autonomia produtiva"
   ]
  },
+ "2253448": {
+  "assunto": "Saúde",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "b431dd060dacd26d",
+  "gerado_em": "2026-11-25",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata da atenção integral à saúde da população negra",
+   "Vale em epidemias, pandemias e surtos de doenças contagiosas",
+   "Vale também durante Estado de Calamidade Pública",
+   "A ementa não lista as medidas específicas"
+  ],
+  "resumo": "Estabelece medidas para que a população negra tenha atendimento de saúde com equidade, ou seja, com tratamento adequado às suas necessidades. As medidas valem em epidemias, pandemias, surtos de doenças contagiosas e durante Estado de Calamidade Pública. A ementa não detalha quais são as medidas.",
+  "tags": [
+   "população negra",
+   "equidade racial",
+   "pandemia",
+   "calamidade pública",
+   "saúde da população negra"
+  ]
+ },
  "2253943": {
   "assunto": "Administração Pública e Congresso",
   "assunto_secundario": "Educação",
@@ -6048,6 +6076,34 @@
    "câncer colorretal",
    "saúde do homem",
    "prevenção de câncer"
+  ]
+ },
+ "2332174": {
+  "assunto": "Trabalho e Direitos",
+  "assunto_secundario": "Segurança Pública",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "b99f4f04aa6ee87f",
+  "gerado_em": "2026-11-25",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Reconhece a responsabilidade do Estado pelo desaparecimento forçado de 11 vítimas de Acari",
+   "Prevê medidas de reparação para vítimas e familiares da Chacina de Acari",
+   "Prevê medidas de não repetição",
+   "A ementa não especifica o conteúdo das medidas"
+  ],
+  "resumo": "Reconhece que o Estado é responsável pelo desaparecimento forçado das 11 vítimas de Acari. Também estabelece medidas de reparação e de não repetição para as vítimas e os familiares da Chacina de Acari. A ementa não detalha quais são essas medidas.",
+  "tags": [
+   "Chacina de Acari",
+   "desaparecimento forçado",
+   "reparação às vítimas",
+   "responsabilidade do Estado",
+   "direitos humanos"
   ]
  },
  "2333334": {
@@ -24482,6 +24538,33 @@
    "homenagem"
   ]
  },
+ "2655570": {
+  "assunto": "Impostos e Economia",
+  "assunto_secundario": "Administração Pública e Congresso",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "ff49d31e8ef66ae3",
+  "gerado_em": "2026-11-25",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Altera quatro leis complementares e duas leis ordinárias (Lei 11.540/2007 e Lei 9.796/1999)",
+   "Dá ao Poder Executivo federal novos instrumentos de gestão",
+   "Cita como finalidade a estabilidade macroeconômica e o desenvolvimento socioeconômico",
+   "A ementa não explica o conteúdo das mudanças em cada lei"
+  ],
+  "resumo": "Muda seis leis, entre elas leis complementares de 2020, 2023, 2025 e 2026, para dar ao Poder Executivo federal novos instrumentos de gestão. A ementa diz que o objetivo é a estabilidade macroeconômica do País e condições para o desenvolvimento socioeconômico. A ementa não detalha quais instrumentos são esses.",
+  "tags": [
+   "estabilidade macroeconômica",
+   "Poder Executivo",
+   "lei complementar",
+   "gestão federal"
+  ]
+ },
  "285284": {
   "assunto": "Administração Pública e Congresso",
   "assunto_secundario": "Relações Internacionais e Defesa",
@@ -25296,6 +25379,33 @@
    "bioma marinho",
    "conservação marinha",
    "litoral"
+  ]
+ },
+ "606005": {
+  "assunto": "Saúde",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "f3c3c9d42fac2ff9",
+  "gerado_em": "2026-11-25",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera o Estatuto da Igualdade Racial (Lei nº 12.288/2010)",
+   "Inclui o quesito cor ou raça em prontuários, registros e cadastramentos",
+   "Vale para o Sistema de Informação em Saúde do SUS"
+  ],
+  "resumo": "Muda o Estatuto da Igualdade Racial (Lei nº 12.288/2010) para incluir o quesito cor ou raça nos prontuários, registros e cadastros do Sistema de Informação em Saúde do SUS.",
+  "tags": [
+   "cor ou raça",
+   "igualdade racial",
+   "SUS",
+   "prontuário",
+   "Estatuto da Igualdade Racial"
   ]
  },
  "610520": {
