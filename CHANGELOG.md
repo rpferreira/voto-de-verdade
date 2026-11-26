@@ -2,6 +2,13 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.11.1 (2026-11-26)
+
+### Ajustes
+- **Tamanhos de letra:** o site usava 22 tamanhos diferentes, vários quase iguais (de 14,4 a 15,6 px, por exemplo). Agora há uma escala fixa, e os valores soltos foram para o degrau mais próximo, com diferença de no máximo 0,8 px: links do topo, abas, descrição dos cartões de assunto, fichas de voto, partido e estado nos cartões de deputado e descrições dos princípios (15 px); seletor de idioma, guia da votação e detalhe dos gráficos (14 px); título do rodapé (17 px). O cabeçalho do celular mantém os tamanhos compactos de propósito.
+- **Painel «Princípios» da tela inicial:** o canto passa de 20 para 24 px de raio, o mesmo dos outros painéis grandes.
+- **Documentação e testes:** novo `docs/design-system.md` com as cores (claro e escuro), a escala de letras e os raios, e novo teste `testes/tokens.py` que barra cor escrita à mão, tamanho de letra ou raio fora das tabelas, token de cor sem versão escura e contraste de texto abaixo de 4,5:1.
+
 ## 0.11.0 (2026-11-26)
 
 ### Novidades
