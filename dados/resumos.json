@@ -6241,6 +6241,33 @@
    "fundo penitenciário"
   ]
  },
+ "2335264": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "d5767f85875c7f01",
+  "gerado_em": "2026-11-26",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera o Código de Processo Penal (Decreto-Lei nº 3.689/1941)",
+   "Altera a Lei dos Juizados Especiais (Lei nº 9.099/1995)",
+   "Trata do cabimento de instrumentos despenalizantes"
+  ],
+  "resumo": "Muda o Código de Processo Penal e a Lei dos Juizados Especiais nas regras sobre quando se pode usar instrumentos despenalizantes, que são medidas que evitam ou reduzem a aplicação de pena. A ementa não detalha quais mudanças são feitas.",
+  "tags": [
+   "juizados especiais",
+   "código de processo penal",
+   "despenalização",
+   "processo penal",
+   "penas"
+  ]
+ },
  "2336393": {
   "assunto": "Impostos e Economia",
   "assunto_secundario": "Trabalho e Direitos",
@@ -11168,6 +11195,34 @@
    "doença rara",
    "benefício",
    "pensão especial"
+  ]
+ },
+ "2394518": {
+  "assunto": "Educação",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "89566a082d69be74",
+  "gerado_em": "2026-11-26",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Cria o Protocolo de Acolhimento e Atendimento às vítimas de discriminação racial",
+   "Vale para estabelecimentos de ensino do país",
+   "Abrange também condutas análogas à discriminação racial",
+   "Altera as Leis nº 13.431/2017 e nº 8.069/1990"
+  ],
+  "resumo": "Cria um protocolo para acolher e atender vítimas de discriminação racial e condutas parecidas em escolas e outros estabelecimentos de ensino do país. Também muda a Lei nº 13.431, de 2017, e o Estatuto da Criança e do Adolescente (Lei nº 8.069, de 1990).",
+  "tags": [
+   "racismo",
+   "discriminação racial",
+   "escolas",
+   "acolhimento de vítimas",
+   "criança e adolescente"
   ]
  },
  "2394688": {
@@ -24427,6 +24482,34 @@
    "armas"
   ]
  },
+ "2647427": {
+  "assunto": "Segurança Pública",
+  "assunto_secundario": "Trabalho e Direitos",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "57d55375dd5937a4",
+  "gerado_em": "2026-11-26",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei Maria da Penha (Lei nº 11.340/2006)",
+   "Trata da monitoração eletrônica como medida protetiva de urgência",
+   "Prevê alertas sonoros e luminosos",
+   "Prevê uso excepcional de contenção física remota"
+  ],
+  "resumo": "Muda a Lei Maria da Penha para fixar garantias mínimas na monitoração eletrônica usada como medida protetiva de urgência. A ementa cita alertas sonoros e luminosos, o uso excepcional de contenção física à distância e a proteção da vítima.",
+  "tags": [
+   "Lei Maria da Penha",
+   "tornozeleira eletrônica",
+   "violência doméstica",
+   "medida protetiva",
+   "monitoramento"
+  ]
+ },
  "2648606": {
   "assunto": "Impostos e Economia",
   "assunto_secundario": null,
@@ -25649,6 +25732,33 @@
    "fauna",
    "rodovias",
    "ferrovias"
+  ]
+ },
+ "949156": {
+  "assunto": "Educação",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "e534579e38afbfa8",
+  "gerado_em": "2026-11-26",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Altera a Lei nº 9.394/1996, a Lei de Diretrizes e Bases da Educação (LDB)",
+   "O tema é a educação em tempo integral",
+   "A ementa não detalha o conteúdo das mudanças"
+  ],
+  "resumo": "Muda a Lei de Diretrizes e Bases da Educação (LDB, Lei nº 9.394/1996) para tratar da educação em tempo integral. A ementa não detalha quais regras novas serão incluídas na lei.",
+  "tags": [
+   "escola integral",
+   "tempo integral",
+   "LDB",
+   "ensino",
+   "jornada escolar"
   ]
  },
  "962503": {
