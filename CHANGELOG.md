@@ -2,6 +2,15 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.11.0 (2026-11-26)
+
+### Novidades
+- **Catálogo de componentes (`/catalogo/`):** página pública, em português e em inglês, com as cores, os tipos de letra, os espaços, as formas e as peças com que as telas são montadas: botões, campo de busca, fichas de voto, placar, selos, avisos, cartões de projeto, de deputado e de assunto, estado vazio e ícones. As peças são as mesmas das telas, com exemplos inventados, e dá para ver nos modos claro e escuro. Ela não aparece no menu nem no rodapé: abre pelo endereço.
+
+### Ajustes
+- **Selos de duas linhas no celular:** o selo «Votação simbólica, sem o voto de cada deputado» tinha 42px de altura quando o texto passava para a segunda linha, fora da grade de 4px do site. O filete de 1px do selo passa a ser sombra interna, e o selo fica com 40px. Vale também para o selo de aviso. O visual é o mesmo.
+- **Testes:** o catálogo entra nos testes de navegador, de espaçamento, de idiomas e de segurança.
+
 ## 0.10.4 (2026-11-18)
 
 ### Ajustes

@@ -162,7 +162,7 @@ def ataque(p, base, projetos, deputados, assuntos):
         urls += [f"/deputado/{i}/", f"/#/deputado/{i}"]
     for a in assuntos[:4]:
         urls += [f"/assunto/{a['slug']}/", f"/#/assunto/{a['slug']}"]
-    urls += ["/", "/#/", "/deputados/", "/#/deputados", "/sobre/", "/em-numeros/", "/#/em-numeros", "/em-numeros/por-assunto/", "/#/em-numeros/por-assunto", "/inteligencia-artificial/", "/#/inteligencia-artificial", "/inteligencia-artificial/confianca/", "/#/inteligencia-artificial/confianca"]
+    urls += ["/", "/#/", "/deputados/", "/#/deputados", "/sobre/", "/catalogo/", "/#/catalogo", "/em-numeros/", "/#/em-numeros", "/em-numeros/por-assunto/", "/#/em-numeros/por-assunto", "/inteligencia-artificial/", "/#/inteligencia-artificial", "/inteligencia-artificial/confianca/", "/#/inteligencia-artificial/confianca"]
     img = "%3Cimg%20src=x%20onerror=window.__pwn=9%3E"
     urls += [
         f"/#/assunto/%22%3E{img}", f"/#/projeto/%22%3E{img}", "/#/deputado/<img src=x onerror=window.__pwn=9>",

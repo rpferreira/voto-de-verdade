@@ -230,7 +230,7 @@ def navegador(saida):
     avisor = next(p for p in projetos if p["ar"])
     subst = next(p for p in projetos if p["subst"])
     sem_resumo = next((p for p in projetos if not p["resumo"]), None)
-    rotas = ["/", "/?q=vacina", "/?q=zzzzqq", "/#/deputados", "/#/deputados?q=zzzzqq", "/#/deputados?uf=SP", f"/#/deputado/{dep['id']}",
+    rotas = ["/", "/#/catalogo", "/?q=vacina", "/?q=zzzzqq", "/#/deputados", "/#/deputados?q=zzzzqq", "/#/deputados?uf=SP", f"/#/deputado/{dep['id']}",
              f"/#/deputado/{dep['id']}?v=S", "/#/deputado/1", "/#/sobre", "/#/apoie", "/#/em-numeros", "/#/em-numeros/por-mes", "/#/em-numeros/por-assunto",
              "/#/em-numeros/resultado", "/#/em-numeros/participacao", "/#/em-numeros/placar-votos", "/#/em-numeros/placar-margem", "/#/em-numeros?ano=2025",
              "/#/inteligencia-artificial", "/#/inteligencia-artificial/confianca", "/#/assunto/inexistente", "/#/projeto/999", "/#/foo/bar",

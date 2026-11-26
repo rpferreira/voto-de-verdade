@@ -109,8 +109,8 @@ h3 { font-weight: 500; }
 .naoachou__texto { margin-top: 0; }
 /* Notas e contagens (o mesmo em todas as telas): 15px, cinza. */
 .nota, .estado, .numeros__nota, .confianca, .nota-neutra { font-size: 0.95rem; line-height: 1.5rem; }
-.cabeca-assunto h1, .texto-longo h1, .abertura h1, .cabeca-dep h1, .numeros h1, .naoachou h1 { margin: 0; font-size: clamp(2rem, 5.6vw, 3rem); line-height: 1.05; line-height: round(up, 1.05em, 4px); }
-.texto-longo h1, .numeros h1 { margin-bottom: var(--item); }
+.cabeca-assunto h1, .texto-longo h1, .catalogo h1, .abertura h1, .cabeca-dep h1, .numeros h1, .naoachou h1 { margin: 0; font-size: clamp(2rem, 5.6vw, 3rem); line-height: 1.05; line-height: round(up, 1.05em, 4px); }
+.texto-longo h1, .catalogo h1, .numeros h1 { margin-bottom: var(--item); }
 h3, .projeto__corpo h3, .numeros__bloco h3 { font-size: 1.0625rem; line-height: 1.5rem; }
 
 .pular { position: absolute; left: var(--item); top: var(--item); transform: translateY(-200%); z-index: 20; background: var(--tinta); color: var(--papel); padding: var(--item); border-radius: var(--raio); }
@@ -375,11 +375,11 @@ details.ajuda p { margin: var(--perto) 0 0; color: var(--tinta-suave); }
 .proj__titulo { font-size: 1.0625rem; font-weight: 500; line-height: 1.5rem; max-width: 70ch; }
 .proj__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--junto) var(--item); color: var(--tinta-suave); font-size: 0.95rem; }
 
-.selo-aviso { display: inline-flex; align-items: center; min-height: 1.5rem; line-height: 1.25rem; background: var(--aviso-fundo); color: var(--aviso-texto); border: 1px solid var(--aviso-borda); border-radius: var(--raio); padding: 0 var(--perto); font-size: 0.875rem; }
+.selo-aviso { display: inline-flex; align-items: center; min-height: 1.5rem; line-height: 1.25rem; background: var(--aviso-fundo); color: var(--aviso-texto); box-shadow: inset 0 0 0 1px var(--aviso-borda); border-radius: var(--raio); padding: 0 var(--perto); font-size: 0.875rem; }
 /* Situação que merece destaque (não dá para só ler de passagem): amarelo para atenção (classificação incerta, fora do exercício), cinza para um fato neutro (votação simbólica ou secreta). */
 /* «Novo»: projeto que entrou no site há poucos dias (só em «Últimas votações» da tela inicial). Mesmas cores da etiqueta «beta». */
 .selo-novo { display: inline-flex; align-items: center; height: 1.5rem; padding: 0 var(--perto); border-radius: 99px; background: var(--cobalto-claro); color: var(--cobalto); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; }
-.selo-info { display: inline-flex; align-items: center; min-height: 1.5rem; line-height: 1.25rem; background: color-mix(in srgb, var(--tinta) 6%, transparent); color: var(--tinta); border: 1px solid var(--linha); border-radius: var(--raio); padding: 0 var(--perto); font-size: 0.875rem; }
+.selo-info { display: inline-flex; align-items: center; min-height: 1.5rem; line-height: 1.25rem; background: color-mix(in srgb, var(--tinta) 6%, transparent); color: var(--tinta); box-shadow: inset 0 0 0 1px var(--linha); border-radius: var(--raio); padding: 0 var(--perto); font-size: 0.875rem; }  /* filete de 1px como sombra interna: assim o selo de duas linhas tem 40px, e não 42 */
 .rotulo-ia, .resumo-projeto .rotulo-ia { display: flex; align-items: flex-start; gap: var(--perto); margin: 0 0 var(--perto); font-size: 0.75rem; line-height: 1rem; color: var(--tinta-suave); }
 .rotulo-ia .icone { width: 0.875rem; height: 0.875rem; flex: none; margin-top: 0; opacity: 0.8; }
 .cartao-aviso { background: var(--aviso-fundo); color: var(--aviso-texto); box-shadow: inset 0 0 0 1px var(--aviso-borda); border-radius: var(--raio); padding: var(--item); }
@@ -640,6 +640,35 @@ a.botao, a.botao:hover { text-decoration: none; }
 .aviso-idioma__fechar { display: inline-grid; place-items: center; flex: none; width: 2rem; height: 2rem; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--tinta); cursor: pointer; }
 .aviso-idioma__fechar:hover { background: color-mix(in srgb, var(--tinta) 8%, transparent); }
 .aviso-idioma__fechar svg { width: 1.25rem; height: 1.25rem; }
+
+/* ---------- catálogo de componentes (#/catalogo): só tokens e papéis, como o resto do site ---------- */
+.catalogo { padding-bottom: var(--bloco); }
+.catalogo > p, .catalogo__secao > p { max-width: 46rem; margin: 0 0 var(--item); }
+.catalogo__secao { margin-top: var(--bloco); }
+.catalogo__secao > h2 { margin: 0 0 var(--perto); }
+.catalogo__secao > h3 { margin: var(--grupo) 0 var(--perto); }
+/* Mesa de exemplo: cantos retos de propósito, para as peças de dentro (que têm raio próprio) não precisarem acompanhar os cantos dela. */
+.catalogo__exemplo { display: grid; gap: var(--item); padding: var(--item); background: var(--papel); box-shadow: inset 0 0 0 1px var(--linha); }
+.catalogo__exemplo > p { margin: 0; }
+.catalogo__linha-botoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--perto) var(--item); }
+.catalogo__busca { margin-top: 0; max-width: 40rem; }
+.catalogo__grade { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--item); grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); }
+.catalogo__grade--icones { grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); }
+.catalogo__cor { display: grid; align-content: start; gap: var(--junto); padding: var(--perto); border-radius: var(--raio); background: var(--superficie); box-shadow: inset 0 0 0 1px var(--linha); }
+.catalogo__amostra { height: 4rem; border-radius: var(--perto); background: var(--amostra); box-shadow: inset 0 0 0 1px var(--linha); }
+.catalogo__nome { font-weight: 600; font-size: 0.95rem; line-height: 1.5rem; overflow-wrap: anywhere; }
+.catalogo__valor, .catalogo__papel { font-size: 0.95rem; line-height: 1.5rem; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
+.catalogo__espacos { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--item); }
+.catalogo__espacos > li { display: grid; gap: var(--perto); }
+.catalogo__linha { display: flex; flex-wrap: wrap; gap: 0 var(--item); font-size: 0.95rem; line-height: 1.5rem; }
+.catalogo__medida { display: block; height: var(--perto); width: var(--medida); border-radius: 99px; background: var(--cobalto); }
+.catalogo__forma { display: grid; place-items: center; min-height: 6rem; padding: var(--item); background: var(--superficie); font-size: 0.95rem; line-height: 1.5rem; }
+.catalogo__forma--raio { border-radius: var(--raio); box-shadow: inset 0 0 0 1px var(--linha); }
+.catalogo__forma--raio-grande { border-radius: var(--raio-grande); box-shadow: inset 0 0 0 1px var(--linha); }
+.catalogo__forma--sombra { border-radius: var(--raio); box-shadow: var(--sombra); }
+.catalogo__forma--sombra-alta { border-radius: var(--raio); box-shadow: var(--sombra-alta); }
+.catalogo__icone { display: grid; justify-items: center; gap: var(--perto); padding: var(--item); border-radius: var(--raio); background: var(--superficie); box-shadow: inset 0 0 0 1px var(--linha); text-align: center; }
+.catalogo__icone .icone { width: 2rem; height: 2rem; color: var(--cobalto); }
 
 /* ---------- voltar ao topo (aparece depois de duas telas de rolagem) ---------- */
 .voltar-topo { position: fixed; right: var(--item); bottom: var(--item); z-index: 9; display: grid; place-items: center; width: 3rem; height: 3rem; padding: 0; border: 0; border-radius: 50%; background: var(--superficie); color: var(--tinta); cursor: pointer; box-shadow: inset 0 0 0 1px var(--linha), var(--sombra-alta); }

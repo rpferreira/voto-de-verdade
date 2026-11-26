@@ -808,6 +808,28 @@ def gerar_idioma(site, g, D, L, URL, doacao):
              estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": titulo_lic, "url": f"{URL}/{L.prefixo}licenca/", "inLanguage": lang_ld,
                            "license": LICENCA_CONTEUDO, "isPartOf": {"@id": URL + "/" + L.prefixo + "#site"}})
 
+    # ---- Catálogo de componentes (os exemplos aparecem quando o aplicativo abre; aqui ficam os textos, para buscadores e leitores sem JavaScript)
+    titulo_cat = L("Catálogo de componentes")
+    secoes_cat = [
+        (L("Cores"), L("Cada cor tem um papel, e o valor muda no modo escuro. Nenhuma cor lembra partido.")),
+        (L("Tipos de letra"), L("Uma fonte só, a Atkinson Hyperlegible Next, feita para ler bem mesmo com baixa visão. Títulos de página: 32 a 48 px; seções: 24 a 30 px; títulos de cartão: 20 px; títulos pequenos: 17 px; texto de apoio: 18 px; notas e contagens: 15 px.")),
+        (L("Espaços"), L("Os componentes só usam estes papéis, nunca números soltos. Quanto mais distante a relação entre dois elementos, maior o espaço. Quando há dois números, o segundo vale em telas largas.")),
+        (L("Formas e sombras"), L("Cantos arredondados de 16 e 24 px e duas sombras: a comum e a alta (a do cartão sob o cursor).")),
+        (L("Votos"), L("Cada voto se distingue também pela forma, não só pela cor: sim é cheio em azul, não é cheio em tinta, abstenção é vazada, obstrução tem borda tracejada e presidia tem borda pontilhada.")),
+        (L("Em construção"), L("O topo, o rodapé, os filtros, os gráficos de Em números e as telas inteiras entram nas próximas versões do catálogo.")),
+    ]
+    intro_cat = L("As cores, os tipos de letra, os espaços e as peças com que as telas do Voto de Verdade são montadas, como aparecem no site. Tudo aqui é exemplo: nomes, números e votações são inventados. Use o botão de modo escuro para ver os dois temas.")
+    g.montar("catalogo", "catalogo", L("Catálogo de componentes: {0}", NOME),
+             L("Cores, tipos de letra, espaços e peças com que as telas do Voto de Verdade são montadas, com exemplos inventados, nos temas claro e escuro."),
+             f'<div class="miolo texto-longo"><nav class="migalhas" aria-label="{migalha_voce}"><ol><li><a href="../">{L("Início")}</a></li><li aria-current="page">{esc(titulo_cat)}</li></ol></nav>'
+             f'<h1>{esc(titulo_cat)}</h1><p>{esc(intro_cat)}</p>'
+             + "".join(f"<h2>{esc(t)}</h2><p>{esc(x)}</p>" for t, x in secoes_cat)
+             + f'<p class="nota">{esc(L("Os exemplos aparecem quando a página abre com JavaScript."))}</p></div>',
+             markdown=f"# {titulo_cat}\n\n{intro_cat}\n\n" + "\n\n".join(f"## {t}\n\n{x}" for t, x in secoes_cat) + "\n",
+             og=("texto", titulo_cat, None, None),
+             estruturados={"@context": "https://schema.org", "@type": "WebPage", "name": titulo_cat, "url": f"{URL}/{L.prefixo}catalogo/", "inLanguage": lang_ld,
+                           "isPartOf": {"@id": URL + "/" + L.prefixo + "#site"}})
+
     # ---- Em números (as colunas e barras aparecem quando o aplicativo abre; aqui ficam os textos e, em páginas próprias, as tabelas)
     pn = D.painel
     if pn:
@@ -1250,7 +1272,7 @@ def main():
     versao_data = re.search(r"^## [\d.]+ \((\d{4}-\d{2}-\d{2})\)", open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "CHANGELOG.md"), encoding="utf-8").read(), re.M)
     data_textos = versao_data.group(1) if versao_data else meta["gerado_em"]
     datas_g = geradores["pt"].datas
-    TEXTOS_FIXOS = {"sobre", "licenca", "apoie", "inteligencia-artificial"}
+    TEXTOS_FIXOS = {"sobre", "licenca", "apoie", "inteligencia-artificial", "catalogo"}
 
     def data_de(caminho):
         if caminho in datas_g:
