@@ -2,7 +2,7 @@
 
 A versão do site aparece no rodapé de todas as páginas («Versão 0.1.0 (beta) · Histórico de mudanças») e vem de **um único arquivo**: `VERSION`, na raiz do repositório. O histórico fica em `CHANGELOG.md`.
 
-> Não confunda com o `?v=abc123` que aparece nos endereços de `app.js` e `estilos.css`. Aquilo é só um código para o navegador baixar de novo o arquivo quando ele muda (veja `versao()` em `site/gerar_paginas.py`). A versão do site é esta.
+> Não confunda com o `?v=abc123` que aparece nos endereços de `app.js` e `estilos.css`. Aquilo é só um código para o navegador baixar de novo o arquivo quando ele muda (veja `versao()` e `fixar_modulos()` em `site/gerar_paginas.py`). A versão do site é esta.
 
 ## 1. Formato
 

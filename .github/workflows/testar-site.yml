@@ -65,6 +65,10 @@ jobs:
       - name: Conferir as regras de espaçamento (grade de 8px)
         run: python testes/espacamento.py _site
 
+      # Módulos JavaScript (app.js e site/js/): imports certos, nenhum módulo sem uso, e o mesmo ?v= no app.js e em todo import.
+      - name: Conferir os módulos JavaScript
+        run: python testes/modulos.py _site
+
       # Cores, tamanhos de letra e raios só dos valores de docs/design-system.md; contraste de 4,5:1 nos dois temas.
       - name: Conferir os tokens de cor, letra e forma
         run: python testes/tokens.py

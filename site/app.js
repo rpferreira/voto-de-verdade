@@ -5,6 +5,8 @@
    As páginas prontas (projeto/<id>/, deputado/<id>/, assunto/<slug>/) são feitas por site/gerar_paginas.py,
    com título e prévia próprios para Google e WhatsApp; elas abrem o mesmo aplicativo (rota inicial no bloco de configuração).
    Os filtros ficam no endereço para poder compartilhar. */
+import { h, svg, semAcento, termos, casa, decodificar, soHttps, somaDe, pctNum } from "./js/util.js";
+
 (async function () {
   "use strict";
 
@@ -100,32 +102,10 @@
     }
   }
 
-  const semAcento = (t) => (t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const formato = new Intl.DateTimeFormat(LOCALE, { day: "numeric", month: "long", year: "numeric" });
   const data = (iso) => (iso ? formato.format(new Date(iso + "T12:00:00")) : "");
   const num = (n) => n.toLocaleString(LOCALE);
   const plural = (n, um, varios) => `${num(n)} ${n === 1 ? um : varios}`;
-
-  function h(tag, attrs, ...filhos) {
-    const el = document.createElement(tag);
-    for (const [k, v] of Object.entries(attrs || {})) {
-      if (v === false || v == null) continue;
-      if (k === "class") el.className = v;
-      else if (k.startsWith("on") && typeof v === "function") el.addEventListener(k.slice(2), v);
-      else if (v === true) el.setAttribute(k, "");
-      else el.setAttribute(k, v);
-    }
-    for (const f of filhos.flat()) {
-      if (f == null || f === false) continue;
-      el.append(f.nodeType ? f : document.createTextNode(String(f)));
-    }
-    return el;
-  }
-
-  // Endereço com "%" malformado (por exemplo #/assunto/%) não pode derrubar o roteador: vira "não encontrado".
-  const decodificar = (t) => { try { return decodeURIComponent(t); } catch (e) { return t; } };
-  // Só aceitamos link https que venha dos dados; qualquer outro esquema (javascript:, data:…) é ignorado.
-  const soHttps = (u) => (typeof u === "string" && /^https:\/\//i.test(u) ? u : null);
 
   function lerRota() {
     const hash = location.hash;
@@ -203,9 +183,6 @@
     for (const p of lista) p._t = semAcento([p.titulo, p.resumo, p.nome, (p.tags || []).join(" ")].join(" "));
     return (indiceProjetos = lista);
   }
-  // "pl4952" vale como "pl 4952". Termos de até 3 letras só casam no começo de uma palavra ("ia" não acha "previdência").
-  const termos = (q) => semAcento(q).replace(/([a-z])(\d)/g, "$1 $2").split(/\s+/).filter((t) => t.length > 1);
-  const casa = (texto, ts) => ts.every((t) => (t.length <= 3 ? texto.startsWith(t) || texto.includes(" " + t) || new RegExp("[^a-z0-9]" + t.replace(/[^a-z0-9]/g, "\\$&")).test(texto) : texto.includes(t)));
 
   let indiceVot = null;
   async function indiceVotacoes() {
@@ -250,12 +227,6 @@
     "ia": "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z|M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z",
     "p-sem-rastreio": "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z|M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z|M3 3l18 18",
   };
-  const SVGNS = "http://www.w3.org/2000/svg";
-  function svg(tag, attrs) {
-    const el = document.createElementNS(SVGNS, tag);
-    for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, v);
-    return el;
-  }
   function icone(slug) {
     const s = svg("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true", class: "icone" });
     for (const d of (ICONES[slug] || ICONES.outros).split("|")) s.append(svg("path", { d }));
@@ -614,8 +585,6 @@
     ["apertada", tx("Apertada"), tx("diferença de menos de 15%")],
   ];
   const NIVEIS_IA = [["alta", tx("Alta")], ["media", tx("Média")], ["baixa", tx("Baixa")]];
-  const somaDe = (obj, chaves) => chaves.reduce((a, k) => a + (obj[k] || 0), 0);
-  const pctNum = (a, b) => (b ? Math.round((1000 * a) / b) / 10 : 0);
   const fmtPct = (v) => v.toLocaleString(LOCALE, { maximumFractionDigits: 1 }) + "%";
   // Os números do período inteiro ou de um ano: o que a tela mostra e o que as tabelas e os arquivos baixados trazem.
   const visao = (pn, ano) => (ano && pn.por_ano && pn.por_ano[ano] ? Object.assign({}, pn, pn.por_ano[ano]) : pn);
