@@ -1016,6 +1016,33 @@ with sync_playwright() as p:
         confere(pg.locator('main a[href="#/licenca"]').count() == 1, f"{nome}: «Como o site funciona» leva à licença completa")
         pg.context.close()
 
+    print("Catálogo de componentes: as peças de verdade, nos dois temas, em português e em inglês")
+    for caminho, nome, titulo in (("/", "PT", "Catálogo de componentes"), ("/en/", "EN", "Component catalog")):
+        for largura, tema, papel in ((1280, "light", "#f5f6fa"), (390, "dark", "#0b1018")):
+            rot = f"{nome} {largura}px {tema}"
+            pg = com_tema(nova(largura, tema), tema)
+            pg.goto(base + caminho + "catalogo/")
+            pg.wait_for_selector("#titulo-catalogo", timeout=15000)
+            confere(pg.locator("h1").inner_text() == titulo, f"{rot}: título do catálogo")
+            confere(pg.locator(".catalogo__secao").count() == 11, f"{rot}: 11 seções")
+            confere(pg.locator(".catalogo__cor").count() == 11, f"{rot}: 11 cores")
+            confere(pg.locator(".catalogo__valor").first.inner_text() == papel, f"{rot}: o valor de --papel é o do tema na tela ({papel})")
+            confere(pg.locator(".catalogo .proj").count() == 5, f"{rot}: 5 cartões de projeto de exemplo")
+            confere(pg.locator(".catalogo .tiles > li").count() == len(assuntos), f"{rot}: um cartão para cada um dos {len(assuntos)} assuntos")
+            confere(pg.locator(".catalogo .voto").count() == 10, f"{rot}: 10 fichas de voto (5 soltas e 5 nos cartões de deputado)")
+            confere(pg.locator(".catalogo .catalogo__icone").count() >= 13, f"{rot}: ícones listados")
+            confere(sem_rolagem_lateral(pg), f"{rot}: o catálogo não rola para o lado")
+            endereco = pg.url
+            pg.locator(".catalogo .proj").first.click()
+            pg.locator(".catalogo .linha-dep").first.click()
+            confere(pg.url == endereco and pg.locator("#titulo-catalogo").count() == 1, f"{rot}: clicar nos exemplos não sai do catálogo")
+            confere(not pg.erros, f"{rot}: catálogo sem erros no console " + str(pg.erros))
+            pg.context.close()
+        sem = navegador.new_context(java_script_enabled=False).new_page()
+        sem.goto(base + caminho + "catalogo/")
+        confere(sem.locator("h1").inner_text() == titulo and sem.locator("main h2").count() == 6, f"{nome}: catalogo/ tem o texto sem JavaScript")
+        sem.context.close()
+
     print("Como o site funciona: destaques em semibold e links para as fontes")
     EXTERNOS = ["https://dadosabertos.camara.leg.br", "https://www.camara.leg.br", "resolucaodacamaradosdeputados-17-21-setembro-1989", "opensource.org/license/mit", "creativecommons.org/licenses/by/4.0/deed"]
     for caminho, nome in (("/", "PT"), ("/en/", "EN")):

@@ -1640,6 +1640,115 @@
     return document.getElementById("titulo-apoie");
   }
 
+  // ------------------------------------------------------------------ catálogo (cores, tipos, espaços e peças da interface)
+  // Mostra as peças de verdade (as mesmas funções das telas) com dados de exemplo, claros e escuros. Serve de mapa para quem mexe no
+  // visual e de rede de segurança: se uma peça quebrar, ela aparece quebrada aqui. Os nomes, números e votações são inventados.
+  const CATALOGO_CORES = [
+    ["--papel", tx("Fundo da página")], ["--superficie", tx("Fundo de cartões e painéis")], ["--tinta", tx("Texto")], ["--tinta-suave", tx("Texto de apoio")],
+    ["--linha", tx("Filetes e bordas")], ["--cobalto", tx("Destaque: links, foco e o voto «Sim»")], ["--cobalto-claro", tx("Fundo suave do destaque")],
+    ["--cinza-voto", tx("Abstenção, obstrução e presidia")], ["--aviso-fundo", tx("Aviso de incerteza: fundo")],
+    ["--aviso-borda", tx("Aviso de incerteza: borda")], ["--aviso-texto", tx("Aviso de incerteza: texto")],
+  ];
+  const CATALOGO_ESPACOS = [
+    ["--junto", "4", tx("Partes de uma coisa só")], ["--perto", "8", tx("Itens do mesmo grupo")], ["--item", "16", tx("Irmãos: o espaço padrão")],
+    ["--grupo", "24", tx("Grupos dentro de um bloco")], ["--bloco", "32 · 48", tx("Blocos de uma seção")], ["--respiro", "40 · 64", tx("Seções da página")],
+    ["--margem", "16 · 32", tx("Lateral da página")], ["--calha", "32 · 48", tx("Entre colunas")],
+  ];
+
+  async function telaCatalogo() {
+    const titulo = tx("Catálogo de componentes");
+    const assuntos = await dados("assuntos");
+    const secao = (id, nome, texto, ...filhos) => h("section", { class: "catalogo__secao", "aria-labelledby": id },
+      h("h2", { id }, nome), texto ? h("p", {}, texto) : null, ...filhos);
+    const exemplo = (...filhos) => h("div", { class: "catalogo__exemplo" }, ...filhos);
+    const sub = (nome) => h("h3", {}, nome);
+
+    // Cores: o valor é lido do tema que está na tela e refeito quando o tema muda.
+    const valores = [];
+    const cores = h("ul", { class: "catalogo__grade" }, CATALOGO_CORES.map(([nome, papel]) => {
+      const valor = h("span", { class: "catalogo__valor" });
+      valores.push([valor, nome]);
+      return h("li", { class: "catalogo__cor" }, h("span", { class: "catalogo__amostra", style: `--amostra:var(${nome})` }),
+        h("span", { class: "catalogo__nome" }, nome), valor, h("span", { class: "catalogo__papel" }, papel));
+    }));
+    const lerCores = () => { const cs = getComputedStyle(document.documentElement); for (const [el, nome] of valores) el.textContent = cs.getPropertyValue(nome).trim(); };
+
+    const espacos = h("ul", { class: "catalogo__espacos" }, CATALOGO_ESPACOS.map(([nome, px, papel]) => h("li", {},
+      h("span", { class: "catalogo__linha" }, h("span", { class: "catalogo__nome" }, nome), h("span", {}, tx("{0} px", px)), h("span", { class: "catalogo__papel" }, papel)),
+      h("span", { class: "catalogo__medida", style: `--medida:var(${nome})`, "aria-hidden": "true" }))));
+
+    const formas = h("ul", { class: "catalogo__grade" }, [
+      ["raio", tx("Raio comum")], ["raio-grande", tx("Raio grande")], ["sombra", tx("Sombra")], ["sombra-alta", tx("Sombra alta")],
+    ].map(([cls, nome]) => h("li", { class: "catalogo__forma catalogo__forma--" + cls }, nome)));
+
+    // Cartões de projeto de exemplo: os mesmos que as listas usam, em cada situação.
+    const base = { id: 0, nome: "PL 0000/0000", ultima: "2026-01-15", aprovada: true, tipo: "nominal" };
+    const nominal = (ap, s) => ({ id: "0-0", d: "2026-01-15", s, ap });
+    const semVotos = { porProjeto: {} };
+    const projetos = h("ul", { class: "projetos" }, [
+      linhaProjeto({ ...base, titulo: tx("Projeto de exemplo com votação nominal, aprovado") }, null, { votacao: nominal(true, [320, 120, 6, 2, 1]) }),
+      linhaProjeto({ ...base, titulo: tx("Projeto de exemplo que entrou há pouco e foi rejeitado"), aprovada: false }, null, { votacao: nominal(false, [180, 240, 4, 0, 1]), novo: true }),
+      linhaProjeto({ ...base, titulo: tx("Projeto de exemplo com classificação incerta"), ca: "media" }, null, { votacao: nominal(true, [250, 190, 3, 0, 1]) }),
+      linhaProjeto({ ...base, titulo: tx("Projeto de exemplo com votação simbólica"), tipo: "simbolica" }, semVotos),
+      linhaProjeto({ ...base, titulo: tx("Projeto de exemplo com votação secreta"), tipo: "secreta" }, semVotos),
+    ]);
+
+    // TODO (plano de componentização, passo 3): o cartão de deputado ainda é montado em quatro lugares; vira uma função só.
+    const sub1 = (extra) => [h("span", {}, tx("PARTIDO · UF")), extra];
+    const deputados = h("ul", { class: "lista-dep" }, [
+      h("li", {}, h("a", { class: "linha-dep", href: "#/catalogo" }, h("span", { class: "linha-dep__nome" }, tx("Nome de Exemplo")), h("span", { class: "linha-dep__sub" }, sub1(null)))),
+      h("li", {}, h("a", { class: "linha-dep", href: "#/catalogo" }, h("span", { class: "linha-dep__nome" }, tx("Nome de Exemplo")),
+        h("span", { class: "linha-dep__sub" }, sub1(h("span", { class: "selo-aviso" }, tx("Fora do exercício agora")))))),
+    ]);
+    const deputadosComVoto = h("ul", { class: "lista-dep" }, ORDEM_VOTO.map((c) => h("li", {}, h("a", { class: "linha-dep linha-dep--voto", href: "#/catalogo" },
+      h("span", { class: "linha-dep__nome" }, tx("Nome de Exemplo")), h("span", { class: "linha-dep__sub" }, tx("PARTIDO · UF")), fichaVoto(c)))));
+
+    const campo = h("input", { type: "search", name: "q", autocomplete: "off", spellcheck: "false", placeholder: tx("Busque por assunto ou palavra"), "aria-label": tx("Busque por assunto ou palavra"), enterkeyhint: "search" });
+    const raiz = h("div", { class: "miolo catalogo" },
+      h("nav", { class: "migalhas", "aria-label": tx("Você está em") }, h("ol", {}, h("li", {}, h("a", { href: "#/" }, tx("Início"))), h("li", { "aria-current": "page" }, titulo))),
+      h("h1", { id: "titulo-catalogo", tabindex: "-1" }, titulo),
+      h("p", {}, tx("As cores, os tipos de letra, os espaços e as peças com que as telas do Voto de Verdade são montadas, como aparecem no site. Tudo aqui é exemplo: nomes, números e votações são inventados. Use o botão de modo escuro para ver os dois temas.")),
+      secao("cat-cores", tx("Cores"), tx("Cada cor tem um papel, e o valor muda no modo escuro. Nenhuma cor lembra partido."), cores),
+      secao("cat-tipos", tx("Tipos de letra"),
+        tx("Uma fonte só, a Atkinson Hyperlegible Next, feita para ler bem mesmo com baixa visão. Títulos de página: 32 a 48 px; seções: 24 a 30 px; títulos de cartão: 20 px; títulos pequenos: 17 px; texto de apoio: 18 px; notas e contagens: 15 px."),
+        exemplo(h("p", { class: "abertura__texto" }, tx("Texto de apoio: cinza, logo abaixo do título da página.")),
+          h("p", {}, tx("Texto comum: 16 px, com linhas de 24 px.")), h("p", { class: "nota" }, tx("Nota ou contagem: 15 px, para o que é secundário.")))),
+      secao("cat-espacos", tx("Espaços"), tx("Os componentes só usam estes papéis, nunca números soltos. Quanto mais distante a relação entre dois elementos, maior o espaço. Quando há dois números, o segundo vale em telas largas."), espacos),
+      secao("cat-formas", tx("Formas e sombras"), tx("Cantos arredondados de 16 e 24 px e duas sombras: a comum e a alta (a do cartão sob o cursor)."), formas),
+      secao("cat-botoes", tx("Botões e campos"), null,
+        exemplo(h("p", { class: "catalogo__linha-botoes" }, h("button", { type: "button", class: "botao" }, tx("Botão principal")),
+            h("button", { type: "button", class: "botao botao--leve" }, tx("Botão leve")), h("a", { href: "#/catalogo" }, tx("Link de exemplo"))),
+          h("form", { class: "heroi__busca catalogo__busca", role: "search", "aria-label": tx("Procurar assunto ou projeto"), onsubmit: (e) => e.preventDefault() }, caixaDeBusca(campo)))),
+      secao("cat-votos", tx("Votos"), tx("Cada voto se distingue também pela forma, não só pela cor: sim é cheio em azul, não é cheio em tinta, abstenção é vazada, obstrução tem borda tracejada e presidia tem borda pontilhada."),
+        sub(tx("Fichas de voto")), exemplo(h("p", { class: "catalogo__linha-botoes" }, ORDEM_VOTO.map(fichaVoto))),
+        sub(tx("Placar")), exemplo(placarVotos({ S: 320, N: 120, A: 6, O: 2, P: 1 })),
+        sub(tx("Barra do placar")), exemplo(barraDoPlacar([320, 120, 6, 2, 1]))),
+      secao("cat-selos", tx("Selos e avisos"), null,
+        exemplo(h("p", { class: "catalogo__linha-botoes" }, h("span", { class: "selo-novo" }, tx("Novo")), seloResultado(true), seloResultado(false),
+            h("span", { class: "selo-info" }, TIPO_SEM.simbolica), h("span", { class: "selo-aviso" }, tx("Classificação incerta"))),
+          seloIA(tx("Resumo feito por inteligência artificial. ")),
+          h("div", { class: "cartao-aviso" }, h("strong", {}, tx("Atenção")), h("p", {}, tx("Exemplo de aviso: a classificação foi feita automaticamente e pode estar errada."))),
+          h("p", { class: "nota-neutra" }, tx("O resumo foi feito a partir da ementa do projeto original. Esta votação foi sobre um substitutivo ou emenda, e o texto votado pode ser diferente.")))),
+      secao("cat-cartoes", tx("Cartões"), null,
+        sub(tx("Projeto")), exemplo(projetos),
+        sub(tx("Deputado")), exemplo(deputados),
+        sub(tx("Deputado, com o voto")), exemplo(deputadosComVoto),
+        sub(tx("Assunto")), exemplo(h("ul", { class: "tiles" }, assuntos.map((a) => cartaoTile(a, a.n, null, ""))))),
+      secao("cat-vazio", tx("Estado vazio"), null,
+        exemplo(estadoVazio({ icone: "v-filtro", titulo: tx("Nada para mostrar aqui"), texto: tx("Explica por que não há nada e oferece o próximo passo."), acoes: [{ rotulo: tx("Limpar filtros"), onclick: () => {} }] }))),
+      secao("cat-icones", tx("Ícones"), null,
+        h("ul", { class: "catalogo__grade catalogo__grade--icones" }, Object.keys(ICONES).map((nome) => h("li", { class: "catalogo__icone" }, icone(nome), h("span", { class: "catalogo__nome" }, nome))))),
+      secao("cat-faltam", tx("Em construção"), tx("O topo, o rodapé, os filtros, os gráficos de Em números e as telas inteiras entram nas próximas versões do catálogo.")));
+    // Os exemplos não levam a lugar nenhum: clicar neles não muda de página.
+    raiz.addEventListener("click", (e) => { const a = e.target.closest("a"); if (a && a.closest(".catalogo__exemplo")) e.preventDefault(); });
+    principal.replaceChildren(raiz);
+    lerCores();
+    const observador = new MutationObserver(() => { if (document.body.contains(raiz)) lerCores(); else observador.disconnect(); });
+    observador.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    document.title = tx("Catálogo de componentes: {0}", "Voto de Verdade");
+    return document.getElementById("titulo-catalogo");
+  }
+
   const NAO_ENCONTRADA = {
     projeto: { titulo: tx("Não achamos este projeto"), texto: tx("O número pode estar errado, ou este projeto não teve votação de mérito no plenário desde 1º de fevereiro de 2023. Só esses projetos estão aqui."), acoes: [{ rotulo: tx("Buscar um projeto ou ver os assuntos"), href: "#/" }, { rotulo: tx("Procurar um deputado"), href: "#/deputados" }] },
     assunto: { titulo: tx("Não achamos este assunto"), texto: tx("O endereço pode estar errado. Os assuntos disponíveis estão na página inicial."), acoes: [{ rotulo: tx("Ver todos os assuntos"), href: "#/" }] },
@@ -1702,6 +1811,7 @@
       else if (partes[0] === "votacao" && partes[1]) titulo = await telaVotacao(partes[1], p);
       else if (partes[0] === "sobre") titulo = await telaSobre();
       else if (partes[0] === "licenca") titulo = telaLicenca();
+      else if (partes[0] === "catalogo") titulo = await telaCatalogo();
       else if (partes[0] === "em-numeros") titulo = partes[1] ? await telaTabelaNumeros(partes[1], "numeros", p) : await telaPainel(p);
       else if (partes[0] === "inteligencia-artificial") titulo = partes[1] ? await telaTabelaNumeros(partes[1], "ia", p) : await telaIA();
       else if (partes[0] === "apoie" && soHttps(CONFIG.doacao)) titulo = telaApoie();
