@@ -12365,6 +12365,21 @@
 ],
 "aviso_assunto":"The subject of this bill was chosen by artificial intelligence and may be wrong: The official summary (ementa) does not say what the subject of Decree No. 12.466/2025 is, so the subject cannot be known; two automatic readings chose different subjects (Other and Public Administration and Congress); the bill did not fit well in any of the subjects."
 },
+"2516578":{
+"h":"b6fe5f0bae367382",
+"resumo":"Approves the text of a treaty between Brazil and Guyana on international legal cooperation in civil matters, signed in Georgetown on May 6, 2022. The official summary (ementa) does not detail the rules set out in the treaty.",
+"pontos":[
+"Deals with legal cooperation in civil matters between Brazil and Guyana",
+"The treaty was signed in Georgetown, on May 6, 2022",
+"The official summary (ementa) does not explain the content of the treaty's rules"
+],
+"tags":[
+"Guyana",
+"international treaty",
+"legal cooperation",
+"bilateral agreement"
+]
+},
 "2516804":{
 "h":"d9adb1882d2d91b8",
 "resumo":"The bill sets October 11 as International Day of the Girl on the national calendar. The official summary (ementa) states that the date has been officially celebrated by the UN since December 19, 2011, under Resolution 66/170 of the General Assembly.",
@@ -12701,6 +12716,21 @@
 "Chamber of Deputies"
 ],
 "aviso_resumo":"This summary was written by artificial intelligence and may contain errors: an automatic check found parts of the summary with no support in the original text."
+},
+"2532113":{
+"h":"67db82415b367874",
+"resumo":"Approves the text of a treaty between Brazil and Guyana on mutual legal assistance in criminal matters, signed in Georgetown on May 6, 2022. The official summary (ementa) does not detail the cooperation rules set out in the treaty.",
+"pontos":[
+"Deals with mutual legal assistance in criminal matters between Brazil and Guyana",
+"Treaty signed in Georgetown, on May 6, 2022",
+"Approves the text of the treaty by means of a legislative decree"
+],
+"tags":[
+"Guyana",
+"international treaty",
+"legal cooperation",
+"criminal matters"
+]
 },
 "2532468":{
 "h":"3d14f2c52e70cd86",
@@ -18162,6 +18192,10 @@
 "h":"cce768e2c1fc7e72",
 "descricao":"Approved: the substitute text to Legislative Decree Bill No. 214 of 2025, as adopted by the rapporteur of the Committee on Constitution, Justice and Citizenship. Yes: 383; No: 98; Total: 481."
 },
+"2516578-33":{
+"h":"d4cff401c5e41984",
+"descricao":"Approved Legislative Decree Bill No. 235, of 2025."
+},
 "2516804-30":{
 "h":"d3ae118118f66e3a",
 "descricao":"Approved: the substitute text to Bill No. 2.562 of 2025, as adopted by the rapporteur of the Committee on the Defense of Women's Rights."
@@ -18246,6 +18280,10 @@
 "2532000-22":{
 "h":"fe86129a11f6ff8e",
 "descricao":"Approved: Draft Resolution No. 55 of 2025."
+},
+"2532113-37":{
+"h":"f7fbb0467cec738d",
+"descricao":"Approved the Substitute Sub-amendment to Legislative Decree Bill No. 366, of 2025, adopted by the rapporteur of the Constitution, Justice and Citizenship Committee."
 },
 "2532468-61":{
 "h":"072c01b1d9df4872",
