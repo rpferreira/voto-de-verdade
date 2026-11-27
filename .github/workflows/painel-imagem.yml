@@ -16,6 +16,7 @@ on:
       - ".github/workflows/painel-imagem.yml"
       - "site/painel.py"
       - "site/app.js"
+      - "site/js/**"
       - "site/estilos.css"
       - "site/dados/painel.json"
       - "testes/captura_painel.py"

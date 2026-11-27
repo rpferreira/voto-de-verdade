@@ -47,8 +47,12 @@ def confere(ok, msg):
 
 
 def chaves_do_app():
-    with open(os.path.join(SITE, "app.js"), encoding="utf-8") as f:
-        js = f.read()
+    js = ""
+    arquivos = [os.path.join(SITE, "app.js")] + sorted(
+        os.path.join(raiz, nome) for raiz, _, nomes in os.walk(os.path.join(SITE, "js")) for nome in nomes if nome.endswith(".js"))
+    for arquivo in arquivos:  # o app.js e os módulos de site/js/
+        with open(arquivo, encoding="utf-8") as f:
+            js += f.read() + "\n"
     achadas = set()
     for m in re.finditer(r"\btx\(\s*\"((?:[^\"\\]|\\.)*)\"", js):
         achadas.add(json.loads('"' + m.group(1) + '"'))

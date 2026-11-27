@@ -193,10 +193,39 @@ TEXTOS_DO_MODELO = [
 ]
 
 
+IMPORT_RELATIVO = re.compile(r"""(\b(?:from|import)\s*\(?\s*)(["'])(\.{1,2}/[^"']+?\.js)\2""")
+
+
+def fixar_modulos(site, saida):
+    """O app.js é um módulo e importa os de site/js/. O navegador guarda cópia de cada arquivo por alguns minutos, então um app.js novo
+    não pode abrir um módulo velho. Um único código (impressão de app.js + js/**/*.js juntos) vai no ?v= do app.js e de todo import,
+    nas cópias de `saida`; o código-fonte em site/ continua sem ?v=. Devolve (código, lista dos módulos em js/)."""
+    modulos = sorted(
+        os.path.relpath(os.path.join(raiz, nome), site).replace(os.sep, "/")
+        for raiz, _, nomes in os.walk(os.path.join(site, "js")) for nome in nomes if nome.endswith(".js")
+    )
+    arquivos = ["app.js"] + modulos
+    impressao = hashlib.sha256()
+    for rel in arquivos:
+        with open(os.path.join(site, rel), "rb") as f:
+            impressao.update(rel.encode() + b"\0" + f.read() + b"\0")
+    codigo = impressao.hexdigest()[:10]
+    for rel in arquivos:
+        destino = os.path.join(saida, rel)
+        with open(destino, encoding="utf-8") as f:
+            texto = f.read()
+        novo = IMPORT_RELATIVO.sub(lambda m: f"{m.group(1)}{m.group(2)}{m.group(3)}?v={codigo}{m.group(2)}", texto)
+        if novo != texto:
+            with open(destino, "w", encoding="utf-8") as f:
+                f.write(novo)
+    return codigo, modulos
+
+
 class Gerador:
     """As páginas de um idioma. caminho e rota são sempre os do idioma (en/ é só a pasta onde o inglês é gravado)."""
 
-    def __init__(self, modelo, url, saida, L, doacao="", servico="", idiomas=("pt",), versoes=None):
+    def __init__(self, modelo, url, saida, L, doacao="", servico="", idiomas=("pt",), versoes=None, modulos=()):
+        self.modulos = tuple(modulos)  # arquivos de site/js/ (viram <link rel="modulepreload">)
         self.versoes = versoes or {}  # arquivo do site -> impressão do conteúdo (vira ?v=... no endereço, para o navegador não usar cópia velha)
         self.doacao = doacao
         self.servico = servico
@@ -348,6 +377,8 @@ class Gerador:
         trocas = [
             ('href="fontes/', f'href="{ativos}fontes/'),
             ('href="estilos.css"', f'href="{ativos}estilos.css{self.versao("estilos.css")}"'),
+            ('<script type="module" src="app.js">',
+             "".join(f'<link rel="modulepreload" href="{ativos}{m}{self.versao("app.js")}">\n  ' for m in self.modulos) + '<script type="module" src="app.js">'),
             ('src="app.js"', f'src="{ativos}app.js{self.versao("app.js")}"'),
             ('src="tema.js"', f'src="{ativos}tema.js{self.versao("tema.js")}"'),
             ('class="marca" href="#/"', f'class="marca" href="{raiz or "./"}"'),
@@ -1223,13 +1254,15 @@ def main():
         if os.path.exists(caminho_arq):
             with open(caminho_arq, "rb") as f:
                 versoes[arq] = hashlib.sha256(f.read()).hexdigest()[:10]
+    # o app.js é módulo: o código dele cobre também os arquivos de site/js/ (veja fixar_modulos)
+    versoes["app.js"], modulos = fixar_modulos(args.site, args.saida)
     paginas = {}
     faltam = {}
     n_dep = 0
     geradores = {}
     for cod in idiomas:
         L = Idioma(cod, args.site)
-        g = Gerador(modelo, URL, args.saida, L, so_https(doacao.get("url")), (doacao.get("servico") or "").strip(), idiomas, versoes)
+        g = Gerador(modelo, URL, args.saida, L, so_https(doacao.get("url")), (doacao.get("servico") or "").strip(), idiomas, versoes, modulos)
         Dl = traduzir_dados(args.site, D, L)
         n_dep = gerar_idioma(args.site, g, Dl, L, URL, doacao)
         arquivos_dados, llms = arquivos_de_dados(g, L, URL, meta, args.site, bool(D.painel))

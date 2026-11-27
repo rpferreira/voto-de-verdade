@@ -2,6 +2,13 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.11.2 (2026-11-26)
+
+### Ajustes
+- **Código do site em módulos:** o `app.js` (com mais de 2 mil linhas) começa a ser dividido em arquivos menores, que o navegador abre como módulos JavaScript. Nesta primeira etapa saem as funções puras (montar elementos, busca sem acento, conta de porcentagem) para `site/js/util.js`. O site faz o mesmo que antes: as telas, em português e em inglês, nos modos claro e escuro, ficaram idênticas, ponto a ponto.
+- **Versão dos arquivos:** o `?v=` do `app.js` agora vale para o conjunto (o `app.js` e tudo que está em `site/js/`), e o gerador coloca o mesmo código em todo `import`; assim o navegador nunca mistura um `app.js` novo com um módulo velho. As páginas também avisam o navegador dos módulos (`modulepreload`), para baixá-los junto com o `app.js`.
+- **Testes:** novo `testes/modulos.py` (imports relativos e existentes, nenhum módulo sem uso, nenhum import circular, mesmo `?v=` em todo lugar). O teste de idiomas passa a ler também os módulos.
+
 ## 0.11.1 (2026-11-26)
 
 ### Ajustes
