@@ -19562,6 +19562,32 @@
    "Decreto 12.466"
   ]
  },
+ "2516578": {
+  "assunto": "Relações Internacionais e Defesa",
+  "assunto_secundario": null,
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "a1996e599af017dc",
+  "gerado_em": "2026-11-27",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": false,
+  "pontos_chave": [
+   "Trata de cooperação jurídica em matéria civil entre Brasil e Guiana",
+   "O tratado foi assinado em Georgetown, em 6 de maio de 2022",
+   "A ementa não explica o conteúdo das regras do tratado"
+  ],
+  "resumo": "Aprova o texto de um tratado entre o Brasil e a Guiana sobre cooperação jurídica internacional em matéria civil, assinado em Georgetown em 6 de maio de 2022. A ementa não detalha as regras previstas no tratado.",
+  "tags": [
+   "Guiana",
+   "tratado internacional",
+   "cooperação jurídica",
+   "acordo bilateral"
+  ]
+ },
  "2516804": {
   "assunto": "Cultura, Esporte e Turismo",
   "assunto_secundario": "Trabalho e Direitos",
@@ -20131,6 +20157,32 @@
    "Vaticano",
    "Santa Sé",
    "Câmara dos Deputados"
+  ]
+ },
+ "2532113": {
+  "assunto": "Relações Internacionais e Defesa",
+  "assunto_secundario": "Segurança Pública",
+  "conferencia": "claude-haiku-4-5-20251001",
+  "conferencia_obs": [],
+  "confianca_assunto": "alta",
+  "confianca_resumo": "alta",
+  "entrada": "60929c3d26e4e807",
+  "gerado_em": "2026-11-27",
+  "modelo": "claude-sonnet-5-5",
+  "motivo_assunto": null,
+  "motivo_resumo": null,
+  "pode_diferir": true,
+  "pontos_chave": [
+   "Trata de auxílio jurídico mútuo em matéria penal entre Brasil e Guiana",
+   "Tratado assinado em Georgetown, em 6 de maio de 2022",
+   "Aprova o texto do tratado por meio de decreto legislativo"
+  ],
+  "resumo": "Aprova o texto de um tratado entre o Brasil e a Guiana sobre auxílio jurídico mútuo em matéria penal, assinado em Georgetown em 6 de maio de 2022. A ementa não detalha as regras de cooperação previstas no tratado.",
+  "tags": [
+   "Guiana",
+   "tratado internacional",
+   "cooperação jurídica",
+   "matéria penal"
   ]
  },
  "2532468": {
