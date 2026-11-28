@@ -936,6 +936,27 @@
    "avisos": [
     "Coleta: 1 projetos sem busca única (veja o relatório)."
    ]
+  },
+  {
+   "data": "2026-11-28",
+   "contagens": {
+    "votacoes": 990,
+    "projetos": 950,
+    "deputados": 644,
+    "nominais": 220,
+    "votos": 91945
+   },
+   "pendentes": 1,
+   "pendentes_en": 0,
+   "pct_incertos": 11.6,
+   "gerado_em": "2026-11-27",
+   "custo_mes_usd": 0.94,
+   "erros": [
+    "A atualização diária terminou com resultado 'failure'. Veja o log: https://github.com/rpferreira/voto-de-verdade/actions/runs/46167349710"
+   ],
+   "avisos": [
+    "Coleta: 1 projetos sem busca única (veja o relatório)."
+   ]
   }
  ]
 }
