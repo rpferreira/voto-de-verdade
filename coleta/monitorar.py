@@ -37,6 +37,7 @@ import subprocess
 import sys
 import time
 from datetime import date, datetime
+from http.client import HTTPException
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
@@ -256,8 +257,9 @@ def buscar(url, tentativas=3):
                 return r.status, r.read().decode("utf-8", "replace")
         except HTTPError as e:
             return e.code, ""
-        except (URLError, TimeoutError, OSError) as e:
-            ultimo = str(e)
+        except (URLError, TimeoutError, OSError, HTTPException) as e:
+            # HTTPException cobre a resposta cortada no meio (IncompleteRead), que antes derrubava o monitor
+            ultimo = f"{type(e).__name__}: {e}"[:300]
             time.sleep(3 * (i + 1))
     return 0, ultimo or ""
 

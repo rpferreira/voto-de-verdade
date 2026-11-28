@@ -35,7 +35,8 @@ import time
 import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
-from urllib.error import HTTPError, URLError
+from http.client import HTTPException
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from construir_banco import ASSUNTOS
@@ -291,8 +292,9 @@ def chamar(modelo, sistema, usuario, ferramenta, chave, tentativas=6, max_tokens
                 i += 1
                 continue
             raise ErroProjeto(ultimo)
-        except (URLError, TimeoutError, ConnectionError, ValueError) as e:
-            ultimo = f"erro de rede: {e}"
+        except (OSError, HTTPException, ValueError) as e:
+            # OSError cobre URLError, tempo esgotado e conexão derrubada; HTTPException, a resposta cortada no meio (IncompleteRead)
+            ultimo = f"erro de rede: {type(e).__name__}: {e}"[:300]
             time.sleep(min(60, 2 ** (i + 1)))
             i += 1
     raise ErroProjeto(f"falhou depois de {tentativas} tentativas ({ultimo})")

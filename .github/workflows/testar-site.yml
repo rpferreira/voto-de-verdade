@@ -84,3 +84,7 @@ jobs:
       # Como a coleta repete as consultas quando a API da Câmara cai (falhou em 10/11 e 18/11/2026 e o site ficou desatualizado).
       - name: Testar a repetição da coleta
         run: python testes/coleta_repeticao.py
+
+      # O monitor e o resumidor repetem a consulta quando a resposta vem cortada ou a conexão cai (a coleta caiu assim em 28/11/2026).
+      - name: Testar os erros de rede do monitor e do resumidor
+        run: python testes/erros_de_rede.py
