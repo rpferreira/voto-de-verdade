@@ -2,6 +2,11 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.11.4 (2026-11-28)
+
+### Ajustes
+- **Monitor e resumos por IA:** os dois tinham a mesma falha da coleta de 28/11 (0.11.3): uma resposta cortada no meio (`IncompleteRead`) não era tratada como falha passageira. O monitor, que confere o site no ar, e o resumidor, que chama a API da IA, agora repetem a consulta quando a resposta vem cortada ou a conexão é derrubada e, se continuar falhando, desistem dizendo o motivo. No resumidor, uma resposta cortada pode custar uma segunda chamada à IA; o limite de tentativas e os limites de gasto continuam valendo. Teste novo: `testes/erros_de_rede.py`, que falha no código antigo.
+
 ## 0.11.3 (2026-11-28)
 
 ### Ajustes

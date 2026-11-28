@@ -224,6 +224,7 @@ Para ver no seu computador: `python3 site/exportar_dados.py` e depois `python3 -
 | `testes/espacamento.py` | Confere as regras de espaçamento (grade de 8px) no CSS e nas telas |
 | `testes/idiomas.py` | Confere a versão em inglês: dicionário, dados, páginas e telas |
 | `testes/guardar.py` | Testa o `guardar_no_repositorio.sh` num repositório de mentira (arquivos pendentes e alguém mexendo no remoto) |
+| `testes/coleta_repeticao.py` e `testes/erros_de_rede.py` | Testam, sem rede, como a coleta, o monitor e o resumidor repetem a consulta quando a API cai, demora ou corta a resposta no meio |
 | `testes/seguranca.py` | Ataca o site com dados maliciosos e confere a política de segurança (CSP), sem rastreio e sem cookies |
 | `testes/requirements.txt` | Versão fixa do programa de teste (o Dependabot avisa quando sai nova) |
 | `SECURITY.md` | Como avisar de uma falha e o que o site garante |
