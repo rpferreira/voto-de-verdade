@@ -2,6 +2,11 @@
 
 Como a versão é escolhida: [docs/versionamento.md](docs/versionamento.md). Dados atualizados todos os dias não entram aqui.
 
+## 0.11.3 (2026-11-28)
+
+### Ajustes
+- **Rotina diária de dados:** em 28/11 a API da Câmara cortou uma resposta no meio (erro `IncompleteRead`) e a coleta caiu na primeira vez, sem tentar de novo, porque esse tipo de erro não estava na lista dos que a repetição trata. A coleta agora repete também quando a resposta vem cortada ou a conexão é derrubada, com as mesmas esperas da 0.10.4 (30 s, 90 s, 3 min e 5 min), e, se continuar falhando, desiste dizendo o motivo em vez de derrubar o programa. O teste `testes/coleta_repeticao.py` ganhou os dois casos; ele falha no código antigo.
+
 ## 0.11.2 (2026-11-26)
 
 ### Ajustes

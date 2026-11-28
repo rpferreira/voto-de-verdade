@@ -8,7 +8,8 @@ Sem rede e sem esperar de verdade (a função de espera é trocada por um regist
   2. 503 nas tentativas curtas e resposta depois da primeira espera longa: devolve a resposta.
   3. Erro de rede (sem resposta) tratado do mesmo jeito.
   4. Erro que não passa (404): não repete.
-  5. API fora do ar o tempo todo: desiste, e a espera total da coleta nunca passa de ORCAMENTO_ESPERA;
+  5. Resposta cortada no meio (IncompleteRead) e conexão derrubada (ConnectionResetError): repete, em vez de derrubar a coleta.
+  6. API fora do ar o tempo todo: desiste, e a espera total da coleta nunca passa de ORCAMENTO_ESPERA;
      depois que o orçamento acaba, as consultas seguintes fazem só as tentativas curtas.
 Em 10/11 e 18/11/2026 a API da Câmara caiu e o site ficou dias sem atualizar: as três tentativas em poucos
 segundos eram curtas demais. Sai com código 1 se algo falhar.
@@ -18,6 +19,7 @@ import io
 import json
 import os
 import sys
+from http.client import IncompleteRead
 from urllib.error import HTTPError, URLError
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -60,6 +62,10 @@ def roteiro(passos):
             return Resposta({"dados": [1]})
         if passo == "rede":
             raise URLError("timed out")
+        if passo == "cortada":
+            raise IncompleteRead(b"x" * 52013)
+        if passo == "reset":
+            raise ConnectionResetError("Connection reset by peer")
         raise HTTPError(req.full_url, passo, "erro", {}, io.BytesIO(b"falha"))
 
     col.urlopen = urlopen
@@ -93,7 +99,16 @@ chamadas, esperas = roteiro([404])
 st, d = col.get_url("http://x/d")
 confere(st == 404 and len(chamadas) == 1 and not longas(esperas), "não repete")
 
-print("5. API fora do ar o tempo todo")
+print("5. Resposta cortada no meio e conexão derrubada")
+for passo in ("cortada", "reset"):
+    chamadas, esperas = roteiro([passo, passo, passo, 200])
+    st, d = col.get_url("http://x/i")
+    confere(st == 200 and d == {"dados": [1]} and longas(esperas) == [30], f"{passo}: repete e devolve a resposta (esperas longas: {longas(esperas)})")
+chamadas, esperas = roteiro(["cortada"])
+st, d = col.get_url("http://x/j")
+confere(st is None and "IncompleteRead" in d.get("_erro", ""), "se continuar cortando, desiste sem derrubar o programa e diz o motivo")
+
+print("6. API fora do ar o tempo todo")
 chamadas, esperas = roteiro([503])
 st, d = col.get_url("http://x/e")
 confere(st == 503 and d.get("_erro") == "falha", "desiste com o erro da API")
