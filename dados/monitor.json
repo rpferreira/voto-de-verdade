@@ -949,11 +949,9 @@
    "pendentes": 1,
    "pendentes_en": 0,
    "pct_incertos": 11.6,
-   "gerado_em": "2026-11-27",
+   "gerado_em": "2026-11-28",
    "custo_mes_usd": 0.94,
-   "erros": [
-    "A atualização diária terminou com resultado 'failure'. Veja o log: https://github.com/rpferreira/voto-de-verdade/actions/runs/46167349710"
-   ],
+   "erros": [],
    "avisos": [
     "Coleta: 1 projetos sem busca única (veja o relatório)."
    ]
