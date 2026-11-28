@@ -36,6 +36,7 @@ import sys
 import time
 from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta
+from http.client import HTTPException
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -203,8 +204,10 @@ def _uma_tentativa(url):
         except Exception:
             corpo = ""
         return e.code, {"_erro": corpo[:300]}, e.code in (429, 500, 502, 503, 504)
-    except (URLError, TimeoutError, ValueError) as e:
-        return None, {"_erro": str(e)}, True
+    except (OSError, HTTPException, ValueError) as e:
+        # OSError cobre URLError, tempo esgotado e conexão derrubada; HTTPException cobre a resposta cortada no meio
+        # (IncompleteRead, que derrubou a coleta de 28/11/2026); ValueError, o JSON quebrado.
+        return None, {"_erro": f"{type(e).__name__}: {e}"[:300]}, True
 
 
 def get_url(url, tentativas=3):
